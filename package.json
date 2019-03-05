@@ -1,0 +1,23 @@
+{
+  "name": "@azure/avocado",
+  "version": "0.0.0",
+  "description": "A validator of OpenAPI configurations",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Azure/avocado.git"
+  },
+  "keywords": [
+    "openapi",
+    "validator"
+  ],
+  "author": "Microsoft",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Azure/avocado/issues"
+  },
+  "homepage": "https://github.com/Azure/avocado#readme"
+}
