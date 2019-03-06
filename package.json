@@ -1,15 +1,11 @@
 {
   "name": "@azure/avocado",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "bin/avocado",
-    "dist/cli.d.ts",
-    "dist/cli.d.ts.map",
-    "dist/cli.js",
-    "dist/cli.js.map",
+    "bin/cli.js",
     "dist/index.d.ts",
     "dist/index.d.ts.map",
     "dist/index.js",
@@ -18,7 +14,7 @@
     "src/cli.ts"
   ],
   "bin": {
-    "avocado": "./bin/avocado"
+    "avocado": "./bin/cli.js"
   },
   "scripts": {
     "tsc": "tsc",
@@ -62,5 +58,8 @@
     "mocha-multi-reporters": "^1.1.7",
     "nyc": "^13.3.0",
     "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "tslib": "^1.9.3"
   }
 }
