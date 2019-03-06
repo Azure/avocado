@@ -1,10 +1,11 @@
 {
   "name": "@azure/avocado",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
+    "bin/avocado",
     "dist/cli.d.ts",
     "dist/cli.d.ts.map",
     "dist/cli.js",
@@ -13,7 +14,8 @@
     "dist/index.d.ts.map",
     "dist/index.js",
     "dist/index.js.map",
-    "src/index.ts"
+    "src/index.ts",
+    "src/cli.ts"
   ],
   "bin": {
     "avocado": "./bin/avocado"
@@ -29,7 +31,9 @@
       "text",
       "cobertura"
     ],
-    "include": [ "dist/*.js" ],
+    "include": [
+      "dist/*.js"
+    ],
     "check-coverage": true,
     "lines": 100,
     "statements": 100,
