@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require("../dist/index").cli()
+require("../dist/index").cli().then(process.exit)

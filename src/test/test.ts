@@ -1,3 +1,9 @@
 import * as avocado from "../index"
+import * as assert from "assert"
 
-avocado.cli()
+describe("tests", () => {
+  it("empty", async () => {
+    const result = await avocado.cli()
+    assert.strictEqual(result, 0)
+  })
+})

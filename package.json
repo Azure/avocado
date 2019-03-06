@@ -60,6 +60,7 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
+    "@types/node": "^11.10.4",
     "tslib": "^1.9.3"
   }
 }
