@@ -2,6 +2,8 @@
 
 [![Build Status](https://dev.azure.com/azure-sdk/public/_apis/build/status/public.avocado?branchName=master)](https://dev.azure.com/azure-sdk/public/_build/latest?definitionId=120&branchName=master)
 
+NPM: https://www.npmjs.com/package/@azure/avocado
+
 ## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
