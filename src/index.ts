@@ -5,15 +5,7 @@ import * as azureMd from "@azure/openapi-markdown"
 
 // Command-Line Interface. The function should return `Promise<number>`,
 // it shouldn't throw exceptions or reject the promise.
-export const cli = async () => {
-  try {
-    await validateAll(path.resolve("./"))
-    return 0
-  } catch (e){
-    console.error(e)
-    return 1
-  }
-}
+export const cli = async () => await validateAll(path.resolve("./"))
 
 const validateAll = async (dir: string): Promise<void> => {
   for await (const f of fs.recursiveReaddir(dir)) {

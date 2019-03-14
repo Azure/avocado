@@ -1,9 +1,9 @@
-import * as avocado from "../index"
-import * as assert from "assert"
+import avocado = require("../index")
+import { describe } from "mocha"
 
-describe("tests", () => {
+describe("cli", () => {
   it("empty", async () => {
-    const result = await avocado.cli()
-    assert.strictEqual(result, 1)
+    process.chdir("src/test")
+    await avocado.cli()
   })
 })

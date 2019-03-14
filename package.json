@@ -54,7 +54,6 @@
   "homepage": "https://github.com/Azure/avocado#readme",
   "devDependencies": {
     "@types/mocha": "^5.2.6",
-    "chai": "^4.2.0",
     "mocha": "^6.0.2",
     "mocha-junit-reporter": "^1.18.0",
     "mocha-multi-reporters": "^1.1.7",
