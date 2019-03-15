@@ -4,16 +4,20 @@ import * as md from "@ts-common/commonmark-to-markdown"
 import * as azureMd from "@azure/openapi-markdown"
 import * as ai from "@ts-common/async-iterator"
 
-// Command-Line Interface. The function should return `Promise<number>`,
-// it should throw an exception or reject the promise in case of critical error only.
-export const cli = async (path: string) => {
-  const errors = await validateAll(path)
-  let i = 0
-  for await (const e of errors) {
-    console.error(e)
-    ++i
+export const cli = async <T>(f: (path: string) => AsyncIterable<T>): Promise<number> => {
+  try {
+    const errors = await f("./")
+    let code = 0
+    for await (const e of errors) {
+      console.error(e)
+      code = 1
+    }
+    return code
+  } catch (e) {
+    console.error("INTERNAL ERROR")
+    console.error(e);
+    return 1
   }
-  return i
 }
 
 type Error = {
@@ -23,7 +27,7 @@ type Error = {
   readonly openApiUrl: string
 }
 
-const validateAll = (dir: string): ai.AsyncIterableEx<Error> =>
+export const avocado = (dir: string): ai.AsyncIterableEx<Error> =>
   fs.recursiveReaddir(path.resolve(dir))
     .filter(f => path.basename(f).toLowerCase() === "readme.md")
     .flatMap(validateReadMe)

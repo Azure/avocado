@@ -1,5 +1,3 @@
 #!/usr/bin/env node
-require("../dist/index")
-  .cli("./")
-  .then(code => process.exit(code))
-  .catch(e => { console.error(e); process.exit(1); })
+import * as a from "../dist/index";
+a.cli(a.avocado).then(process.exit)
