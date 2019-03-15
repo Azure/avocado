@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 require("../dist/index")
   .cli()
-  .then(process.exit(0))
+  .then(code => process.exit(code))
   .catch(e => { console.error(e); process.exit(1); })
