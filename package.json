@@ -62,7 +62,7 @@
     "@types/node": "^11.10.4"
   },
   "dependencies": {
-    "@azure/openapi-markdown": "^0.7.7",
+    "@azure/openapi-markdown": "^0.7.8",
     "@ts-common/commonmark-to-markdown": "^1.1.10",
     "@ts-common/fs": "^0.1.1",
     "@ts-common/string-map": "^0.2.5",
