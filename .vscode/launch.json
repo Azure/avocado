@@ -21,7 +21,8 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}\\dist\\index.js",
+      "program": "${workspaceFolder}/bin/cli.js",
+      "cwd": "${workspaceFolder}/../azure-rest-api-specs/specification",
       "outFiles": [
         "${workspaceFolder}/**/*.js"
       ]

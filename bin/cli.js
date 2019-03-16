@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-import * as a from "../dist/index";
+const a = require("../dist/index")
 a.cli(a.avocado).then(process.exit)
