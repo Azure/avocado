@@ -20,7 +20,7 @@ export const cli = async <T>(f: (path: string) => AsyncIterable<T>): Promise<num
   }
 }
 
-type Error = {
+export type Error = {
   readonly code: "NO_OPEN_API_FILE_FOUND"|"UNREFERENCED_OPEN_API_FILE"
   readonly message: string
   readonly readMeUrl: string
@@ -45,7 +45,7 @@ const validateReadMe = (readMePath: string): ai.AsyncIterableEx<Error> =>
           code: "NO_OPEN_API_FILE_FOUND",
           message: "the OpenAPI file is not found but it is referenced from the readme file.",
           readMeUrl: readMePath,
-          openApiUrl: p
+          openApiUrl: fullPath
         }
       }
     }
@@ -58,7 +58,7 @@ const validateReadMe = (readMePath: string): ai.AsyncIterableEx<Error> =>
           code: "UNREFERENCED_OPEN_API_FILE",
           message: "the OpenAPI file is not referenced from the readme file.",
           readMeUrl: readMePath,
-          openApiUrl: f
+          openApiUrl: path.resolve(f)
         }
       }
     }

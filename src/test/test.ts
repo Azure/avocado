@@ -2,6 +2,7 @@ import * as avocado from "../index"
 import { describe } from "mocha"
 import assert from "assert"
 import * as ai from "@ts-common/async-iterator"
+import * as path from "path"
 
 describe("cli", () => {
   it("no errors", async () => {
@@ -21,10 +22,26 @@ describe("cli", () => {
 describe("avocado", () => {
   it("no_file_found", async () => {
     const r = await avocado.avocado("src/test/no_file_found").toArray()
-    assert.strictEqual(r.length, 1)
+    const e: ReadonlyArray<avocado.Error> = [
+      {
+        code: "NO_OPEN_API_FILE_FOUND",
+        message: r[0].message,
+        readMeUrl: path.resolve("src/test/no_file_found/readme.md"),
+        openApiUrl: path.resolve("src/test/no_file_found/specs/some.json")
+      }
+    ]
+    assert.deepStrictEqual(r, e)
   })
   it("unreferenced file", async () => {
     const r = await avocado.avocado("src/test/unreferenced_file").toArray()
-    assert.strictEqual(r.length, 1)
+    const e: ReadonlyArray<avocado.Error> = [
+      {
+        code: "UNREFERENCED_OPEN_API_FILE",
+        message: r[0].message,
+        readMeUrl: path.resolve("src/test/unreferenced_file/readme.md"),
+        openApiUrl: path.resolve("src/test/unreferenced_file/specs/some.json")
+      }
+    ]
+    assert.deepStrictEqual(r, e)
   })
 })

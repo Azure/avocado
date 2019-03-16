@@ -1,4 +1,4 @@
 ```yaml $(tag) == 'something'
 input-file:
-- some.json
+- specs/some.json
 ```
