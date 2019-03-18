@@ -2,10 +2,10 @@
   "$ref": 54,
   "a": [
     {
-      "$ref": "a.json#"
+      "$ref": "a.json"
     },
     {
-      "$ref": "local"
+      "$ref": "#local"
     }
   ]
 }

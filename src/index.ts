@@ -50,7 +50,7 @@ type Ref = {
 
 const parseRef = (ref: string): Ref => {
   const i = ref.indexOf("#")
-  return i < 0 ? { url: "", pointer: ref } : { url: ref.substr(0, i), pointer: ref.substr(i + 1) }
+  return i < 0 ? { url: ref, pointer: "" } : { url: ref.substr(0, i), pointer: ref.substr(i + 1) }
 }
 
 const getRefs = (j: json.Json): it.IterableEx<string> =>
