@@ -74,4 +74,16 @@ describe("avocado", () => {
       }
     ])
   })
+
+  it("invalid_ref", async () => {
+    const r = await avocado.avocado("src/test/invalid_ref").toArray()
+    assert.deepStrictEqual(r, [
+      {
+        code: "NO_OPEN_API_FILE_FOUND",
+        message: "the OpenAPI file is not found but it is referenced from the readme file.",
+        openApiUrl: path.resolve("src/test/invalid_ref/specs/a.json"),
+        readMeUrl: path.resolve("src/test/invalid_ref/readme.md"),
+      }
+    ])
+  })
 })
