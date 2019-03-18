@@ -3,6 +3,7 @@ import * as fs from "@ts-common/fs"
 import * as md from "@ts-common/commonmark-to-markdown"
 import * as azureMd from "@azure/openapi-markdown"
 import * as ai from "@ts-common/async-iterator"
+import * as jp from "@ts-common/json-parser"
 
 export const cli = async <T>(f: (path: string) => AsyncIterable<T>): Promise<number> => {
   try {
@@ -20,12 +21,19 @@ export const cli = async <T>(f: (path: string) => AsyncIterable<T>): Promise<num
   }
 }
 
-export type Error = {
-  readonly code: "NO_OPEN_API_FILE_FOUND"|"UNREFERENCED_OPEN_API_FILE"
+export type JsonParseError = {
+  readonly code: "JSON_PARSE",
+  readonly error: jp.ParseError
+}
+
+export type FileError = {
+  code: "NO_OPEN_API_FILE_FOUND" | "UNREFERENCED_OPEN_API_FILE"
   readonly message: string
   readonly readMeUrl: string
   readonly openApiUrl: string
 }
+
+export type Error = JsonParseError | FileError
 
 export const avocado = (dir: string): ai.AsyncIterableEx<Error> =>
   fs.recursiveReaddir(path.resolve(dir))
@@ -51,14 +59,25 @@ const validateReadMe = (readMePath: string): ai.AsyncIterableEx<Error> =>
     }
     const normInputFiles = inputFiles.map(f => path.resolve(path.join(dir, f)))
     const set = normInputFiles.reduce((set, v) => set.add(v), new Set<string>())
-    const fromReadMe = fs.recursiveReaddir(dir)
-    for await (const f of fromReadMe) {
-      if (path.extname(f) === ".json" && !set.has(f)) {
-        yield {
-          code: "UNREFERENCED_OPEN_API_FILE",
-          message: "the OpenAPI file is not referenced from the readme file.",
-          readMeUrl: readMePath,
-          openApiUrl: path.resolve(f)
+    const files = fs.recursiveReaddir(dir)
+    for await (const f of files) {
+      if (path.extname(f) === ".json") {
+        const file = await fs.readFile(f)
+        const errors: jp.ParseError[] = []
+        jp.parse(f, file.toString(), e => errors.push(e))
+        for (const e of errors) {
+          yield {
+            code: "JSON_PARSE",
+            error: e
+          }
+        }
+        if (!set.has(f)) {
+          yield {
+            code: "UNREFERENCED_OPEN_API_FILE",
+            message: "the OpenAPI file is not referenced from the readme file.",
+            readMeUrl: readMePath,
+            openApiUrl: path.resolve(f)
+          }
         }
       }
     }
