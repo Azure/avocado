@@ -134,19 +134,16 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
     const m = md.parse(file.toString())
     const dir = path.dirname(readMePath)
     const inputFiles = openApiMd.getInputFiles(m.markDown).toArray()
-    const normInputFiles = inputFiles.map(f => path.resolve(path.join(dir, f)))
-    const set = normInputFiles.reduce((set, v) => set.add(v), new Set<string>())
-    const fileNames = fs.recursiveReaddir(dir)
-    const errors = resolveReferences(readMePath, set)
-    yield *errors
-    for await (const f of fileNames) {
-      if (path.extname(f) === ".json" && !set.has(f)) {
-        yield {
+    const set = inputFiles
+      .map(f => path.resolve(path.join(dir, f)))
+      .reduce((s, v) => s.add(v), new Set<string>())
+    yield *resolveReferences(readMePath, set)
+    yield *fs.recursiveReaddir(dir)
+      .filter(filePath => path.extname(filePath) === ".json" && !set.has(filePath))
+      .map<Error>(filePath => ({
           code: "UNREFERENCED_OPEN_API_FILE",
           message: "The OpenAPI file is not referenced from the readme file.",
           readMeUrl: readMePath,
-          openApiUrl: path.resolve(f)
-        }
-      }
-    }
+          openApiUrl: path.resolve(filePath)
+        }))
   })
