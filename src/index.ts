@@ -11,12 +11,13 @@ import * as sm from "@ts-common/string-map"
 export const cli = async <T>(f: (path: string) => AsyncIterable<T>): Promise<number> => {
   try {
     const errors = await f("./")
-    let code = 0
+    let errorsNumber = 0
     for await (const e of errors) {
       console.error(e)
-      code = 1
+      ++errorsNumber
     }
-    return code
+    console.log(`errors: ${errorsNumber}`)
+    return errorsNumber === 0 ? 0 : 1
   } catch (e) {
     console.error("INTERNAL ERROR")
     console.error(e);
@@ -69,31 +70,33 @@ const resolveReferences = async (readMePath: string, fileNames: Set<string>) => 
   while (fileNamesToCheck.length !== 0) {
     const newFileNames = []
     for (const fileName of fileNamesToCheck) {
-      if (await fs.exists(fileName)) {
-        const file = await fs.readFile(fileName)
-        const document = jp.parse(
-          fileName,
-          file.toString(),
-          e => errors.push({ code: "JSON_PARSE", error: e})
-        )
-        const dir = path.dirname(fileName)
-        const refFiles = getRefs(document)
-          .map(v => parseRef(v).url)
-          .filter(u => u !== "")
-          .map(u => path.resolve(path.join(dir, u)))
-        for (const rf of refFiles) {
-          if (!fileNames.has(rf)) {
-            fileNames.add(rf)
-            newFileNames.push(rf)
-          }
-        }
-      } else {
+      let file: Buffer
+      try {
+        file = await fs.readFile(fileName)
+      } catch (e) {
         errors.push({
           code: "NO_OPEN_API_FILE_FOUND",
           message: "the OpenAPI file is not found but it is referenced from the readme file.",
           readMeUrl: readMePath,
           openApiUrl: fileName
         })
+        continue
+      }
+      const document = jp.parse(
+        fileName,
+        file.toString(),
+        e => errors.push({ code: "JSON_PARSE", error: e})
+      )
+      const dir = path.dirname(fileName)
+      const refFiles = getRefs(document)
+        .map(v => parseRef(v).url)
+        .filter(u => u !== "")
+        .map(u => path.resolve(path.join(dir, u)))
+      for (const rf of refFiles) {
+        if (!fileNames.has(rf)) {
+          fileNames.add(rf)
+          newFileNames.push(rf)
+        }
       }
     }
     fileNamesToCheck = newFileNames
