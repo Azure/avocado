@@ -96,7 +96,13 @@ const jsonParse = (fileName: string, file: string) => {
   }
 }
 
-const resolveReferences = (readMePath: string, fileNames: Set<string>) =>
+/**
+ * The function finds all referenced files and put them in the `fileNames` set.
+ *
+ * @param readMePath a path to `readme.md` as the original source of `fileNames` set.
+ * @param fileNames a set of file names from `readme.md` file.
+ */
+const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
   asyncIt.iterable<Error>(async function *() {
     let fileNamesToCheck = it.toArray(fileNames)
     while (fileNamesToCheck.length !== 0) {
@@ -137,7 +143,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
     const set = inputFiles
       .map(f => path.resolve(path.join(dir, f)))
       .reduce((s, v) => s.add(v), new Set<string>())
-    yield *resolveReferences(readMePath, set)
+    yield *resolveFileReferences(readMePath, set)
     yield *fs.recursiveReaddir(dir)
       .filter(filePath => path.extname(filePath) === ".json" && !set.has(filePath))
       .map<Error>(filePath => ({
