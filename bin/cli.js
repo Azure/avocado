@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-const a = require("../dist/index")
-a.cli(a.avocado).then(process.exit)
+const index = require("../dist/index")
+index.cli(index.avocado).then(process.exit)

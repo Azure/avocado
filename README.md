@@ -1,6 +1,6 @@
 # Avocado
 
-A Validator of OpenAPI Configuration And Directories.
+Another Validator of OpenAPI spec repository Configuration And Directories.
 
 [![Build Status](https://dev.azure.com/azure-sdk/public/_apis/build/status/public.avocado?branchName=master)](https://dev.azure.com/azure-sdk/public/_build/latest?definitionId=120&branchName=master)
 

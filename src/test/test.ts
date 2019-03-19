@@ -60,6 +60,7 @@ describe("avocado", () => {
     assert.deepStrictEqual(r, [
       {
         code: "JSON_PARSE",
+        message: "The file is not valid JSON file.",
         error: {
           code: "unexpected token",
           kind: "structure",
@@ -80,7 +81,7 @@ describe("avocado", () => {
     assert.deepStrictEqual(r, [
       {
         code: "NO_OPEN_API_FILE_FOUND",
-        message: "the OpenAPI file is not found but it is referenced from the readme file.",
+        message: "The OpenAPI file is not found but it is referenced from the readme file.",
         openApiUrl: path.resolve("src/test/invalid_ref/specs/a.json"),
         readMeUrl: path.resolve("src/test/invalid_ref/readme.md"),
       }

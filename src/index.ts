@@ -1,16 +1,21 @@
 import * as path from "path"
 import * as fs from "@ts-common/fs"
 import * as md from "@ts-common/commonmark-to-markdown"
-import * as azureMd from "@azure/openapi-markdown"
-import * as ai from "@ts-common/async-iterator"
-import * as jp from "@ts-common/json-parser"
+import * as openApiMd from "@azure/openapi-markdown"
+import * as asyncIt from "@ts-common/async-iterator"
+import * as jsonParser from "@ts-common/json-parser"
 import * as it from "@ts-common/iterator"
 import * as json from "@ts-common/json"
-import * as sm from "@ts-common/string-map"
+import * as stringMap from "@ts-common/string-map"
 
-export const cli = async <T>(f: (path: string) => AsyncIterable<T>): Promise<number> => {
+/**
+ * The function executes the given `tool` and prints errors to `stderr`.
+ *
+ * @param tool is a function which returns errors as `AsyncIterable`.
+ */
+export const cli = async <T>(tool: (path: string) => AsyncIterable<T>): Promise<number> => {
   try {
-    const errors = await f("./")
+    const errors = await tool("./")
     let errorsNumber = 0
     for await (const e of errors) {
       console.error(e)
@@ -20,14 +25,15 @@ export const cli = async <T>(f: (path: string) => AsyncIterable<T>): Promise<num
     return errorsNumber === 0 ? 0 : 1
   } catch (e) {
     console.error("INTERNAL ERROR")
-    console.error(e);
+    console.error(e)
     return 1
   }
 }
 
 export type JsonParseError = {
   readonly code: "JSON_PARSE",
-  readonly error: jp.ParseError
+  readonly message: string
+  readonly error: jsonParser.ParseError
 }
 
 export type FileError = {
@@ -39,10 +45,15 @@ export type FileError = {
 
 export type Error = JsonParseError | FileError
 
-export const avocado = (dir: string): ai.AsyncIterableEx<Error> =>
+/**
+ * The function validates files in the given `dir` folder and returns errors.
+ *
+ * @param dir
+ */
+export const avocado = (dir: string): asyncIt.AsyncIterableEx<Error> =>
   fs.recursiveReaddir(path.resolve(dir))
     .filter(f => path.basename(f).toLowerCase() === "readme.md")
-    .flatMap(validateReadMe)
+    .flatMap(validateReadMeFile)
 
 type Ref = {
   readonly url: string
@@ -56,7 +67,7 @@ const parseRef = (ref: string): Ref => {
 
 const getRefs = (j: json.Json): it.IterableEx<string> =>
   json.isObject(j) ?
-    sm.entries(j).flatMap(
+    stringMap.entries(j).flatMap(
       ([k, v]) => k === "$ref" && typeof v === "string" ?
         it.concat([v]) :
         getRefs(v)
@@ -64,66 +75,77 @@ const getRefs = (j: json.Json): it.IterableEx<string> =>
   it.isArray(j) ? it.flatMap(j, getRefs) :
   it.empty()
 
-const resolveReferences = async (readMePath: string, fileNames: Set<string>) => {
-  let fileNamesToCheck = it.toArray(fileNames)
-  const errors: Error[] = []
-  while (fileNamesToCheck.length !== 0) {
-    const newFileNames = []
-    for (const fileName of fileNamesToCheck) {
-      let file: Buffer
-      try {
-        file = await fs.readFile(fileName)
-      } catch (e) {
-        errors.push({
-          code: "NO_OPEN_API_FILE_FOUND",
-          message: "the OpenAPI file is not found but it is referenced from the readme file.",
-          readMeUrl: readMePath,
-          openApiUrl: fileName
-        })
-        continue
-      }
-      const document = jp.parse(
-        fileName,
-        file.toString(),
-        e => errors.push({ code: "JSON_PARSE", error: e})
-      )
-      const dir = path.dirname(fileName)
-      const refFiles = getRefs(document)
-        .map(v => parseRef(v).url)
-        .filter(u => u !== "")
-        .map(u => path.resolve(path.join(dir, u)))
-      for (const rf of refFiles) {
-        if (!fileNames.has(rf)) {
-          fileNames.add(rf)
-          newFileNames.push(rf)
-        }
-      }
-    }
-    fileNamesToCheck = newFileNames
-  }
-  return errors
+const getReferencedFileNames = (fileName: string, doc: json.Json) => {
+  const dir = path.dirname(fileName)
+  return getRefs(doc)
+    .map(v => parseRef(v).url)
+    .filter(u => u !== "")
+    .map(u => path.resolve(path.join(dir, u)))
 }
 
-const validateReadMe = (readMePath: string): ai.AsyncIterableEx<Error> =>
-  ai.iterable<Error>(async function *() {
+const jsonParse = (fileName: string, file: string) => {
+  const errors: Error[] = []
+  const document = jsonParser.parse(
+    fileName,
+    file.toString(),
+    e => errors.push({ code: "JSON_PARSE", message: "The file is not valid JSON file.", error: e})
+  )
+  return {
+    errors,
+    document
+  }
+}
+
+const resolveReferences = (readMePath: string, fileNames: Set<string>) =>
+  asyncIt.iterable<Error>(async function *() {
+    let fileNamesToCheck = it.toArray(fileNames)
+    while (fileNamesToCheck.length !== 0) {
+      const newFileNames = []
+      for (const fileName of fileNamesToCheck) {
+        let file: Buffer
+        try {
+          file = await fs.readFile(fileName)
+        } catch (e) {
+          yield {
+            code: "NO_OPEN_API_FILE_FOUND",
+            message: "The OpenAPI file is not found but it is referenced from the readme file.",
+            readMeUrl: readMePath,
+            openApiUrl: fileName
+          }
+          continue
+        }
+        const { errors, document } = jsonParse(fileName, file.toString())
+        yield *errors
+        const refFileNames = getReferencedFileNames(fileName, document)
+        for (const refFileName of refFileNames) {
+          if (!fileNames.has(refFileName)) {
+            fileNames.add(refFileName)
+            newFileNames.push(refFileName)
+          }
+        }
+      }
+      fileNamesToCheck = newFileNames
+    }
+  })
+
+const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> =>
+  asyncIt.iterable<Error>(async function *() {
     const file = await fs.readFile(readMePath)
     const m = md.parse(file.toString())
     const dir = path.dirname(readMePath)
-    const inputFiles = azureMd.getInputFiles(m.markDown).toArray()
+    const inputFiles = openApiMd.getInputFiles(m.markDown).toArray()
     const normInputFiles = inputFiles.map(f => path.resolve(path.join(dir, f)))
     const set = normInputFiles.reduce((set, v) => set.add(v), new Set<string>())
     const fileNames = fs.recursiveReaddir(dir)
-    const errors = await resolveReferences(readMePath, set)
+    const errors = resolveReferences(readMePath, set)
     yield *errors
     for await (const f of fileNames) {
-      if (path.extname(f) === ".json") {
-        if (!set.has(f)) {
-          yield {
-            code: "UNREFERENCED_OPEN_API_FILE",
-            message: "the OpenAPI file is not referenced from the readme file.",
-            readMeUrl: readMePath,
-            openApiUrl: path.resolve(f)
-          }
+      if (path.extname(f) === ".json" && !set.has(f)) {
+        yield {
+          code: "UNREFERENCED_OPEN_API_FILE",
+          message: "The OpenAPI file is not referenced from the readme file.",
+          readMeUrl: readMePath,
+          openApiUrl: path.resolve(f)
         }
       }
     }
