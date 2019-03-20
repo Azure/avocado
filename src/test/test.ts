@@ -22,7 +22,7 @@ describe("cli", () => {
 })
 
 describe("avocado", () => {
-  it("not_autorest_markdown", async () => {
+  it("not autorest markdown", async () => {
     const r = await avocado.avocado("src/test/not_autorest_markdown").toArray()
     const expected: unknown = [
       {
@@ -36,7 +36,7 @@ describe("avocado", () => {
     assert.deepStrictEqual(r, expected)
   })
 
-  it("no_file_found", async () => {
+  it("no file found", async () => {
     const r = await avocado.avocado("src/test/no_file_found").toArray()
     const r0 = r[0]
     if (r0.code === "JSON_PARSE") {
@@ -91,7 +91,7 @@ describe("avocado", () => {
     ])
   })
 
-  it("invalid_ref", async () => {
+  it("invalid ref", async () => {
     const r = await avocado.avocado("src/test/invalid_ref").toArray()
     const expected: unknown = [
       {
