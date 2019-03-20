@@ -14,7 +14,7 @@ describe("cli", () => {
     assert.strictEqual(r, 1)
   })
   it("internal error", async () => {
-    const r = await avocado.cli(() => { throw "critical error" })
+    const r = await avocado.cli(() => { throw new Error("critical error") })
     assert.strictEqual(r, 1)
   })
 })
@@ -25,7 +25,7 @@ describe("avocado", () => {
     const r = await avocado.avocado("src/test/no_file_found").toArray()
     const r0 = r[0]
     if (r0.code === "JSON_PARSE") {
-      throw 'r0.code === "JSON_PARSE"'
+      throw new Error('r0.code === "JSON_PARSE"')
     }
     const e: ReadonlyArray<avocado.Error> = [
       {
@@ -42,7 +42,7 @@ describe("avocado", () => {
     const r = await avocado.avocado("src/test/unreferenced_file").toArray()
     const r0 = r[0]
     if (r0.code === "JSON_PARSE") {
-      throw 'r0.code === "JSON_PARSE"'
+      throw new Error('r0.code === "JSON_PARSE"')
     }
     const e: ReadonlyArray<avocado.Error> = [
       {

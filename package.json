@@ -20,7 +20,8 @@
     "integration": "tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
     "cli": "tsc && node ./bin/cli.js",
     "tsc": "tsc",
-    "test": "tsc && nyc mocha ./dist/test/*.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-multi-reporters.json",
+    "tslint": "tslint --project ./",
+    "test": "tsc && tslint --project ./ && nyc mocha ./dist/test/*.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-multi-reporters.json",
     "prepack": "npm install && tsc"
   },
   "nyc": {
@@ -62,11 +63,12 @@
   },
   "devDependencies": {
     "@types/mocha": "^5.2.6",
+    "@types/node": "^11.10.4",
     "mocha": "^6.0.2",
     "mocha-junit-reporter": "^1.18.0",
     "mocha-multi-reporters": "^1.1.7",
     "nyc": "^13.3.0",
-    "typescript": "^3.3.3333",
-    "@types/node": "^11.10.4"
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.3333"
   }
 }

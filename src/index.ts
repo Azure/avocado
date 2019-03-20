@@ -18,20 +18,24 @@ export const cli = async <T>(tool: (path: string) => AsyncIterable<T>): Promise<
     const errors = await tool("./")
     let errorsNumber = 0
     for await (const e of errors) {
+      // tslint:disable-next-line:no-console
       console.error(e)
       ++errorsNumber
     }
+    // tslint:disable-next-line:no-console
     console.log(`errors: ${errorsNumber}`)
     return errorsNumber === 0 ? 0 : 1
   } catch (e) {
+    // tslint:disable-next-line:no-console
     console.error("INTERNAL ERROR")
+    // tslint:disable-next-line:no-console
     console.error(e)
     return 1
   }
 }
 
 export type JsonParseError = {
-  readonly code: "JSON_PARSE",
+  readonly code: "JSON_PARSE"
   readonly message: string
   readonly error: jsonParser.ParseError
 }
