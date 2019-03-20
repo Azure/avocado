@@ -28,7 +28,9 @@ describe("avocado", () => {
       {
         code: "NOT_AUTOREST_MARKDOWN",
         message: "The `readme.md` is not AutoRest markdown file.",
-        readMeUrl: path.resolve("src/test/not_autorest_markdown/readme.md")
+        readMeUrl: path.resolve("src/test/not_autorest_markdown/readme.md"),
+        helpUrl:
+          "http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format"
       }
     ]
     assert.deepStrictEqual(r, expected)

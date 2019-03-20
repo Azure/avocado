@@ -46,6 +46,7 @@ export type NotAutoRestMarkDown = {
   readonly code: "NOT_AUTOREST_MARKDOWN"
   readonly message: string
   readonly readMeUrl: string
+  readonly helpUrl: string
 }
 
 export type FileError = {
@@ -184,7 +185,9 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
       yield {
         code: "NOT_AUTOREST_MARKDOWN",
         message: "The `readme.md` is not AutoRest markdown file.",
-        readMeUrl: readMePath
+        readMeUrl: readMePath,
+        helpUrl:
+          "http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format"
       }
     }
     const dir = path.dirname(readMePath)
