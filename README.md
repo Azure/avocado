@@ -1,5 +1,12 @@
+# Avocado
 
-# Contributing
+Another Validator of OpenAPI spec repository Configuration And Directories.
+
+[![Build Status](https://dev.azure.com/azure-sdk/public/_apis/build/status/public.avocado?branchName=master)](https://dev.azure.com/azure-sdk/public/_build/latest?definitionId=120&branchName=master)
+
+NPM: https://www.npmjs.com/package/@azure/avocado
+
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us

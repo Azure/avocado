@@ -63,3 +63,4 @@ typings/
 package-lock.json
 test-results.xml
 dist/
+.vs/
