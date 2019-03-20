@@ -162,9 +162,9 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
     yield *fs.recursiveReaddir(dir)
       .filter(filePath => path.extname(filePath) === ".json" && !inputFileSet.has(filePath))
       .map<Error>(filePath => ({
-          code: "UNREFERENCED_OPEN_API_FILE",
-          message: "The OpenAPI file is not referenced from the readme file.",
-          readMeUrl: readMePath,
-          openApiUrl: path.resolve(filePath)
-        }))
+        code: "UNREFERENCED_OPEN_API_FILE",
+        message: "The OpenAPI file is not referenced from the readme file.",
+        readMeUrl: readMePath,
+        openApiUrl: path.resolve(filePath)
+      }))
   })
