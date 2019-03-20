@@ -14,13 +14,14 @@ describe("cli", () => {
     assert.strictEqual(r, 1)
   })
   it("internal error", async () => {
-    const r = await avocado.cli(() => { throw new Error("critical error") })
+    const r = await avocado.cli(() => {
+      throw new Error("critical error")
+    })
     assert.strictEqual(r, 1)
   })
 })
 
 describe("avocado", () => {
-
   it("no_file_found", async () => {
     const r = await avocado.avocado("src/test/no_file_found").toArray()
     const r0 = r[0]
@@ -78,13 +79,14 @@ describe("avocado", () => {
 
   it("invalid_ref", async () => {
     const r = await avocado.avocado("src/test/invalid_ref").toArray()
-    assert.deepStrictEqual(r, [
+    const expected: unknown = [
       {
         code: "NO_OPEN_API_FILE_FOUND",
         message: "The OpenAPI file is not found but it is referenced from the readme file.",
         openApiUrl: path.resolve("src/test/invalid_ref/specs/a.json"),
-        readMeUrl: path.resolve("src/test/invalid_ref/readme.md"),
+        readMeUrl: path.resolve("src/test/invalid_ref/readme.md")
       }
-    ])
+    ]
+    assert.deepStrictEqual(r, expected)
   })
 })

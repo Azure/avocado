@@ -20,7 +20,9 @@
     "integration": "tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
     "cli": "tsc && node ./bin/cli.js",
     "tsc": "tsc",
+    "prettier": "prettier ./src/**/*.ts",
     "tslint": "tslint --project ./",
+    "tslint-check": "tslint-config-prettier-check ./tslint.json",
     "test": "tsc && tslint --project ./ && nyc mocha ./dist/test/*.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-multi-reporters.json",
     "prepack": "npm install && tsc"
   },
@@ -68,8 +70,11 @@
     "mocha-junit-reporter": "^1.18.0",
     "mocha-multi-reporters": "^1.1.7",
     "nyc": "^13.3.0",
+    "prettier": "^1.16.4",
     "tslint": "^5.14.0",
+    "tslint-config-prettier": "^1.18.0",
     "tslint-immutable": "^5.4.0",
+    "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.3.3333"
   }
 }
