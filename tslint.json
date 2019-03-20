@@ -1,7 +1,8 @@
 {
     "defaultSeverity": "error",
     "extends": [
-        "tslint:recommended"
+        "tslint:recommended",
+        "tslint-immutable"
     ],
     "jsRules": {},
     "rules": {
@@ -10,7 +11,28 @@
         "interface-over-type-literal": false,
         "trailing-comma": false,
         "arrow-parens": false,
-        "object-literal-sort-keys": false
+        "object-literal-sort-keys": false,
+
+        // Recommended built-in rules
+        "no-var-keyword": true,
+        "no-parameter-reassignment": true,
+        "typedef": true,
+
+        // Immutability rules
+        "readonly-keyword": true,
+        "readonly-array": true,
+        "no-let": true,
+        "no-object-mutation": true,
+        "no-delete": true,
+        "no-method-signature": true,
+
+        // Functional style rules
+        "no-this": false,
+        "no-class": true,
+        "no-mixed-interface": true
+        // "no-expression-statement": true,
+        // "no-if-statement": true,
+        // "no-loop-statement": true
     },
     "rulesDirectory": []
 }

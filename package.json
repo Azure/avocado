@@ -69,6 +69,7 @@
     "mocha-multi-reporters": "^1.1.7",
     "nyc": "^13.3.0",
     "tslint": "^5.14.0",
+    "tslint-immutable": "^5.4.0",
     "typescript": "^3.3.3333"
   }
 }

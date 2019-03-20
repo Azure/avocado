@@ -16,6 +16,7 @@ import * as stringMap from "@ts-common/string-map"
 export const cli = async <T>(tool: (path: string) => AsyncIterable<T>): Promise<number> => {
   try {
     const errors = await tool("./")
+    // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
       // tslint:disable-next-line:no-console
@@ -41,7 +42,7 @@ export type JsonParseError = {
 }
 
 export type FileError = {
-  code: "NO_OPEN_API_FILE_FOUND" | "UNREFERENCED_OPEN_API_FILE"
+  readonly code: "NO_OPEN_API_FILE_FOUND" | "UNREFERENCED_OPEN_API_FILE"
   readonly message: string
   readonly readMeUrl: string
   readonly openApiUrl: string
@@ -88,6 +89,7 @@ const getReferencedFileNames = (fileName: string, doc: json.Json) => {
 }
 
 const jsonParse = (fileName: string, file: string) => {
+  // tslint:disable-next-line:readonly-array
   const errors: Error[] = []
   const document = jsonParser.parse(
     fileName,
@@ -108,11 +110,14 @@ const jsonParse = (fileName: string, file: string) => {
  */
 const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
   asyncIt.iterable<Error>(async function *() {
+    // tslint:disable-next-line:no-let
     let fileNamesToCheck = it.toArray(fileNames)
     // read references from `fileNamesToCheck` until there are no files are left.
     while (fileNamesToCheck.length !== 0) {
+      // tslint:disable-next-line:readonly-array
       const newFileNames = []
       for (const fileName of fileNamesToCheck) {
+        // tslint:disable-next-line:no-let
         let file: Buffer
         try {
           file = await fs.readFile(fileName)
