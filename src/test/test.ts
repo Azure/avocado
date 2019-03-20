@@ -22,6 +22,18 @@ describe("cli", () => {
 })
 
 describe("avocado", () => {
+  it("not_autorest_markdown", async () => {
+    const r = await avocado.avocado("src/test/not_autorest_markdown").toArray()
+    const expected: unknown = [
+      {
+        code: "NOT_AUTOREST_MARKDOWN",
+        message: "The `readme.md` is not AutoRest markdown file.",
+        readMeUrl: path.resolve("src/test/not_autorest_markdown/readme.md")
+      }
+    ]
+    assert.deepStrictEqual(r, expected)
+  })
+
   it("no_file_found", async () => {
     const r = await avocado.avocado("src/test/no_file_found").toArray()
     const r0 = r[0]

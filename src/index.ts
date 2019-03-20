@@ -7,6 +7,7 @@ import * as jsonParser from "@ts-common/json-parser"
 import * as it from "@ts-common/iterator"
 import * as json from "@ts-common/json"
 import * as stringMap from "@ts-common/string-map"
+import * as commonmark from "commonmark"
 
 /**
  * The function executes the given `tool` and prints errors to `stderr`.
@@ -41,6 +42,12 @@ export type JsonParseError = {
   readonly error: jsonParser.ParseError
 }
 
+export type NotAutoRestMarkDown = {
+  readonly code: "NOT_AUTOREST_MARKDOWN"
+  readonly message: string
+  readonly readMeUrl: string
+}
+
 export type FileError = {
   readonly code: "NO_OPEN_API_FILE_FOUND" | "UNREFERENCED_OPEN_API_FILE"
   readonly message: string
@@ -48,7 +55,7 @@ export type FileError = {
   readonly openApiUrl: string
 }
 
-export type Error = JsonParseError | FileError
+export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 
 /**
  * The function validates files in the given `dir` folder and returns errors.
@@ -142,11 +149,44 @@ const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
     }
   })
 
+const markDownIterate = (node: commonmark.Node | null) =>
+  it.iterable(function*() {
+    // tslint:disable-next-line:no-let
+    let i = node
+    while (i !== null) {
+      yield i
+      i = i.next
+    }
+  })
+
+const isAutoRestMd = (m: md.MarkDownEx) =>
+  markDownIterate(m.markDown.firstChild).some(v => {
+    if (v.type !== "block_quote") {
+      return false
+    }
+    const p = v.firstChild
+    if (p === null || p.type !== "paragraph") {
+      return false
+    }
+    const t = p.firstChild
+    if (t === null || t.type !== "text") {
+      return false
+    }
+    return t.literal === "see https://aka.ms/autorest"
+  })
+
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> =>
   asyncIt.iterable<Error>(async function*() {
     const file = await fs.readFile(readMePath)
     // parse the `readme.md` file
     const m = md.parse(file.toString())
+    if (!isAutoRestMd(m)) {
+      yield {
+        code: "NOT_AUTOREST_MARKDOWN",
+        message: "The `readme.md` is not AutoRest markdown file.",
+        readMeUrl: readMePath
+      }
+    }
     const dir = path.dirname(readMePath)
     // get all input files from the `readme.md`.
     const inputFiles = openApiMd.getInputFiles(m.markDown).toArray()
