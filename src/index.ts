@@ -105,6 +105,7 @@ const jsonParse = (fileName: string, file: string) => {
 const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
   asyncIt.iterable<Error>(async function *() {
     let fileNamesToCheck = it.toArray(fileNames)
+    // read references from `fileNamesToCheck` until there are no files are left.
     while (fileNamesToCheck.length !== 0) {
       const newFileNames = []
       for (const fileName of fileNamesToCheck) {
@@ -137,15 +138,20 @@ const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> =>
   asyncIt.iterable<Error>(async function *() {
     const file = await fs.readFile(readMePath)
+    // parse the `readme.md` file
     const m = md.parse(file.toString())
     const dir = path.dirname(readMePath)
+    // get all input files from the `readme.md`.
     const inputFiles = openApiMd.getInputFiles(m.markDown).toArray()
-    const set = inputFiles
+    // normalize the file names.
+    const inputFileSet = inputFiles
       .map(f => path.resolve(path.join(dir, f)))
       .reduce((s, v) => s.add(v), new Set<string>())
-    yield *resolveFileReferences(readMePath, set)
+    // add all referenced files to the `set`
+    yield *resolveFileReferences(readMePath, inputFileSet)
+    // report errors if the `dir` folder has JSON files which are not referenced.
     yield *fs.recursiveReaddir(dir)
-      .filter(filePath => path.extname(filePath) === ".json" && !set.has(filePath))
+      .filter(filePath => path.extname(filePath) === ".json" && !inputFileSet.has(filePath))
       .map<Error>(filePath => ({
           code: "UNREFERENCED_OPEN_API_FILE",
           message: "The OpenAPI file is not referenced from the readme file.",
