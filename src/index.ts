@@ -8,30 +8,36 @@ import * as it from "@ts-common/iterator"
 import * as json from "@ts-common/json"
 import * as stringMap from "@ts-common/string-map"
 import * as commonmark from "commonmark"
+import * as yaml from "js-yaml"
+
+export type Report = {
+  readonly error: (error: unknown) => void
+  readonly info: (info: unknown) => void
+}
 
 /**
  * The function executes the given `tool` and prints errors to `stderr`.
  *
  * @param tool is a function which returns errors as `AsyncIterable`.
  */
-export const cli = async <T>(tool: (path: string) => AsyncIterable<T>): Promise<number> => {
+export const cli = async <T>(
+  tool: (cwd: string) => AsyncIterable<T>,
+  // tslint:disable-next-line:no-console
+  report: Report = { error: console.error, info: console.log }
+): Promise<number> => {
   try {
     const errors = await tool("./")
     // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
-      // tslint:disable-next-line:no-console
-      console.error(e)
+      report.error(yaml.safeDump(e))
       ++errorsNumber
     }
-    // tslint:disable-next-line:no-console
-    console.log(`errors: ${errorsNumber}`)
+    report.info(`errors: ${errorsNumber}`)
     return errorsNumber === 0 ? 0 : 1
   } catch (e) {
-    // tslint:disable-next-line:no-console
-    console.error("INTERNAL ERROR")
-    // tslint:disable-next-line:no-console
-    console.error(e)
+    report.error("INTERNAL ERROR")
+    report.error(e)
     return 1
   }
 }

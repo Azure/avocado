@@ -5,19 +5,54 @@ import * as ai from "@ts-common/async-iterator"
 import * as path from "path"
 
 describe("cli", () => {
-  it("no errors", async () => {
+  it("no errors, default output", async () => {
     const r = await avocado.cli(() => ai.fromSequence())
     assert.strictEqual(r, 0)
   })
+  it("no errors", async () => {
+    // tslint:disable-next-line:no-let
+    let error: string = ""
+    // tslint:disable-next-line:no-let
+    let info: string = ""
+    const report: avocado.Report = {
+      error: s => (error += s),
+      info: s => (info += s)
+    }
+    const r = await avocado.cli(() => ai.fromSequence(), report)
+    assert.strictEqual(r, 0)
+    assert.strictEqual(error, "")
+    assert.strictEqual(info, "errors: 0")
+  })
   it("with errors", async () => {
-    const r = await avocado.cli(() => ai.fromSequence("error"))
+    // tslint:disable-next-line:no-let
+    let error: string = ""
+    // tslint:disable-next-line:no-let
+    let info: string = ""
+    const report: avocado.Report = {
+      error: s => (error += s),
+      info: s => (info += s)
+    }
+    const r = await avocado.cli(() => ai.fromSequence("some error"), report)
     assert.strictEqual(r, 1)
+    assert.strictEqual(error, "some error\n")
+    assert.strictEqual(info, "errors: 1")
   })
   it("internal error", async () => {
-    const r = await avocado.cli(() => {
+    // tslint:disable-next-line:no-let
+    let error: string = ""
+    // tslint:disable-next-line:no-let
+    let info: string = ""
+    const report: avocado.Report = {
+      error: s => (error += s),
+      info: s => (info += s)
+    }
+    const f = () => {
       throw new Error("critical error")
-    })
+    }
+    const r = await avocado.cli(f, report)
     assert.strictEqual(r, 1)
+    assert.ok(error.startsWith("INTERNAL ERROR"))
+    assert.strictEqual(info, "")
   })
 })
 
