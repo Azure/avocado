@@ -34,7 +34,7 @@ describe("cli", () => {
     }
     const r = await avocado.cli(() => ai.fromSequence("some error"), report)
     assert.strictEqual(r, 1)
-    assert.strictEqual(error, "some error\n")
+    assert.strictEqual(error, "\x1b[31merror: \x1b[0msome error\n")
     assert.strictEqual(info, "errors: 1")
   })
   it("internal error", async () => {
@@ -51,7 +51,7 @@ describe("cli", () => {
     }
     const r = await avocado.cli(f, report)
     assert.strictEqual(r, 1)
-    assert.ok(error.startsWith("INTERNAL ERROR"))
+    assert.ok(error.startsWith("\x1b[31mINTERNAL ERROR\x1b[0m"))
     assert.strictEqual(info, "")
   })
 })
