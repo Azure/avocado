@@ -21,12 +21,12 @@ export type Report = {
  * @param tool is a function which returns errors as `AsyncIterable`.
  */
 export const cli = async <T>(
-  tool: (cwd: string, argv: it.Iterable<string>) => AsyncIterable<T>,
+  tool: (cwd: string) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console
   report: Report = { error: console.error, info: console.log }
 ): Promise<number> => {
   try {
-    const errors = await tool("./", process.argv)
+    const errors = await tool("./")
     // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
