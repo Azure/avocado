@@ -3,14 +3,22 @@ trigger:
 
 jobs:
 - job: Test
-  pool:
-    vmImage: 'Ubuntu 16.04'
   strategy:
     matrix:
-      Node10:
+      Linux.Node10:
         node.version: 10.x
-      Node11:
+        vm.image: 'Ubuntu 16.04'
+      Linux.Node11:
         node.version: 11.x
+        vm.image: 'Ubuntu 16.04'
+      Win.Node10:
+        node.version: 10.x
+        vm.image: 'vs2017-win2016'
+      Win.Node11:
+        node.version: 11.x
+        vm.image: 'vs2017-win2016'
+  pool:
+    vmImage: $(vm.image)
   steps:
   - task: NodeTool@0
     displayName: 'Install Node'

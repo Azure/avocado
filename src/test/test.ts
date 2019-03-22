@@ -138,4 +138,10 @@ describe("avocado", () => {
     ]
     assert.deepStrictEqual(r, expected)
   })
+
+  it("backslash", async () => {
+    const r = await avocado.avocado("src/test/backslash").toArray()
+    const expected: unknown = []
+    assert.deepStrictEqual(r, expected)
+  })
 })

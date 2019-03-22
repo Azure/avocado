@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -75,7 +75,7 @@
     "prettier": "^1.16.4",
     "tslint": "^5.14.0",
     "tslint-config-prettier": "^1.18.0",
-    "tslint-immutable": "^5.4.0",
+    "tslint-immutable": "^5.5.1",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.3.4000"
   }
