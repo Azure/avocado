@@ -11,10 +11,10 @@ jobs:
       Linux.Node11:
         node.version: 11.x
         vm.image: 'Ubuntu 16.04'
-      Windows.Node10:
+      Win.Node10:
         node.version: 10.x
         vm.image: 'vs2017-win2016'
-      Windows.Node11:
+      Win.Node11:
         node.version: 11.x
         vm.image: 'vs2017-win2016'
   pool:
