@@ -205,7 +205,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
     const inputFiles = openApiMd.getInputFiles(m.markDown).toArray()
     // normalize the file names.
     const inputFileSet = inputFiles
-      .map(f => path.resolve(path.join(dir, f)))
+      .map(f => path.resolve(path.join(dir, ...f.split("\\"))))
       .reduce((s, v) => s.add(v), new Set<string>())
     // add all referenced files to the `set`
     yield* resolveFileReferences(readMePath, inputFileSet)
