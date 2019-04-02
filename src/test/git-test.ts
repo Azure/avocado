@@ -37,10 +37,14 @@ describe("git", () => {
     await pfs.writeFile(path.join(repo, "a.json"), "{}")
     await git("add .")
     await git("commit -m comment --no-gpg-sign")
+    await git("checkout -b source")
+    await pfs.writeFile(path.join(repo, "a.json"), '{ "a": 3 }')
+    await git("add .")
+    await git("commit -m comment --no-gpg-sign")
     await avocado.avocado({
       cwd: repo,
       env: {
-        SYSTEM_PULLREQUEST_SOURCEBRANCH: "master",
+        SYSTEM_PULLREQUEST_SOURCEBRANCH: "source",
         SYSTEM_PULLREQUEST_TARGETBRANCH: "master"
       }
     })
