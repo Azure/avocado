@@ -36,6 +36,7 @@ describe("git", () => {
     await exec("git init", { cwd: repo })
     await pfs.writeFile(path.join(repo, "a.json"), "{}")
     await exec("git add .", { cwd: repo })
-    await exec("git commit -m comment --no-gpg-sign --author=test@example.com", { cwd: repo })
+    const commit = 'git commit -m comment --no-gpg-sign --author="Test <test@example.com>"'
+    await exec(commit, { cwd: repo })
   })
 })
