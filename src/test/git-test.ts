@@ -2,6 +2,7 @@ import * as path from "path"
 import * as util from "util"
 import * as pfs from "@ts-common/fs"
 import * as childProcess from "child_process"
+import * as avocado from "../index"
 
 const exec = util.promisify(childProcess.exec)
 
@@ -35,6 +36,13 @@ describe("git", () => {
     await git("config user.name test")
     await pfs.writeFile(path.join(repo, "a.json"), "{}")
     await git("add .")
-    await git("commit -m comment")
+    await git("commit -m comment --no-gpg-sign")
+    await avocado.avocado({
+      cwd: repo,
+      env: {
+        SYSTEM_PULLREQUEST_SOURCEBRANCH: "master",
+        SYSTEM_PULLREQUEST_TARGETBRANCH: "master"
+      }
+    })
   })
 })

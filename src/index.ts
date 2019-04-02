@@ -77,13 +77,20 @@ export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 /**
  * The function validates files in the given `dir` folder and returns errors.
  *
- * @param dir
+ * @param { cwd, env }
  */
-export const avocado = (config: Config): asyncIt.AsyncIterableEx<Error> =>
-  fs
-    .recursiveReaddir(path.resolve(config.cwd))
-    .filter(f => path.basename(f).toLowerCase() === "readme.md")
-    .flatMap(validateReadMeFile)
+export const avocado = ({ cwd, env }: Config): asyncIt.AsyncIterableEx<Error> => {
+  const sourceBranch = env.SYSTEM_PULLREQUEST_SOURCEBRANCH
+  const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
+  if (sourceBranch !== undefined && targetBranch !== undefined) {
+    return asyncIt.empty()
+  } else {
+    return fs
+      .recursiveReaddir(path.resolve(cwd))
+      .filter(f => path.basename(f).toLowerCase() === "readme.md")
+      .flatMap(validateReadMeFile)
+  }
+}
 
 type Ref = {
   readonly url: string
