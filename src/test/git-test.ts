@@ -38,7 +38,7 @@ describe("git", () => {
     await exec("git config user.name test", { cwd: repo })
     await pfs.writeFile(path.join(repo, "a.json"), "{}")
     await exec("git add .", { cwd: repo })
-    const commit = 'git commit -m comment"'
+    const commit = "git commit -m comment"
     await exec(commit, { cwd: repo })
   })
 })
