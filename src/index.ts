@@ -14,11 +14,15 @@ import * as process from "process"
 export type Report = {
   readonly error: (error: unknown) => void
   readonly info: (info: unknown) => void
-  readonly env: stringMap.StringMap<string>
 }
 
 const consoleRed = "\x1b[31m"
 const consoleReset = "\x1b[0m"
+
+export type Config = {
+  readonly cwd: string
+  readonly env: stringMap.StringMap<string>
+}
 
 /**
  * The function executes the given `tool` and prints errors to `stderr`.
@@ -26,12 +30,12 @@ const consoleReset = "\x1b[0m"
  * @param tool is a function which returns errors as `AsyncIterable`.
  */
 export const cli = async <T>(
-  tool: (cwd: string) => AsyncIterable<T>,
+  tool: (config: Config) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console
-  report: Report = { error: console.error, info: console.log, env: process.env }
+  report: Report = { error: console.error, info: console.log }
 ): Promise<number> => {
   try {
-    const errors = await tool("./")
+    const errors = await tool({ cwd: "./", env: process.env })
     // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
@@ -75,9 +79,9 @@ export type Error = JsonParseError | FileError | NotAutoRestMarkDown
  *
  * @param dir
  */
-export const avocado = (dir: string): asyncIt.AsyncIterableEx<Error> =>
+export const avocado = (config: Config): asyncIt.AsyncIterableEx<Error> =>
   fs
-    .recursiveReaddir(path.resolve(dir))
+    .recursiveReaddir(path.resolve(config.cwd))
     .filter(f => path.basename(f).toLowerCase() === "readme.md")
     .flatMap(validateReadMeFile)
 

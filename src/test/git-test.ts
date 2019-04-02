@@ -1,13 +1,9 @@
 import * as path from "path"
 import * as util from "util"
-import * as fs from "fs"
 import * as pfs from "@ts-common/fs"
 import * as childProcess from "child_process"
 
-const mkdir = util.promisify(fs.mkdir)
-const rmdir = util.promisify(fs.rmdir)
 const exec = util.promisify(childProcess.exec)
-const unlink = util.promisify(fs.unlink)
 
 const recursiveRmdir = async (dir: string): Promise<void> => {
   const list = await pfs.readdir(dir, { withFileTypes: true })
@@ -17,11 +13,11 @@ const recursiveRmdir = async (dir: string): Promise<void> => {
       if (f.isDirectory()) {
         await recursiveRmdir(p)
       } else {
-        await unlink(p)
+        await pfs.unlink(p)
       }
     })
   )
-  await rmdir(dir)
+  await pfs.rmdir(dir)
 }
 
 describe("git", () => {
@@ -30,9 +26,9 @@ describe("git", () => {
     if (await pfs.exists(tmp)) {
       await recursiveRmdir(tmp)
     }
-    await mkdir(tmp)
+    await pfs.mkdir(tmp)
     const repo = path.join(tmp, "repo")
-    await mkdir(repo)
+    await pfs.mkdir(repo)
     const git = (cmd: string) => exec(`git ${cmd}`, { cwd: repo })
     await git("init")
     await git("config user.email test@example.com")
