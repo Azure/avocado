@@ -9,10 +9,12 @@ import * as json from "@ts-common/json"
 import * as stringMap from "@ts-common/string-map"
 import * as commonmark from "commonmark"
 import * as yaml from "js-yaml"
+import * as process from "process"
 
 export type Report = {
   readonly error: (error: unknown) => void
   readonly info: (info: unknown) => void
+  readonly env: stringMap.StringMap<string>
 }
 
 const consoleRed = "\x1b[31m"
@@ -26,7 +28,7 @@ const consoleReset = "\x1b[0m"
 export const cli = async <T>(
   tool: (cwd: string) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console
-  report: Report = { error: console.error, info: console.log }
+  report: Report = { error: console.error, info: console.log, env: process.env }
 ): Promise<number> => {
   try {
     const errors = await tool("./")

@@ -16,7 +16,8 @@ describe("cli", () => {
     let info: string = ""
     const report: avocado.Report = {
       error: s => (error += s),
-      info: s => (info += s)
+      info: s => (info += s),
+      env: {}
     }
     const r = await avocado.cli(() => ai.fromSequence(), report)
     assert.strictEqual(r, 0)
@@ -30,7 +31,8 @@ describe("cli", () => {
     let info: string = ""
     const report: avocado.Report = {
       error: s => (error += s),
-      info: s => (info += s)
+      info: s => (info += s),
+      env: {}
     }
     const r = await avocado.cli(() => ai.fromSequence("some error"), report)
     assert.strictEqual(r, 1)
@@ -44,7 +46,8 @@ describe("cli", () => {
     let info: string = ""
     const report: avocado.Report = {
       error: s => (error += s),
-      info: s => (info += s)
+      info: s => (info += s),
+      env: {}
     }
     const f = () => {
       throw new Error("critical error")

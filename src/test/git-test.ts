@@ -10,14 +10,17 @@ const exec = util.promisify(childProcess.exec)
 const unlink = util.promisify(fs.unlink)
 
 const recursiveRmdir = async (dir: string): Promise<void> => {
-  for (const f of await pfs.readdir(dir, { withFileTypes: true })) {
-    const p = path.join(dir, f.name)
-    if (f.isDirectory()) {
-      await recursiveRmdir(p)
-    } else {
-      await unlink(p)
-    }
-  }
+  const list = await pfs.readdir(dir, { withFileTypes: true })
+  await Promise.all(
+    list.map(async f => {
+      const p = path.join(dir, f.name)
+      if (f.isDirectory()) {
+        await recursiveRmdir(p)
+      } else {
+        await unlink(p)
+      }
+    })
+  )
   await rmdir(dir)
 }
 
@@ -33,6 +36,6 @@ describe("git", () => {
     await exec("git init", { cwd: repo })
     await pfs.writeFile(path.join(repo, "a.json"), "{}")
     await exec("git add .", { cwd: repo })
-    await exec("git commit -m comment", { cwd: repo })
+    await exec("git commit -m comment --no-gpg-sign", { cwd: repo })
   })
 })
