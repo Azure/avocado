@@ -33,6 +33,22 @@ export type FileError = {
 
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 
+const errorId = (cwd: string, error: Error) => {
+  const toObject = () => {
+    switch (error.code) {
+      case "UNREFERENCED_JSON_FILE":
+        return { code: error.code, url: error.jsonUrl.substr(cwd.length) }
+      case "NO_JSON_FILE_FOUND":
+        return { code: error.code, url: error.readMeUrl.substr(cwd.length) }
+      case "NOT_AUTOREST_MARKDOWN":
+        return { code: error.code, url: error.readMeUrl.substr(cwd.length) }
+      case "JSON_PARSE":
+        return { code: error.code, url: error.error.url.substr(cwd.length) }
+    }
+  }
+  return JSON.stringify(toObject())
+}
+
 const validateSpecificationFolder = (cwd: string) =>
   asyncIt.iterable<Error>(async function*() {
     const specification = path.resolve(path.join(cwd, "specification"))
@@ -43,6 +59,14 @@ const validateSpecificationFolder = (cwd: string) =>
         .flatMap(validateReadMeFile)
     }
   })
+
+const validateSpecificationFolderMap = async (cwd: string) => {
+  const map = new Map<string, Error>()
+  for await (const e of validateSpecificationFolder(cwd)) {
+    map.set(errorId(cwd, e), e)
+  }
+  return map
+}
 
 /**
  * The function validates files in the given `cwd` folder and returns errors.
@@ -64,10 +88,14 @@ export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error
       const targetGitRepository = git.repository(target)
       await targetGitRepository({ clone: [cwd, "."] })
       await targetGitRepository({ checkout: [targetBranch] })
-      /* const sourceErrors = */ await validateSpecificationFolder(cwd).toArray()
-      /* const targetErrors = */ await validateSpecificationFolder(target).toArray()
+      const sourceMap = await validateSpecificationFolderMap(cwd)
+      const targetMap = await validateSpecificationFolderMap(target)
+      for (const e of targetMap.keys()) {
+        sourceMap.delete(e)
+      }
+      yield* sourceMap.values()
     } else {
-      yield* validateSpecificationFolder(cwd)
+      yield* (await validateSpecificationFolderMap(cwd)).values()
     }
   })
 

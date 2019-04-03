@@ -40,15 +40,17 @@ describe("git", () => {
     await gitRemote({ config: ["user.name", "test"] })
 
     // commit "a.json" to "master".
-    await pfs.writeFile(path.join(remote, "a.json"), "{}")
+    const specification = path.join(remote, "specification")
+    await pfs.mkdir(specification)
+    await pfs.writeFile(path.join(specification, "readme.md"), "")
     await gitRemote({ add: ["."] })
-    await gitRemote({ commit: ["-m", "comment", "--no-gpg-sign"] })
+    await gitRemote({ commit: ["-m", '"add readme.md"', "--no-gpg-sign"] })
 
     // commit "a.json" to "source".
     await gitRemote({ checkout: ["-b", "source"] })
-    await pfs.writeFile(path.join(remote, "a.json"), '{ "a": 3 }')
+    await pfs.unlink(path.join(specification, "readme.md"))
     await gitRemote({ add: ["."] })
-    await gitRemote({ commit: ["-m", "comment", "--no-gpg-sign"] })
+    await gitRemote({ commit: ["-m", '"delete readme.md"', "--no-gpg-sign"] })
 
     // create local Git repository
     const local = path.join(tmp, "local")
