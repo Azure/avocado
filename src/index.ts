@@ -48,6 +48,16 @@ export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error
     if (targetBranch !== undefined) {
       const sourceGitRepository = git.repository(cwd)
       await sourceGitRepository({ branch: [targetBranch, `remotes/origin/${targetBranch}`] })
+      await sourceGitRepository({
+        diff: ["--name-status", targetBranch, "HEAD"]
+      })
+      const target = path.resolve(path.join(cwd, "..", "target"))
+      await fs.mkdir(target)
+      const targetGitRepository = git.repository(target)
+      await targetGitRepository({ clone: [cwd, "."] })
+      await targetGitRepository({ checkout: [targetBranch] })
+      // tslint:disable-next-line:no-console
+      // console.log(stdout)
     } else {
       yield* fs
         .recursiveReaddir(path.resolve(cwd))

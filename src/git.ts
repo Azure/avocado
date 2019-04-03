@@ -18,15 +18,15 @@ export type Command =
   { readonly init: readonly [] } |
   { readonly add: readonly [string] } |
   { readonly commit: readonly ["-m", string, "--no-gpg-sign"] } |
-  { readonly checkout: readonly ["-b", string] } |
+  { readonly checkout: readonly ["-b", string]|readonly [string] } |
   { readonly branch: readonly [string]|readonly [string, string] } |
   { readonly remote: readonly ["add", string, string] } |
-  { readonly clone: readonly [string, string] }
+  { readonly clone: readonly [string, string] } |
+  { readonly diff: readonly ["--name-status", string, string] }
 
 export const repository = (repositoryPath: string) =>
   async (command: Command) => {
     const g: GenericCommand = command
-    for (const [cmd, args] of stringMap.entries(g)) {
-      await exec(`git ${cmd} ${args.join(" ")}`, { cwd: repositoryPath })
-    }
+    const [cmd, args] = stringMap.entries(g).toArray()[0]
+    return await exec(`git ${cmd} ${args.join(" ")}`, { cwd: repositoryPath })
   }
