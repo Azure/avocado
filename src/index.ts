@@ -33,11 +33,16 @@ export type FileError = {
 
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 
-const validateFolder = (cwd: string) =>
-  fs
-    .recursiveReaddir(path.resolve(cwd))
-    .filter(f => path.basename(f).toLowerCase() === "readme.md")
-    .flatMap(validateReadMeFile)
+const validateSpecificationFolder = (cwd: string) =>
+  asyncIt.iterable<Error>(async function*() {
+    const specification = path.resolve(path.join(cwd, "specification"))
+    if (await fs.exists(specification)) {
+      yield* fs
+        .recursiveReaddir(specification)
+        .filter(f => path.basename(f).toLowerCase() === "readme.md")
+        .flatMap(validateReadMeFile)
+    }
+  })
 
 /**
  * The function validates files in the given `cwd` folder and returns errors.
@@ -59,10 +64,10 @@ export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error
       const targetGitRepository = git.repository(target)
       await targetGitRepository({ clone: [cwd, "."] })
       await targetGitRepository({ checkout: [targetBranch] })
-      /* const sourceErrors = */ await validateFolder(cwd).toArray()
-      /* const targetErrors = */ await validateFolder(target).toArray()
+      /* const sourceErrors = */ await validateSpecificationFolder(cwd).toArray()
+      /* const targetErrors = */ await validateSpecificationFolder(target).toArray()
     } else {
-      yield* validateFolder(cwd)
+      yield* validateSpecificationFolder(cwd)
     }
   })
 

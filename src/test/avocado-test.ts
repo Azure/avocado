@@ -10,7 +10,7 @@ describe("avocado", () => {
       {
         code: "NOT_AUTOREST_MARKDOWN",
         message: "The `readme.md` is not AutoRest markdown file.",
-        readMeUrl: path.resolve("src/test/not_autorest_markdown/readme.md"),
+        readMeUrl: path.resolve("src/test/not_autorest_markdown/specification/readme.md"),
         helpUrl:
           "http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format"
       }
@@ -28,8 +28,8 @@ describe("avocado", () => {
       {
         code: "NO_JSON_FILE_FOUND",
         message: r0.message,
-        readMeUrl: path.resolve("src/test/no_file_found/readme.md"),
-        jsonUrl: path.resolve("src/test/no_file_found/specs/some.json")
+        readMeUrl: path.resolve("src/test/no_file_found/specification/readme.md"),
+        jsonUrl: path.resolve("src/test/no_file_found/specification/specs/some.json")
       }
     ]
     assert.deepStrictEqual(r, e)
@@ -45,8 +45,8 @@ describe("avocado", () => {
       {
         code: "UNREFERENCED_JSON_FILE",
         message: r0.message,
-        readMeUrl: path.resolve("src/test/unreferenced_file/readme.md"),
-        jsonUrl: path.resolve("src/test/unreferenced_file/specs/some.json")
+        readMeUrl: path.resolve("src/test/unreferenced_file/specification/readme.md"),
+        jsonUrl: path.resolve("src/test/unreferenced_file/specification/specs/some.json")
       }
     ]
     assert.deepStrictEqual(r, e)
@@ -67,7 +67,7 @@ describe("avocado", () => {
             line: 3
           },
           token: "}",
-          url: path.resolve("src/test/invalid_json/specs/some.json")
+          url: path.resolve("src/test/invalid_json/specification/specs/some.json")
         }
       }
     ])
@@ -80,8 +80,8 @@ describe("avocado", () => {
       {
         code: "NO_JSON_FILE_FOUND",
         message: r[0].message,
-        jsonUrl: path.resolve("src/test/invalid_ref/specs/a.json"),
-        readMeUrl: path.resolve("src/test/invalid_ref/readme.md")
+        jsonUrl: path.resolve("src/test/invalid_ref/specification/specs/a.json"),
+        readMeUrl: path.resolve("src/test/invalid_ref/specification/readme.md")
       }
     ] as const
     assert.deepStrictEqual(r, expected)
