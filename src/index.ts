@@ -25,16 +25,19 @@ export type NotAutoRestMarkDown = {
 }
 
 export type FileError = {
-  readonly code: "NO_OPEN_API_FILE_FOUND" | "UNREFERENCED_OPEN_API_FILE"
+  readonly code: "NO_JSON_FILE_FOUND" | "UNREFERENCED_JSON_FILE"
   readonly message: string
   readonly readMeUrl: string
-  readonly openApiUrl: string
+  readonly jsonUrl: string
 }
 
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 
-// const sourceBranchName = "source-731debc6-97f9-4d30-afb3-9abffc660325"
-// const targetBranchName = "target-731debc6-97f9-4d30-afb3-9abffc660325"
+const validateFolder = (cwd: string) =>
+  fs
+    .recursiveReaddir(path.resolve(cwd))
+    .filter(f => path.basename(f).toLowerCase() === "readme.md")
+    .flatMap(validateReadMeFile)
 
 /**
  * The function validates files in the given `cwd` folder and returns errors.
@@ -43,8 +46,8 @@ export type Error = JsonParseError | FileError | NotAutoRestMarkDown
  */
 export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error> =>
   asyncIt.iterable<Error>(async function*() {
-    // const sourceBranch = env.SYSTEM_PULLREQUEST_SOURCEBRANCH
     const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
+    // detect Azure DevOps Pull Request validation.
     if (targetBranch !== undefined) {
       const sourceGitRepository = git.repository(cwd)
       await sourceGitRepository({ branch: [targetBranch, `remotes/origin/${targetBranch}`] })
@@ -56,13 +59,10 @@ export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error
       const targetGitRepository = git.repository(target)
       await targetGitRepository({ clone: [cwd, "."] })
       await targetGitRepository({ checkout: [targetBranch] })
-      // tslint:disable-next-line:no-console
-      // console.log(stdout)
+      /* const sourceErrors = */ await validateFolder(cwd).toArray()
+      /* const targetErrors = */ await validateFolder(target).toArray()
     } else {
-      yield* fs
-        .recursiveReaddir(path.resolve(cwd))
-        .filter(f => path.basename(f).toLowerCase() === "readme.md")
-        .flatMap(validateReadMeFile)
+      yield* validateFolder(cwd)
     }
   })
 
@@ -126,10 +126,10 @@ const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
           file = await fs.readFile(fileName)
         } catch (e) {
           yield {
-            code: "NO_OPEN_API_FILE_FOUND",
-            message: "The OpenAPI file is not found but it is referenced from the readme file.",
+            code: "NO_JSON_FILE_FOUND",
+            message: "The JSON file is not found but it is referenced from the readme file.",
             readMeUrl: readMePath,
-            openApiUrl: fileName
+            jsonUrl: fileName
           }
           continue
         }
@@ -201,9 +201,9 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
       .recursiveReaddir(dir)
       .filter(filePath => path.extname(filePath) === ".json" && !inputFileSet.has(filePath))
       .map<Error>(filePath => ({
-        code: "UNREFERENCED_OPEN_API_FILE",
-        message: "The OpenAPI file is not referenced from the readme file.",
+        code: "UNREFERENCED_JSON_FILE",
+        message: "The JSON file is not referenced from the readme file.",
         readMeUrl: readMePath,
-        openApiUrl: path.resolve(filePath)
+        jsonUrl: path.resolve(filePath)
       }))
   })

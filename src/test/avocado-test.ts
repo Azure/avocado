@@ -26,10 +26,10 @@ describe("avocado", () => {
     }
     const e: ReadonlyArray<avocado.Error> = [
       {
-        code: "NO_OPEN_API_FILE_FOUND",
+        code: "NO_JSON_FILE_FOUND",
         message: r0.message,
         readMeUrl: path.resolve("src/test/no_file_found/readme.md"),
-        openApiUrl: path.resolve("src/test/no_file_found/specs/some.json")
+        jsonUrl: path.resolve("src/test/no_file_found/specs/some.json")
       }
     ]
     assert.deepStrictEqual(r, e)
@@ -43,10 +43,10 @@ describe("avocado", () => {
     }
     const e: ReadonlyArray<avocado.Error> = [
       {
-        code: "UNREFERENCED_OPEN_API_FILE",
+        code: "UNREFERENCED_JSON_FILE",
         message: r0.message,
         readMeUrl: path.resolve("src/test/unreferenced_file/readme.md"),
-        openApiUrl: path.resolve("src/test/unreferenced_file/specs/some.json")
+        jsonUrl: path.resolve("src/test/unreferenced_file/specs/some.json")
       }
     ]
     assert.deepStrictEqual(r, e)
@@ -75,14 +75,15 @@ describe("avocado", () => {
 
   it("invalid ref", async () => {
     const r = await avocado.avocado({ cwd: "src/test/invalid_ref", env: {} }).toArray()
-    const expected: unknown = [
+    // tslint:disable-next-line:prettier
+    const expected: readonly avocado.Error[] = [
       {
-        code: "NO_OPEN_API_FILE_FOUND",
-        message: "The OpenAPI file is not found but it is referenced from the readme file.",
-        openApiUrl: path.resolve("src/test/invalid_ref/specs/a.json"),
+        code: "NO_JSON_FILE_FOUND",
+        message: r[0].message,
+        jsonUrl: path.resolve("src/test/invalid_ref/specs/a.json"),
         readMeUrl: path.resolve("src/test/invalid_ref/readme.md")
       }
-    ]
+    ] as const
     assert.deepStrictEqual(r, expected)
   })
 
