@@ -6,12 +6,11 @@
   "types": "dist/index.d.ts",
   "files": [
     "bin/cli.js",
-    "dist/index.d.ts",
-    "dist/index.d.ts.map",
-    "dist/index.js",
-    "dist/index.js.map",
-    "src/index.ts",
-    "src/cli.ts"
+    "dist/*.d.ts",
+    "dist/*.d.ts.map",
+    "dist/*.js",
+    "dist/*.js.map",
+    "src/*.ts"
   ],
   "bin": {
     "avocado": "./bin/cli.js"

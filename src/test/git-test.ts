@@ -1,10 +1,7 @@
 import * as path from "path"
-import * as util from "util"
 import * as pfs from "@ts-common/fs"
-import * as childProcess from "child_process"
 import * as avocado from "../index"
-
-const exec = util.promisify(childProcess.exec)
+import * as git from "../git"
 
 const recursiveRmdir = async (dir: string): Promise<void> => {
   const list = await pfs.readdir(dir, { withFileTypes: true })
@@ -31,30 +28,30 @@ describe("git", () => {
 
     // Create "tmp/repo" folder.
     await pfs.mkdir(tmp)
-    const repo = path.join(tmp, "repo")
-    await pfs.mkdir(repo)
+    const repoPath = path.join(tmp, "repo")
+    await pfs.mkdir(repoPath)
 
-    const git = (cmd: string) => exec(`git ${cmd}`, { cwd: repo })
+    const gitRepo = git.repository(repoPath)
 
     // create Git repo
-    await git("init")
-    await git("config user.email test@example.com")
-    await git("config user.name test")
+    await gitRepo({ init: [] })
+    await gitRepo({ config: ["user.email", "test@example.com"] })
+    await gitRepo({ config: ["user.name", "test"] })
 
     // commit "a.json" to "master".
-    await pfs.writeFile(path.join(repo, "a.json"), "{}")
-    await git("add .")
-    await git("commit -m comment --no-gpg-sign")
+    await pfs.writeFile(path.join(repoPath, "a.json"), "{}")
+    await gitRepo({ add: ["."] })
+    await gitRepo({ commit: ["-m", "comment", "--no-gpg-sign"] })
 
     // commit "a.json" to "source".
-    await git("checkout -b source")
-    await pfs.writeFile(path.join(repo, "a.json"), '{ "a": 3 }')
-    await git("add .")
-    await git("commit -m comment --no-gpg-sign")
+    await gitRepo({ checkout: ["-b", "source"] })
+    await pfs.writeFile(path.join(repoPath, "a.json"), '{ "a": 3 }')
+    await gitRepo({ add: ["."] })
+    await gitRepo({ commit: ["-m", "comment", "--no-gpg-sign"] })
 
     // run avocado as AzureDevOps pull request.
     await avocado.avocado({
-      cwd: repo,
+      cwd: repoPath,
       env: {
         SYSTEM_PULLREQUEST_SOURCEBRANCH: "source",
         SYSTEM_PULLREQUEST_TARGETBRANCH: "master"
