@@ -21,7 +21,7 @@ const recursiveRmdir = async (dir: string): Promise<void> => {
 
 describe("git", () => {
   it("Azure DevOps ", async () => {
-    const tmp = path.resolve("tmp")
+    const tmp = path.resolve(path.join("..", "avocado-tmp"))
 
     if (await pfs.exists(tmp)) {
       await recursiveRmdir(tmp)
