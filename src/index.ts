@@ -9,6 +9,7 @@ import * as json from "@ts-common/json"
 import * as stringMap from "@ts-common/string-map"
 import * as commonmark from "commonmark"
 import * as cli from "./cli"
+import * as git from "./git"
 
 export type JsonParseError = {
   readonly code: "JSON_PARSE"
@@ -32,23 +33,28 @@ export type FileError = {
 
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 
+// const sourceBranchName = "source-731debc6-97f9-4d30-afb3-9abffc660325"
+// const targetBranchName = "target-731debc6-97f9-4d30-afb3-9abffc660325"
+
 /**
  * The function validates files in the given `cwd` folder and returns errors.
  *
  * @param { cwd, env }
  */
-export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error> => {
-  const sourceBranch = env.SYSTEM_PULLREQUEST_SOURCEBRANCH
-  const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
-  if (sourceBranch !== undefined && targetBranch !== undefined) {
-    return asyncIt.empty()
-  } else {
-    return fs
-      .recursiveReaddir(path.resolve(cwd))
-      .filter(f => path.basename(f).toLowerCase() === "readme.md")
-      .flatMap(validateReadMeFile)
-  }
-}
+export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error> =>
+  asyncIt.iterable<Error>(async function*() {
+    // const sourceBranch = env.SYSTEM_PULLREQUEST_SOURCEBRANCH
+    const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
+    if (targetBranch !== undefined) {
+      const sourceGitRepository = git.repository(cwd)
+      await sourceGitRepository({ branch: [targetBranch, `remotes/origin/${targetBranch}`] })
+    } else {
+      yield* fs
+        .recursiveReaddir(path.resolve(cwd))
+        .filter(f => path.basename(f).toLowerCase() === "readme.md")
+        .flatMap(validateReadMeFile)
+    }
+  })
 
 type Ref = {
   readonly url: string

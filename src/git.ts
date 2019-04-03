@@ -18,7 +18,10 @@ export type Command =
   { readonly init: readonly [] } |
   { readonly add: readonly [string] } |
   { readonly commit: readonly ["-m", string, "--no-gpg-sign"] } |
-  { readonly checkout: readonly ["-b", string] }
+  { readonly checkout: readonly ["-b", string] } |
+  { readonly branch: readonly [string]|readonly [string, string] } |
+  { readonly remote: readonly ["add", string, string] } |
+  { readonly clone: readonly [string, string] }
 
 export const repository = (repositoryPath: string) =>
   async (command: Command) => {
