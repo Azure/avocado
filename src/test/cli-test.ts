@@ -5,7 +5,7 @@ import * as ai from "@ts-common/async-iterator"
 
 describe("cli", () => {
   it("no errors, default output", async () => {
-    const r = await cli.cli(() => ai.fromSequence())
+    const r = await cli.run(() => ai.fromSequence())
     assert.strictEqual(r, 0)
   })
   it("no errors", async () => {
@@ -17,7 +17,7 @@ describe("cli", () => {
       error: s => (error += s),
       info: s => (info += s)
     }
-    const r = await cli.cli(() => ai.fromSequence(), report)
+    const r = await cli.run(() => ai.fromSequence(), report)
     assert.strictEqual(r, 0)
     assert.strictEqual(error, "")
     assert.strictEqual(info, "errors: 0")
@@ -31,7 +31,7 @@ describe("cli", () => {
       error: s => (error += s),
       info: s => (info += s)
     }
-    const r = await cli.cli(() => ai.fromSequence("some error"), report)
+    const r = await cli.run(() => ai.fromSequence("some error"), report)
     assert.strictEqual(r, 1)
     assert.strictEqual(error, "\x1b[31merror: \x1b[0msome error\n")
     assert.strictEqual(info, "errors: 1")
@@ -48,7 +48,7 @@ describe("cli", () => {
     const f = () => {
       throw new Error("critical error")
     }
-    const r = await cli.cli(f, report)
+    const r = await cli.run(f, report)
     assert.strictEqual(r, 1)
     assert.ok(error.startsWith("\x1b[31mINTERNAL ERROR\x1b[0m"))
     assert.strictEqual(info, "")

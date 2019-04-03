@@ -19,7 +19,7 @@ export type Config = {
  *
  * @param tool is a function which returns errors as `AsyncIterable`.
  */
-export const cli = async <T>(
+export const run = async <T>(
   tool: (config: Config) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console
   report: Report = { error: console.error, info: console.log }
