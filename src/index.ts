@@ -8,49 +8,7 @@ import * as it from "@ts-common/iterator"
 import * as json from "@ts-common/json"
 import * as stringMap from "@ts-common/string-map"
 import * as commonmark from "commonmark"
-import * as yaml from "js-yaml"
-import * as process from "process"
-
-export type Report = {
-  readonly error: (error: unknown) => void
-  readonly info: (info: unknown) => void
-}
-
-const consoleRed = "\x1b[31m"
-const consoleReset = "\x1b[0m"
-
-export type Config = {
-  readonly cwd: string
-  readonly env: stringMap.StringMap<string>
-}
-
-/**
- * The function executes the given `tool` and prints errors to `stderr`.
- *
- * @param tool is a function which returns errors as `AsyncIterable`.
- */
-export const cli = async <T>(
-  tool: (config: Config) => AsyncIterable<T>,
-  // tslint:disable-next-line:no-console
-  report: Report = { error: console.error, info: console.log }
-): Promise<number> => {
-  try {
-    const errors = await tool({ cwd: "./", env: process.env })
-    // tslint:disable-next-line:no-let
-    let errorsNumber = 0
-    for await (const e of errors) {
-      report.error(`${consoleRed}error: ${consoleReset}`)
-      report.error(yaml.safeDump(e))
-      ++errorsNumber
-    }
-    report.info(`errors: ${errorsNumber}`)
-    return errorsNumber === 0 ? 0 : 1
-  } catch (e) {
-    report.error(`${consoleRed}INTERNAL ERROR${consoleReset}`)
-    report.error(e)
-    return 1
-  }
-}
+import * as cli from "./cli"
 
 export type JsonParseError = {
   readonly code: "JSON_PARSE"
@@ -79,7 +37,7 @@ export type Error = JsonParseError | FileError | NotAutoRestMarkDown
  *
  * @param { cwd, env }
  */
-export const avocado = ({ cwd, env }: Config): asyncIt.AsyncIterableEx<Error> => {
+export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error> => {
   const sourceBranch = env.SYSTEM_PULLREQUEST_SOURCEBRANCH
   const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
   if (sourceBranch !== undefined && targetBranch !== undefined) {
