@@ -75,7 +75,7 @@ export type FileError = {
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 
 /**
- * The function validates files in the given `dir` folder and returns errors.
+ * The function validates files in the given `cwd` folder and returns errors.
  *
  * @param { cwd, env }
  */
