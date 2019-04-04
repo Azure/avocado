@@ -69,5 +69,5 @@ describe("git", () => {
       })
       .toArray()
     assert.deepStrictEqual(errors, [])
-  })
+  }).timeout(5000)
 })
