@@ -90,6 +90,10 @@ export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error
       await sourceGitRepository({
         diff: ["--name-status", targetBranch, sourceBranch]
       })
+
+      // we have to clone the repository because we need to switch branches.
+      // Switching branches in the current repository can be dangerous because Avocado
+      // may be running from it.
       const target = path.resolve(path.join(cwd, "..", "target"))
       await fs.mkdir(target)
       const targetGitRepository = git.repository(target)
