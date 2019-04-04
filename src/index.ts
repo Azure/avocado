@@ -33,17 +33,21 @@ export type FileError = {
 
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 
-const errorId = (cwd: string, error: Error) => {
+const errorId = (error: Error) => {
   const toObject = () => {
     switch (error.code) {
       case "UNREFERENCED_JSON_FILE":
-        return { code: error.code, url: error.jsonUrl.substr(cwd.length) }
+        return { code: error.code, url: error.jsonUrl }
       case "NO_JSON_FILE_FOUND":
-        return { code: error.code, url: error.readMeUrl.substr(cwd.length) }
+        return { code: error.code, url: error.readMeUrl }
       case "NOT_AUTOREST_MARKDOWN":
-        return { code: error.code, url: error.readMeUrl.substr(cwd.length) }
+        return { code: error.code, url: error.readMeUrl }
       case "JSON_PARSE":
-        return { code: error.code, url: error.error.url.substr(cwd.length) }
+        return {
+          code: error.code,
+          url: error.error.url,
+          position: error.error.position
+        }
     }
   }
   return JSON.stringify(toObject())
@@ -63,10 +67,12 @@ const validateSpecificationFolder = (cwd: string) =>
 const validateSpecificationFolderMap = async (cwd: string) => {
   const map = new Map<string, Error>()
   for await (const e of validateSpecificationFolder(cwd)) {
-    map.set(errorId(cwd, e), e)
+    map.set(errorId(e), e)
   }
   return map
 }
+
+const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
 
 /**
  * The function validates files in the given `cwd` folder and returns errors.
@@ -79,17 +85,22 @@ export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error
     // detect Azure DevOps Pull Request validation.
     if (targetBranch !== undefined) {
       const sourceGitRepository = git.repository(cwd)
+      await sourceGitRepository({ branch: [sourceBranch] })
       await sourceGitRepository({ branch: [targetBranch, `remotes/origin/${targetBranch}`] })
       await sourceGitRepository({
-        diff: ["--name-status", targetBranch, "HEAD"]
+        diff: ["--name-status", targetBranch, sourceBranch]
       })
       const target = path.resolve(path.join(cwd, "..", "target"))
       await fs.mkdir(target)
       const targetGitRepository = git.repository(target)
       await targetGitRepository({ clone: [cwd, "."] })
+
       await targetGitRepository({ checkout: [targetBranch] })
-      const sourceMap = await validateSpecificationFolderMap(cwd)
       const targetMap = await validateSpecificationFolderMap(target)
+
+      await targetGitRepository({ checkout: [sourceBranch] })
+      const sourceMap = await validateSpecificationFolderMap(target)
+
       for (const e of targetMap.keys()) {
         sourceMap.delete(e)
       }
