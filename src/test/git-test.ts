@@ -63,7 +63,6 @@ describe("git", () => {
       .avocado({
         cwd: local,
         env: {
-          SYSTEM_PULLREQUEST_SOURCEBRANCH: "source",
           SYSTEM_PULLREQUEST_TARGETBRANCH: "master"
         }
       })
