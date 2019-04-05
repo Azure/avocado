@@ -10,6 +10,7 @@ import * as stringMap from "@ts-common/string-map"
 import * as commonmark from "commonmark"
 import * as cli from "./cli"
 import * as git from "./git"
+import nodeObjectHash = require("node-object-hash")
 
 export type JsonParseError = {
   readonly code: "JSON_PARSE"
@@ -33,7 +34,7 @@ export type FileError = {
 
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 
-const errorId = (error: Error) => {
+const errorCorrelationId = (error: Error) => {
   const toObject = () => {
     switch (error.code) {
       case "UNREFERENCED_JSON_FILE":
@@ -50,7 +51,7 @@ const errorId = (error: Error) => {
         }
     }
   }
-  return JSON.stringify(toObject())
+  return nodeObjectHash().hash(toObject())
 }
 
 const validateSpecificationFolder = (cwd: string) =>
@@ -67,7 +68,7 @@ const validateSpecificationFolder = (cwd: string) =>
 const validateSpecificationFolderMap = async (cwd: string) => {
   const map = new Map<string, Error>()
   for await (const e of validateSpecificationFolder(cwd)) {
-    map.set(errorId(e), e)
+    map.set(errorCorrelationId(e), e)
   }
   return map
 }
@@ -87,9 +88,6 @@ export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error
       const sourceGitRepository = git.repository(cwd)
       await sourceGitRepository({ branch: [sourceBranch] })
       await sourceGitRepository({ branch: [targetBranch, `remotes/origin/${targetBranch}`] })
-      await sourceGitRepository({
-        diff: ["--name-status", targetBranch, sourceBranch]
-      })
 
       // we have to clone the repository because we need to switch branches.
       // Switching branches in the current repository can be dangerous because Avocado

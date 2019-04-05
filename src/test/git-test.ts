@@ -34,7 +34,7 @@ describe("git", () => {
 
     const gitRemote = git.repository(remote)
 
-    // create Git repo
+    // create a Git repository
     await gitRemote({ init: [] })
     await gitRemote({ config: ["user.email", "test@example.com"] })
     await gitRemote({ config: ["user.name", "test"] })
