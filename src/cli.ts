@@ -23,7 +23,7 @@ export const run = async <T>(
   tool: (config: Config) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console
   report: Report = { error: console.error, info: console.log }
-): Promise<number> => {
+): Promise<void> => {
   try {
     const errors = await tool({ cwd: "./", env: process.env })
     // tslint:disable-next-line:no-let
@@ -34,10 +34,12 @@ export const run = async <T>(
       ++errorsNumber
     }
     report.info(`errors: ${errorsNumber}`)
-    return errorsNumber === 0 ? 0 : 1
+    // tslint:disable-next-line:no-object-mutation
+    process.exitCode = errorsNumber === 0 ? 0 : 1
   } catch (e) {
     report.error(`${consoleRed}INTERNAL ERROR${consoleReset}`)
     report.error(e)
-    return 1
+    // tslint:disable-next-line:no-object-mutation
+    process.exitCode = 1
   }
 }
