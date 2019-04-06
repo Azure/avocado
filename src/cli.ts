@@ -1,5 +1,6 @@
 import * as stringMap from "@ts-common/string-map"
 import * as yaml from "js-yaml"
+import * as path from "path"
 
 export type Report = {
   readonly error: (error: unknown) => void
@@ -25,7 +26,7 @@ export const run = async <T>(
   report: Report = { error: console.error, info: console.log }
 ): Promise<void> => {
   try {
-    const errors = await tool({ cwd: "./", env: process.env })
+    const errors = await tool({ cwd: path.resolve("./"), env: process.env })
     // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
