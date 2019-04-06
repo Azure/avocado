@@ -2,10 +2,17 @@ import * as cli from "../cli"
 import { describe } from "mocha"
 import assert from "assert"
 import * as ai from "@ts-common/async-iterator"
+import * as path from "path"
 
 describe("cli", () => {
   it("no errors, default output", async () => {
-    await cli.run(() => ai.fromSequence())
+    // tslint:disable-next-line:no-let
+    let cwd: unknown
+    await cli.run(c => {
+      cwd = c.cwd
+      return ai.fromSequence()
+    })
+    assert.strictEqual(cwd, path.resolve("./"))
     assert.strictEqual(process.exitCode, 0)
   })
   it("no errors", async () => {
