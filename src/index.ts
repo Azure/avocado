@@ -8,43 +8,9 @@ import * as it from "@ts-common/iterator"
 import * as json from "@ts-common/json"
 import * as stringMap from "@ts-common/string-map"
 import * as commonmark from "commonmark"
-import * as yaml from "js-yaml"
-
-export type Report = {
-  readonly error: (error: unknown) => void
-  readonly info: (info: unknown) => void
-}
-
-const consoleRed = "\x1b[31m"
-const consoleReset = "\x1b[0m"
-
-/**
- * The function executes the given `tool` and prints errors to `stderr`.
- *
- * @param tool is a function which returns errors as `AsyncIterable`.
- */
-export const cli = async <T>(
-  tool: (cwd: string) => AsyncIterable<T>,
-  // tslint:disable-next-line:no-console
-  report: Report = { error: console.error, info: console.log }
-): Promise<number> => {
-  try {
-    const errors = await tool("./")
-    // tslint:disable-next-line:no-let
-    let errorsNumber = 0
-    for await (const e of errors) {
-      report.error(`${consoleRed}error: ${consoleReset}`)
-      report.error(yaml.safeDump(e))
-      ++errorsNumber
-    }
-    report.info(`errors: ${errorsNumber}`)
-    return errorsNumber === 0 ? 0 : 1
-  } catch (e) {
-    report.error(`${consoleRed}INTERNAL ERROR${consoleReset}`)
-    report.error(e)
-    return 1
-  }
-}
+import * as cli from "./cli"
+import * as git from "./git"
+import nodeObjectHash = require("node-object-hash")
 
 export type JsonParseError = {
   readonly code: "JSON_PARSE"
@@ -60,24 +26,91 @@ export type NotAutoRestMarkDown = {
 }
 
 export type FileError = {
-  readonly code: "NO_OPEN_API_FILE_FOUND" | "UNREFERENCED_OPEN_API_FILE"
+  readonly code: "NO_JSON_FILE_FOUND" | "UNREFERENCED_JSON_FILE"
   readonly message: string
   readonly readMeUrl: string
-  readonly openApiUrl: string
+  readonly jsonUrl: string
 }
 
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 
+const errorCorrelationId = (error: Error) => {
+  const toObject = () => {
+    switch (error.code) {
+      case "UNREFERENCED_JSON_FILE":
+        return { code: error.code, url: error.jsonUrl }
+      case "NO_JSON_FILE_FOUND":
+        return { code: error.code, url: error.readMeUrl }
+      case "NOT_AUTOREST_MARKDOWN":
+        return { code: error.code, url: error.readMeUrl }
+      case "JSON_PARSE":
+        return {
+          code: error.code,
+          url: error.error.url,
+          position: error.error.position
+        }
+    }
+  }
+  return nodeObjectHash().hash(toObject())
+}
+
+const validateSpecificationFolder = (cwd: string) =>
+  asyncIt.iterable<Error>(async function*() {
+    const specification = path.resolve(path.join(cwd, "specification"))
+    if (await fs.exists(specification)) {
+      yield* fs
+        .recursiveReaddir(specification)
+        .filter(f => path.basename(f).toLowerCase() === "readme.md")
+        .flatMap(validateReadMeFile)
+    }
+  })
+
+const validateSpecificationFolderMap = async (cwd: string) => {
+  const map = new Map<string, Error>()
+  for await (const e of validateSpecificationFolder(cwd)) {
+    map.set(errorCorrelationId(e), e)
+  }
+  return map
+}
+
+const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
+
 /**
- * The function validates files in the given `dir` folder and returns errors.
+ * The function validates files in the given `cwd` folder and returns errors.
  *
- * @param dir
+ * @param { cwd, env }
  */
-export const avocado = (dir: string): asyncIt.AsyncIterableEx<Error> =>
-  fs
-    .recursiveReaddir(path.resolve(dir))
-    .filter(f => path.basename(f).toLowerCase() === "readme.md")
-    .flatMap(validateReadMeFile)
+export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error> =>
+  asyncIt.iterable<Error>(async function*() {
+    const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
+    // detect Azure DevOps Pull Request validation.
+    if (targetBranch !== undefined) {
+      const sourceGitRepository = git.repository(cwd)
+      await sourceGitRepository({ branch: [sourceBranch] })
+      await sourceGitRepository({ branch: [targetBranch, `remotes/origin/${targetBranch}`] })
+
+      // we have to clone the repository because we need to switch branches.
+      // Switching branches in the current repository can be dangerous because Avocado
+      // may be running from it.
+      const target = path.resolve(path.join(cwd, "..", "target"))
+      await fs.mkdir(target)
+      const targetGitRepository = git.repository(target)
+      await targetGitRepository({ clone: [cwd, "."] })
+
+      await targetGitRepository({ checkout: [targetBranch] })
+      const targetMap = await validateSpecificationFolderMap(target)
+
+      await targetGitRepository({ checkout: [sourceBranch] })
+      const sourceMap = await validateSpecificationFolderMap(target)
+
+      for (const e of targetMap.keys()) {
+        sourceMap.delete(e)
+      }
+      yield* sourceMap.values()
+    } else {
+      yield* (await validateSpecificationFolderMap(cwd)).values()
+    }
+  })
 
 type Ref = {
   readonly url: string
@@ -139,10 +172,10 @@ const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
           file = await fs.readFile(fileName)
         } catch (e) {
           yield {
-            code: "NO_OPEN_API_FILE_FOUND",
-            message: "The OpenAPI file is not found but it is referenced from the readme file.",
+            code: "NO_JSON_FILE_FOUND",
+            message: "The JSON file is not found but it is referenced from the readme file.",
             readMeUrl: readMePath,
-            openApiUrl: fileName
+            jsonUrl: fileName
           }
           continue
         }
@@ -214,9 +247,9 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
       .recursiveReaddir(dir)
       .filter(filePath => path.extname(filePath) === ".json" && !inputFileSet.has(filePath))
       .map<Error>(filePath => ({
-        code: "UNREFERENCED_OPEN_API_FILE",
-        message: "The OpenAPI file is not referenced from the readme file.",
+        code: "UNREFERENCED_JSON_FILE",
+        message: "The JSON file is not referenced from the readme file.",
         readMeUrl: readMePath,
-        openApiUrl: path.resolve(filePath)
+        jsonUrl: path.resolve(filePath)
       }))
   })
