@@ -14,7 +14,7 @@ const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
 
 /**
  * Currently, the algorithm is recognizing Azure Dev Ops Pull Request if the `env` has
- * `SYSTEM_PULLREQUEST_TARGETBRANCH`. `cwd` should points to a Git repository.
+ * `SYSTEM_PULLREQUEST_TARGETBRANCHgi`. `cwd` should points to a Git repository.
  */
 export const createPullRequestProperties = async (
   // tslint:disable-next-line:prettier

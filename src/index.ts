@@ -85,10 +85,10 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<Error> =>
     const pr = await azureDevOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
     if (pr !== undefined) {
-      pr.checkout(pr.targetBranch)
+      await pr.checkout(pr.targetBranch)
       const targetMap = await validateSpecificationFolderMap(pr.workingDir)
 
-      pr.checkout(pr.sourceBranch)
+      await pr.checkout(pr.sourceBranch)
       const sourceMap = await validateSpecificationFolderMap(pr.workingDir)
 
       for (const e of targetMap.keys()) {
