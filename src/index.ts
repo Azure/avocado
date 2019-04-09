@@ -9,8 +9,8 @@ import * as json from "@ts-common/json"
 import * as stringMap from "@ts-common/string-map"
 import * as commonmark from "commonmark"
 import * as cli from "./cli"
-import * as git from "./git"
 import nodeObjectHash = require("node-object-hash")
+import * as azureDevOps from "./ado"
 
 export type JsonParseError = {
   readonly code: "JSON_PARSE"
@@ -73,42 +73,28 @@ const validateSpecificationFolderMap = async (cwd: string) => {
   return map
 }
 
-const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
-
 /**
  * The function validates files in the given `cwd` folder and returns errors.
  *
- * @param { cwd, env }
+ * @param config
  */
-export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error> =>
+export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<Error> =>
   asyncIt.iterable<Error>(async function*() {
-    const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
+    const pr = await azureDevOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
-    if (targetBranch !== undefined) {
-      const sourceGitRepository = git.repository(cwd)
-      await sourceGitRepository({ branch: [sourceBranch] })
-      await sourceGitRepository({ branch: [targetBranch, `remotes/origin/${targetBranch}`] })
+    if (pr !== undefined) {
+      pr.checkout(pr.targetBranch)
+      const targetMap = await validateSpecificationFolderMap(pr.workingDir)
 
-      // we have to clone the repository because we need to switch branches.
-      // Switching branches in the current repository can be dangerous because Avocado
-      // may be running from it.
-      const target = path.resolve(path.join(cwd, "..", "target"))
-      await fs.mkdir(target)
-      const targetGitRepository = git.repository(target)
-      await targetGitRepository({ clone: [cwd, "."] })
-
-      await targetGitRepository({ checkout: [targetBranch] })
-      const targetMap = await validateSpecificationFolderMap(target)
-
-      await targetGitRepository({ checkout: [sourceBranch] })
-      const sourceMap = await validateSpecificationFolderMap(target)
+      pr.checkout(pr.sourceBranch)
+      const sourceMap = await validateSpecificationFolderMap(pr.workingDir)
 
       for (const e of targetMap.keys()) {
         sourceMap.delete(e)
       }
       yield* sourceMap.values()
     } else {
-      yield* (await validateSpecificationFolderMap(cwd)).values()
+      yield* (await validateSpecificationFolderMap(config.cwd)).values()
     }
   })
 
