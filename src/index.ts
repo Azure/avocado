@@ -68,13 +68,40 @@ const validateSpecificationFolder = (cwd: string) =>
     }
   })
 
-const validateSpecificationFolderMap = async (cwd: string) => {
+/**
+ * Creates a map of unique errors for the given folder `cwd`.
+ *
+ * @param cwd
+ */
+const avocadoForDir = async (cwd: string) => {
   const map = new Map<string, Error>()
   for await (const e of validateSpecificationFolder(cwd)) {
     map.set(errorCorrelationId(e), e)
   }
   return map
 }
+
+/**
+ * Run Avocado in Azure DevOps for a Pull Request.
+ *
+ * @param pr Pull Request properties
+ */
+const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterableEx<Error> =>
+  asyncIt.iterable<Error>(async function*() {
+    // collect all errors from the 'targetBranch'
+    await pr.checkout(pr.targetBranch)
+    const targetMap = await avocadoForDir(pr.workingDir)
+
+    // collect all errors from the 'sourceBranch'
+    await pr.checkout(pr.sourceBranch)
+    const sourceMap = await avocadoForDir(pr.workingDir)
+
+    // remove existing errors.
+    for (const e of targetMap.keys()) {
+      sourceMap.delete(e)
+    }
+    yield* sourceMap.values()
+  })
 
 /**
  * The function validates files in the given `cwd` folder and returns errors.
@@ -86,18 +113,9 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<Error> =>
     const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
     if (pr !== undefined) {
-      await pr.checkout(pr.targetBranch)
-      const targetMap = await validateSpecificationFolderMap(pr.workingDir)
-
-      await pr.checkout(pr.sourceBranch)
-      const sourceMap = await validateSpecificationFolderMap(pr.workingDir)
-
-      for (const e of targetMap.keys()) {
-        sourceMap.delete(e)
-      }
-      yield* sourceMap.values()
+      yield* avocadoForDevOps(pr)
     } else {
-      yield* (await validateSpecificationFolderMap(config.cwd)).values()
+      yield* (await avocadoForDir(config.cwd)).values()
     }
   })
 
