@@ -39,8 +39,6 @@ export const createPullRequestProperties = async (
   await fs.mkdir(workingDir)
   const workingGitRepository = git.repository(workingDir)
   await workingGitRepository({ clone: [cwd, "."] })
-  await workingGitRepository({ branch: [sourceBranch, `remotes/origin/${sourceBranch}`] })
-  await workingGitRepository({ branch: [targetBranch, `remotes/origin/${targetBranch}`] })
   return {
     targetBranch,
     sourceBranch,
@@ -49,7 +47,7 @@ export const createPullRequestProperties = async (
       await workingGitRepository({ checkout: [branch] })
     },
     diff: async () => {
-      const { stdout } = await workingGitRepository({
+      const { stdout } = await originGitRepository({
         diff: ["--name-only", sourceBranch, targetBranch]
       })
       return stdout.split("\n").filter(v => v !== "")

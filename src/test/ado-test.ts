@@ -52,8 +52,8 @@ const createAdoEnv = async (name: string): Promise<cli.Config> => {
   }
 }
 
-describe("git", () => {
-  it("Azure DevOps ", async () => {
+describe("Azure DevOps", () => {
+  it("Azure DevOps and Avocado", async () => {
     const cfg = await createAdoEnv("458e3de4-ca9c-4f98-858a-6bb9863189e6")
 
     // run avocado as AzureDevOps pull request.
@@ -61,7 +61,7 @@ describe("git", () => {
     assert.deepStrictEqual(errors, [])
   }).timeout(5000)
 
-  it("Diff", async () => {
+  it("PR diff", async () => {
     const cfg = await createAdoEnv("cb48-4995-9348-af800342b723")
     const pr = await ado.createPullRequestProperties(cfg)
     if (pr === undefined) {
