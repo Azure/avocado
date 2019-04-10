@@ -14,8 +14,6 @@ export type PullRequestProperties = {
 
 const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
 
-const originBranch = (branchName: string) => `remotes/origin/${branchName}`
-
 /**
  * Currently, the algorithm is recognizing Azure Dev Ops Pull Request if the `env` has
  * `SYSTEM_PULLREQUEST_TARGETBRANCH`. `cwd` should points to the source Git repository.
@@ -31,7 +29,7 @@ export const createPullRequestProperties = async (
   const originGitRepository = git.repository(cwd)
   await originGitRepository({ branch: [sourceBranch] })
   await originGitRepository({
-    branch: [targetBranch, originBranch(targetBranch)]
+    branch: [targetBranch, `remotes/origin/${targetBranch}`]
   })
 
   // we have to clone the repository because we need to switch branches.
@@ -50,7 +48,7 @@ export const createPullRequestProperties = async (
     },
     diff: async () => {
       const { stdout } = await originGitRepository({
-        diff: ["--name-only", originBranch(sourceBranch), originBranch(targetBranch)]
+        diff: ["--name-only", sourceBranch, targetBranch]
       })
       return stdout.split("\n").filter(v => v !== "")
     }
