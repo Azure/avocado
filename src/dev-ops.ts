@@ -3,20 +3,35 @@ import * as git from "./git"
 import * as path from "path"
 import * as fs from "@ts-common/fs"
 
+export type FileChangeKind = 'Added'|'Deleted'|'Modified'
+
+export type FileChange = {
+  readonly kind: FileChangeKind
+  readonly path: string
+}
+
 export type PullRequestProperties = {
   readonly targetBranch: string
   readonly sourceBranch: string
   readonly workingDir: string
   readonly checkout: (branch: string) => Promise<void>
   // tslint:disable-next-line:prettier
-  readonly diff: () => Promise<readonly string[]>
+  readonly diff: () => Promise<readonly FileChange[]>
 }
 
 const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
 
+const parseGitFileChangeKind = (line: string) => {
+  switch (line[0]) {
+    case "A": return "Added"
+    case "D": return "Deleted"
+    default: return "Modified"
+  }
+}
+
 /**
  * Currently, the algorithm is recognizing Azure Dev Ops Pull Request if the `env` has
- * `SYSTEM_PULLREQUEST_TARGETBRANCH`. `cwd` should points to the source Git repository.
+ * `SYSTEM_PULLREQUEST_TARGETBRANCH`. `cwd` should point to the source Git repository.
  */
 export const createPullRequestProperties = async (
   // tslint:disable-next-line:prettier
@@ -48,9 +63,17 @@ export const createPullRequestProperties = async (
     },
     diff: async () => {
       const { stdout } = await originGitRepository({
-        diff: ["--name-only", sourceBranch, targetBranch]
+        diff: ["--name-status", "--no-renames", targetBranch, sourceBranch]
       })
-      return stdout.split("\n").filter(v => v !== "")
+      return stdout
+        .split("\n")
+        .filter(v => v !== "")
+        .map<FileChange>(line => {
+          return {
+            kind: parseGitFileChangeKind(line),
+            path: line.substr(2)
+          }
+        })
     }
   }
 }
