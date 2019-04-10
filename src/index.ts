@@ -12,7 +12,7 @@ import * as cli from "./cli"
 import nodeObjectHash = require("node-object-hash")
 import * as azureDevOps from "./ado"
 
-export { createPullRequestProperties } from "./ado"
+export { createPullRequestProperties, PullRequestProperties } from "./ado"
 
 export type JsonParseError = {
   readonly code: "JSON_PARSE"
