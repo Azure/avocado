@@ -4,9 +4,9 @@ import * as avocado from "../index"
 import * as git from "../git"
 import * as assert from "assert"
 import * as cli from "../cli"
-import * as ado from "../ado"
+import * as devOps from "../dev-ops"
 
-const createAdoEnv = async (name: string): Promise<cli.Config> => {
+const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   const tmp = path.resolve(path.join("..", `avocado-tmp-${name}`))
 
   if (await pfs.exists(tmp)) {
@@ -54,7 +54,7 @@ const createAdoEnv = async (name: string): Promise<cli.Config> => {
 
 describe("Azure DevOps", () => {
   it("Azure DevOps and Avocado", async () => {
-    const cfg = await createAdoEnv("458e3de4-ca9c-4f98-858a-6bb9863189e6")
+    const cfg = await createDevOpsEnv("458e3de4-ca9c-4f98-858a-6bb9863189e6")
 
     // run avocado as AzureDevOps pull request.
     const errors = await avocado.avocado(cfg).toArray()
@@ -62,8 +62,8 @@ describe("Azure DevOps", () => {
   }).timeout(5000)
 
   it("PR diff", async () => {
-    const cfg = await createAdoEnv("cb48-4995-9348-af800342b723")
-    const pr = await ado.createPullRequestProperties(cfg)
+    const cfg = await createDevOpsEnv("cb48-4995-9348-af800342b723")
+    const pr = await devOps.createPullRequestProperties(cfg)
     if (pr === undefined) {
       throw new Error("pr === undefined")
     }

@@ -10,9 +10,9 @@ import * as stringMap from "@ts-common/string-map"
 import * as commonmark from "commonmark"
 import * as cli from "./cli"
 import nodeObjectHash = require("node-object-hash")
-import * as azureDevOps from "./ado"
+import * as devOps from "./dev-ops"
 
-export { createPullRequestProperties, PullRequestProperties } from "./ado"
+export { createPullRequestProperties, PullRequestProperties } from "./dev-ops"
 export { defaultConfig, Config } from "./cli"
 
 export type JsonParseError = {
@@ -83,7 +83,7 @@ const validateSpecificationFolderMap = async (cwd: string) => {
  */
 export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<Error> =>
   asyncIt.iterable<Error>(async function*() {
-    const pr = await azureDevOps.createPullRequestProperties(config)
+    const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
     if (pr !== undefined) {
       await pr.checkout(pr.targetBranch)
