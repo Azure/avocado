@@ -8,6 +8,8 @@ export type PullRequestProperties = {
   readonly sourceBranch: string
   readonly workingDir: string
   readonly checkout: (branch: string) => Promise<void>
+  // tslint:disable-next-line:prettier
+  readonly diff: () => Promise<readonly string[]>
 }
 
 const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
@@ -43,6 +45,12 @@ export const createPullRequestProperties = async (
     workingDir,
     checkout: async (branch: string) => {
       await workingGitRepository({ checkout: [branch] })
+    },
+    diff: async () => {
+      const { stdout } = await workingGitRepository({
+        diff: ["--name-only", sourceBranch, targetBranch]
+      })
+      return stdout.split("\n")
     }
   }
 }
