@@ -9,8 +9,11 @@ import * as json from "@ts-common/json"
 import * as stringMap from "@ts-common/string-map"
 import * as commonmark from "commonmark"
 import * as cli from "./cli"
-import * as git from "./git"
 import nodeObjectHash = require("node-object-hash")
+import * as devOps from "./dev-ops"
+
+export { createPullRequestProperties, PullRequestProperties } from "./dev-ops"
+export { defaultConfig, Config } from "./cli"
 
 export type JsonParseError = {
   readonly code: "JSON_PARSE"
@@ -65,7 +68,12 @@ const validateSpecificationFolder = (cwd: string) =>
     }
   })
 
-const validateSpecificationFolderMap = async (cwd: string) => {
+/**
+ * Creates a map of unique errors for the given folder `cwd`.
+ *
+ * @param cwd
+ */
+const avocadoForDir = async (cwd: string) => {
   const map = new Map<string, Error>()
   for await (const e of validateSpecificationFolder(cwd)) {
     map.set(errorCorrelationId(e), e)
@@ -73,42 +81,41 @@ const validateSpecificationFolderMap = async (cwd: string) => {
   return map
 }
 
-const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
+/**
+ * Run Avocado in Azure DevOps for a Pull Request.
+ *
+ * @param pr Pull Request properties
+ */
+const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterableEx<Error> =>
+  asyncIt.iterable<Error>(async function*() {
+    // collect all errors from the 'targetBranch'
+    await pr.checkout(pr.targetBranch)
+    const targetMap = await avocadoForDir(pr.workingDir)
+
+    // collect all errors from the 'sourceBranch'
+    await pr.checkout(pr.sourceBranch)
+    const sourceMap = await avocadoForDir(pr.workingDir)
+
+    // remove existing errors.
+    for (const e of targetMap.keys()) {
+      sourceMap.delete(e)
+    }
+    yield* sourceMap.values()
+  })
 
 /**
  * The function validates files in the given `cwd` folder and returns errors.
  *
- * @param { cwd, env }
+ * @param config
  */
-export const avocado = ({ cwd, env }: cli.Config): asyncIt.AsyncIterableEx<Error> =>
+export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<Error> =>
   asyncIt.iterable<Error>(async function*() {
-    const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
+    const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
-    if (targetBranch !== undefined) {
-      const sourceGitRepository = git.repository(cwd)
-      await sourceGitRepository({ branch: [sourceBranch] })
-      await sourceGitRepository({ branch: [targetBranch, `remotes/origin/${targetBranch}`] })
-
-      // we have to clone the repository because we need to switch branches.
-      // Switching branches in the current repository can be dangerous because Avocado
-      // may be running from it.
-      const target = path.resolve(path.join(cwd, "..", "target"))
-      await fs.mkdir(target)
-      const targetGitRepository = git.repository(target)
-      await targetGitRepository({ clone: [cwd, "."] })
-
-      await targetGitRepository({ checkout: [targetBranch] })
-      const targetMap = await validateSpecificationFolderMap(target)
-
-      await targetGitRepository({ checkout: [sourceBranch] })
-      const sourceMap = await validateSpecificationFolderMap(target)
-
-      for (const e of targetMap.keys()) {
-        sourceMap.delete(e)
-      }
-      yield* sourceMap.values()
+    if (pr !== undefined) {
+      yield* avocadoForDevOps(pr)
     } else {
-      yield* (await validateSpecificationFolderMap(cwd)).values()
+      yield* (await avocadoForDir(config.cwd)).values()
     }
   })
 
