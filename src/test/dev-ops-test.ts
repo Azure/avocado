@@ -6,6 +6,11 @@ import * as assert from "assert"
 import * as cli from "../cli"
 import * as devOps from "../dev-ops"
 
+/**
+ * Create Azure DevOps environment for testing.
+ *
+ * @param name an environment name. It's used as a unique directory suffix.
+ */
 const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   const tmp = path.resolve(path.join("..", `avocado-tmp-${name}`))
 
