@@ -68,12 +68,10 @@ export const createPullRequestProperties = async (
       return stdout
         .split("\n")
         .filter(v => v !== "")
-        .map<FileChange>(line => {
-          return {
-            kind: parseGitFileChangeKind(line),
-            path: line.substr(2)
-          }
-        })
+        .map<FileChange>(line => ({
+          kind: parseGitFileChangeKind(line),
+          path: line.substr(2)
+        }))
     }
   }
 }
