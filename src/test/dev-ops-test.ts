@@ -34,14 +34,19 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   const specification = path.join(remote, "specification")
   await pfs.mkdir(specification)
   await pfs.writeFile(path.join(specification, "readme.md"), "")
+  await pfs.writeFile(path.join(remote, "license"), "")
   await gitRemote({ add: ["."] })
-  await gitRemote({ commit: ["-m", '"add specification/readme.md"', "--no-gpg-sign"] })
+  await gitRemote({ commit: ["-m", '"initial commit"', "--no-gpg-sign"] })
 
   // commit removing "specification/readme.md" to "source".
   await gitRemote({ checkout: ["-b", "source"] })
   await pfs.unlink(path.join(specification, "readme.md"))
+  await pfs.writeFile(path.join(remote, "textfile.txt"), "")
+  await pfs.writeFile(path.join(remote, "license"), "MIT")
   await gitRemote({ add: ["."] })
-  await gitRemote({ commit: ["-m", '"delete specification/readme.md"', "--no-gpg-sign"] })
+  await gitRemote({
+    commit: ["-m", '"second commit"', "--no-gpg-sign"]
+  })
 
   // create local Git repository
   const local = path.join(tmp, "local")
@@ -73,6 +78,11 @@ describe("Azure DevOps", () => {
       throw new Error("pr === undefined")
     }
     const files = await pr.diff()
-    assert.deepStrictEqual(files, ["specification/readme.md"])
+    const expected = [
+      { kind: "Modified", path: "license" },
+      { kind: "Deleted", path: "specification/readme.md" },
+      { kind: "Added", path: "textfile.txt" }
+    ] as const
+    assert.deepStrictEqual(files, expected)
   }).timeout(5000)
 })
