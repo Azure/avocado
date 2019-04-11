@@ -36,7 +36,7 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   await pfs.writeFile(path.join(specification, "readme.md"), "")
   await pfs.writeFile(path.join(remote, "license"), "")
   await gitRemote({ add: ["."] })
-  await gitRemote({ commit: ["-m", '"A specification/readme.md"', "--no-gpg-sign"] })
+  await gitRemote({ commit: ["-m", '"initial commit"', "--no-gpg-sign"] })
 
   // commit removing "specification/readme.md" to "source".
   await gitRemote({ checkout: ["-b", "source"] })
@@ -45,7 +45,7 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   await pfs.writeFile(path.join(remote, "license"), "MIT")
   await gitRemote({ add: ["."] })
   await gitRemote({
-    commit: ["-m", '"D specification/readme.md, A: textfile.txt, M: license"', "--no-gpg-sign"]
+    commit: ["-m", '"second commit"', "--no-gpg-sign"]
   })
 
   // create local Git repository
