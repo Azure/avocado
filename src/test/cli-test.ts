@@ -1,4 +1,4 @@
-import * as cli from "../cli"
+import { cli } from "../index"
 import { describe } from "mocha"
 import assert from "assert"
 import * as ai from "@ts-common/async-iterator"
