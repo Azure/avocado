@@ -1,3 +1,4 @@
+// tslint:disable:prettier
 import * as util from "util"
 import * as childProcess from "child_process"
 import * as stringMap from "@ts-common/string-map"
@@ -9,11 +10,9 @@ export type ExecResult = {
   readonly stderr: string
 }
 
-// tslint:disable-next-line:prettier
 export type GenericCommand = stringMap.StringMap<readonly string[]>
 
 export type Command =
-  // tslint:disable-next-line:prettier
   { readonly config: readonly ["user.email" | "user.name", string] } |
   { readonly init: readonly [] } |
   { readonly add: readonly [string] } |

@@ -1,5 +1,7 @@
 {
   "semi": false,
   "printWidth": 100,
-  "rules":
+  "rules": {
+
+  }
 }
