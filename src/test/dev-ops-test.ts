@@ -1,10 +1,7 @@
 import * as path from "path"
 import * as pfs from "@ts-common/fs"
-import * as avocado from "../index"
-import * as git from "../git"
+import { git, cli, devOps, avocado } from "../index"
 import * as assert from "assert"
-import * as cli from "../cli"
-import * as devOps from "../dev-ops"
 
 /**
  * Create Azure DevOps environment for testing.
@@ -67,7 +64,7 @@ describe("Azure DevOps", () => {
     const cfg = await createDevOpsEnv("458e3de4-ca9c-4f98-858a-6bb9863189e6")
 
     // run avocado as AzureDevOps pull request.
-    const errors = await avocado.avocado(cfg).toArray()
+    const errors = await avocado(cfg).toArray()
     assert.deepStrictEqual(errors, [])
   }).timeout(5000)
 
@@ -84,5 +81,5 @@ describe("Azure DevOps", () => {
       { kind: "Added", path: "textfile.txt" }
     ] as const
     assert.deepStrictEqual(files, expected)
-  }).timeout(5000)
+  }).timeout(10000)
 })

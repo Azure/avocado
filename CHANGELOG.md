@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- `git` namespace.
+
 ## 0.4.0
 
 - `devOps` and `cli` namespaces.
