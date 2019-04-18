@@ -12,8 +12,7 @@ import * as cli from "./cli"
 import nodeObjectHash = require("node-object-hash")
 import * as devOps from "./dev-ops"
 
-export { createPullRequestProperties, PullRequestProperties } from "./dev-ops"
-export { defaultConfig, Config } from "./cli"
+export { devOps, cli }
 
 export type JsonParseError = {
   readonly code: "JSON_PARSE"

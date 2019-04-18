@@ -3,18 +3,30 @@ import * as git from "./git"
 import * as path from "path"
 import * as fs from "@ts-common/fs"
 
-export type FileChangeKind = 'Added'|'Deleted'|'Modified'
+export type FileChangeKind = "Added" | "Deleted" | "Modified"
 
 export type FileChange = {
   readonly kind: FileChangeKind
   readonly path: string
 }
 
+/**
+ * Properties of Pull Request in Azure DevOps CI.
+ */
 export type PullRequestProperties = {
+  // Target Branch, for example `master`.
   readonly targetBranch: string
+
+  // Source Branch, for example `myname/newchanges`.
   readonly sourceBranch: string
+
+  // Working folder for a cloned directory. We can't switch branches in the original Git repository so we use cloned repository.
   readonly workingDir: string
+
+  // Checkout Git branch, for example, it can be `targetBranch` or `sourceBranch`.
   readonly checkout: (branch: string) => Promise<void>
+
+  // The method returns a set of changes between `targetBranch` and `sourceBranch`.
   // tslint:disable-next-line:prettier
   readonly diff: () => Promise<readonly FileChange[]>
 }
@@ -23,13 +35,22 @@ const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
 
 const parseGitFileChangeKind = (line: string) => {
   switch (line[0]) {
-    case "A": return "Added"
-    case "D": return "Deleted"
-    default: return "Modified"
+    case "A":
+      return "Added"
+    case "D":
+      return "Deleted"
+    default:
+      return "Modified"
   }
 }
 
 /**
+ * If the function is called in Azure DevOps CI for a Pull Request, it creates a
+ * clone of the Git repository and returns properties of the Pull Request, such as
+ * `targetBranch` and `sourceBranch`.
+ *
+ * The function returns `undefined` if it's not Azure DevOps CI for a Pull Request.
+ *
  * Currently, the algorithm is recognizing Azure Dev Ops Pull Request if the `env` has
  * `SYSTEM_PULLREQUEST_TARGETBRANCH`. `cwd` should point to the source Git repository.
  */
