@@ -56,7 +56,9 @@ describe('avocado', () => {
   })
 
   it('invalid JSON', async () => {
-    const r = await avocado.avocado({ cwd: 'src/test/invalid_json', env: {} }).toArray()
+    const r = await avocado
+      .avocado({ cwd: 'src/test/invalid_json_trailing_comma', env: {} })
+      .toArray()
     assert.deepStrictEqual(r, [
       {
         code: 'JSON_PARSE',
@@ -70,7 +72,7 @@ describe('avocado', () => {
             line: 3
           },
           token: '}',
-          url: path.resolve('src/test/invalid_json/specification/specs/some.json')
+          url: path.resolve('src/test/invalid_json_trailing_comma/specification/specs/some.json')
         }
       }
     ])
