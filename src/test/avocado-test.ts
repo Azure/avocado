@@ -78,8 +78,30 @@ describe('avocado', () => {
     ])
   })
 
+  it('invalid JSON with BOM', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/invalid_json_with_bom', env: {} }).toArray()
+    assert.deepStrictEqual(r, [
+      {
+        code: 'JSON_PARSE',
+        message: 'The file is not valid JSON file.',
+        error: {
+          code: 'invalid symbol',
+          kind: 'syntax',
+          message: 'invalid symbol, token: \uFEFF, line: 1, column: 1',
+          position: {
+            column: 1,
+            line: 1
+          },
+          token: '\uFEFF',
+          url: path.resolve('src/test/invalid_json_with_bom/specification/specs/some.json')
+        }
+      }
+    ])
+  })
+
   it('invalid ref', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/invalid_ref', env: {} }).toArray()
+    // tslint:disable-next-line:prettier
     const expected: readonly avocado.Error[] = [
       {
         code: 'NO_JSON_FILE_FOUND',
