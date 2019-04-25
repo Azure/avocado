@@ -33,6 +33,7 @@ jobs:
       customCommand: test
   - task: PublishTestResults@2
     inputs:
+      failTaskOnFailedTests: false
       testResultsFiles: '**/test-results.xml'
       testRunTitle: 'Test results for JavaScript'
   - task: PublishCodeCoverageResults@1
