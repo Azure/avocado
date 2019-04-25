@@ -30,7 +30,7 @@ export const run = async <T>(
   report: Report = { error: console.error, info: console.log }
 ): Promise<void> => {
   try {
-    const errors = await tool(defaultConfig())
+    const errors = tool(defaultConfig())
     // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
