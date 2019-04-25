@@ -58,7 +58,7 @@ const errorCorrelationId = (error: Error) => {
 }
 
 const validateSpecificationFolder = (cwd: string) =>
-  asyncIt.iterable<Error>(async function*() {
+  asyncIt.iterable<Error>(async function* () {
     const specification = path.resolve(path.join(cwd, 'specification'))
     if (await fs.exists(specification)) {
       yield* fs
@@ -87,7 +87,7 @@ const avocadoForDir = async (cwd: string) => {
  * @param pr Pull Request properties
  */
 const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterableEx<Error> =>
-  asyncIt.iterable<Error>(async function*() {
+  asyncIt.iterable<Error>(async function* () {
     // collect all errors from the 'targetBranch'
     await pr.checkout(pr.targetBranch)
     const targetMap = await avocadoForDir(pr.workingDir)
@@ -109,7 +109,7 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
  * @param config
  */
 export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<Error> =>
-  asyncIt.iterable<Error>(async function*() {
+  asyncIt.iterable<Error>(async function* () {
     const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
     if (pr !== undefined) {
@@ -165,7 +165,7 @@ const jsonParse = (fileName: string, file: string) => {
  * @param fileNames a set of file names from `readme.md` file.
  */
 const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
-  asyncIt.iterable<Error>(async function*() {
+  asyncIt.iterable<Error>(async function* () {
     // tslint:disable-next-line:no-let
     let fileNamesToCheck = it.toArray(fileNames)
     // read references from `fileNamesToCheck` until there are no files are left.
@@ -201,7 +201,7 @@ const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
   })
 
 const markDownIterate = (node: commonmark.Node | null) =>
-  it.iterable(function*() {
+  it.iterable(function* () {
     // tslint:disable-next-line:no-let
     let i = node
     while (i !== null) {
@@ -227,6 +227,7 @@ const isAutoRestMd = (m: md.MarkDownEx) =>
   })
 
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> =>
+  // tslint:disable-next-line:space-before-function-paren
   asyncIt.iterable<Error>(async function*() {
     const file = await fs.readFile(readMePath)
     // parse the `readme.md` file

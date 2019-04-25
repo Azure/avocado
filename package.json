@@ -15,6 +15,12 @@
   "bin": {
     "avocado": "./bin/cli.js"
   },
+  "standard": {
+    "parser": "typescript-eslint-parser",
+    "plugins": [
+      "typescript"
+    ]
+  },
   "scripts": {
     "integration": "tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
     "cli": "tsc && node ./bin/cli.js",
@@ -22,13 +28,17 @@
     "prettier": "prettier ./src/**/*.ts",
     "tslint": "tslint --project ./",
     "test": "tsc && tslint --project ./ && jest",
+    "standard": "standard src/**/*.ts",
     "prepack": "npm install && tsc"
   },
   "jest": {
     "testMatch": [
       "**/dist/test/*.js"
     ],
-    "reporters": [ "jest-junit", "default" ],
+    "reporters": [
+      "jest-junit",
+      "default"
+    ],
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {
@@ -38,7 +48,9 @@
         "statements": 100
       }
     },
-    "coverageReporters": ["cobertura"]
+    "coverageReporters": [
+      "cobertura"
+    ]
   },
   "jest-junit": {
     "outputDirectory": ".",
@@ -76,6 +88,7 @@
     "jest-junit": "^6.3.0",
     "prettier": "^1.17.0",
     "tslint": "^5.16.0",
+    "tslint-config-standard": "^8.0.1",
     "tslint-immutable": "^5.5.2",
     "typescript": "^3.4.5"
   }
