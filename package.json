@@ -29,6 +29,7 @@
     "testMatch": [
       "**/dist/test/*.js"
     ],
+    "reporters": [ "jest-junit" ],
     "coverageThreshold": {
       "global": {
         "branches": 100,
@@ -37,6 +38,10 @@
         "statements": 100
       }
     }
+  },
+  "jest-junit": {
+    "outputDirectory": ".",
+    "outputName": "test-results.xml"
   },
   "repository": {
     "type": "git",
@@ -67,6 +72,7 @@
     "@types/jest": "^24.0.11",
     "@types/node": "^11.10.4",
     "jest": "^24.7.1",
+    "jest-junit": "^6.3.0",
     "prettier": "^1.17.0",
     "tslint": "^5.16.0",
     "tslint-immutable": "^5.5.2",
