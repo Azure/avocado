@@ -9,7 +9,7 @@ import * as assert from 'assert'
  * @param name an environment name. It's used as a unique directory suffix.
  */
 const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
-  const tmp = path.resolve(path.join('..', 'avocado-tmp', name))
+  const tmp = path.resolve(path.join('..', `avocado-tmp-${name}`))
 
   if (await pfs.exists(tmp)) {
     await pfs.recursiveRmdir(tmp)
