@@ -28,7 +28,6 @@ export type PullRequestProperties = {
   readonly checkout: (branch: string) => Promise<void>
 
   // The method returns a set of changes between `targetBranch` and `sourceBranch`.
-  // tslint:disable-next-line:prettier
   readonly diff: () => Promise<readonly FileChange[]>
 }
 
@@ -55,10 +54,9 @@ const parseGitFileChangeKind = (line: string) => {
  * Currently, the algorithm is recognizing Azure Dev Ops Pull Request if the `env` has
  * `SYSTEM_PULLREQUEST_TARGETBRANCH`. `cwd` should point to the source Git repository.
  */
-export const createPullRequestProperties = async (
-  // tslint:disable-next-line:prettier
-  { cwd, env }: cli.Config
-): Promise<PullRequestProperties | undefined> => {
+export const createPullRequestProperties = async ({ cwd, env }: cli.Config)
+: Promise<PullRequestProperties | undefined> => {
+
   const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
   if (targetBranch === undefined) {
     return undefined

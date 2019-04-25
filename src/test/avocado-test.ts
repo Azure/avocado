@@ -75,7 +75,6 @@ describe('avocado', () => {
 
   it('invalid ref', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/invalid_ref', env: {} }).toArray()
-    // tslint:disable-next-line:prettier
     const expected: readonly avocado.Error[] = [
       {
         code: 'NO_JSON_FILE_FOUND',

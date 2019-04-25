@@ -32,6 +32,7 @@
     "prepack": "npm install && tsc"
   },
   "jest": {
+    "testEnvironment": "node",
     "testMatch": [
       "**/dist/test/*.js"
     ],
