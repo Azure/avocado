@@ -55,7 +55,7 @@ const parseGitFileChangeKind = (line: string) => {
  * `SYSTEM_PULLREQUEST_TARGETBRANCH`. `cwd` should point to the source Git repository.
  */
 export const createPullRequestProperties = async ({ cwd, env }: cli.Config)
-: Promise<PullRequestProperties | undefined> => {
+  : Promise<PullRequestProperties | undefined> => {
 
   const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
   if (targetBranch === undefined) {

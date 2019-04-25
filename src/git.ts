@@ -17,10 +17,7 @@ export type Command =
   { readonly branch: readonly [string] | readonly [string, string] } |
   { readonly remote: readonly ['add', string, string] } |
   { readonly clone: readonly [string, string] } |
-  {
-    readonly diff:
-      readonly ['--name-status' | '--name-only', '--no-renames', string, string]
-  }
+  { readonly diff: readonly ['--name-status' | '--name-only', '--no-renames', string, string] }
 
 export const repository = (repositoryPath: string) =>
   async (command: Command) => {

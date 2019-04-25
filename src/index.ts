@@ -132,11 +132,11 @@ const parseRef = (ref: string): Ref => {
 const getRefs = (j: json.Json): it.IterableEx<string> =>
   json.isObject(j)
     ? stringMap
-        .entries(j)
-        .flatMap(([k, v]) => (k === '$ref' && typeof v === 'string' ? it.concat([v]) : getRefs(v)))
+      .entries(j)
+      .flatMap(([k, v]) => (k === '$ref' && typeof v === 'string' ? it.concat([v]) : getRefs(v)))
     : it.isArray(j)
-    ? it.flatMap(j, getRefs)
-    : it.empty()
+      ? it.flatMap(j, getRefs)
+      : it.empty()
 
 const getReferencedFileNames = (fileName: string, doc: json.Json) => {
   const dir = path.dirname(fileName)
@@ -227,8 +227,7 @@ const isAutoRestMd = (m: md.MarkDownEx) =>
   })
 
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> =>
-  // tslint:disable-next-line:space-before-function-paren
-  asyncIt.iterable<Error>(async function*() {
+  asyncIt.iterable<Error>(async function* () {
     const file = await fs.readFile(readMePath)
     // parse the `readme.md` file
     const m = md.parse(file.toString())
