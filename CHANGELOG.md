@@ -4,7 +4,7 @@
 
 - restore test coverage
 - use Jest instead of Mocha and Nyc
-- use `tslint` original rules instead of `prettier`
+- use `tslint` and `tslint-config-standard` original rules instead of `prettier`
 
 ## 0.4.1
 
