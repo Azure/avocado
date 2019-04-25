@@ -25,11 +25,11 @@
     "prepack": "npm install && tsc"
   },
   "jest": {
-    "collectCoverage": true,
     "testMatch": [
       "**/dist/test/*.js"
     ],
     "reporters": [ "jest-junit", "default" ],
+    "collectCoverage": true,
     "coverageThreshold": {
       "global": {
         "branches": 100,
@@ -37,7 +37,8 @@
         "lines": 100,
         "statements": 100
       }
-    }
+    },
+    "coverageReporters": ["cobertura"]
   },
   "jest-junit": {
     "outputDirectory": ".",
