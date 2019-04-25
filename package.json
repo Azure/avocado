@@ -29,7 +29,7 @@
     "testMatch": [
       "**/dist/test/*.js"
     ],
-    "reporters": [ "jest-junit" ],
+    "reporters": [ "jest-junit", "default" ],
     "coverageThreshold": {
       "global": {
         "branches": 100,
