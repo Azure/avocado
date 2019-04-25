@@ -1,35 +1,35 @@
-import * as path from "path"
-import * as fs from "@ts-common/fs"
-import * as md from "@ts-common/commonmark-to-markdown"
-import * as openApiMd from "@azure/openapi-markdown"
-import * as asyncIt from "@ts-common/async-iterator"
-import * as jsonParser from "@ts-common/json-parser"
-import * as it from "@ts-common/iterator"
-import * as json from "@ts-common/json"
-import * as stringMap from "@ts-common/string-map"
-import * as commonmark from "commonmark"
-import * as cli from "./cli"
-import * as git from "./git"
-import nodeObjectHash = require("node-object-hash")
-import * as devOps from "./dev-ops"
+import * as path from 'path'
+import * as fs from '@ts-common/fs'
+import * as md from '@ts-common/commonmark-to-markdown'
+import * as openApiMd from '@azure/openapi-markdown'
+import * as asyncIt from '@ts-common/async-iterator'
+import * as jsonParser from '@ts-common/json-parser'
+import * as it from '@ts-common/iterator'
+import * as json from '@ts-common/json'
+import * as stringMap from '@ts-common/string-map'
+import * as commonmark from 'commonmark'
+import * as cli from './cli'
+import * as git from './git'
+import nodeObjectHash = require('node-object-hash')
+import * as devOps from './dev-ops'
 
 export { devOps, cli, git }
 
 export type JsonParseError = {
-  readonly code: "JSON_PARSE"
+  readonly code: 'JSON_PARSE'
   readonly message: string
   readonly error: jsonParser.ParseError
 }
 
 export type NotAutoRestMarkDown = {
-  readonly code: "NOT_AUTOREST_MARKDOWN"
+  readonly code: 'NOT_AUTOREST_MARKDOWN'
   readonly message: string
   readonly readMeUrl: string
   readonly helpUrl: string
 }
 
 export type FileError = {
-  readonly code: "NO_JSON_FILE_FOUND" | "UNREFERENCED_JSON_FILE"
+  readonly code: 'NO_JSON_FILE_FOUND' | 'UNREFERENCED_JSON_FILE'
   readonly message: string
   readonly readMeUrl: string
   readonly jsonUrl: string
@@ -40,13 +40,13 @@ export type Error = JsonParseError | FileError | NotAutoRestMarkDown
 const errorCorrelationId = (error: Error) => {
   const toObject = () => {
     switch (error.code) {
-      case "UNREFERENCED_JSON_FILE":
+      case 'UNREFERENCED_JSON_FILE':
         return { code: error.code, url: error.jsonUrl }
-      case "NO_JSON_FILE_FOUND":
+      case 'NO_JSON_FILE_FOUND':
         return { code: error.code, url: error.readMeUrl }
-      case "NOT_AUTOREST_MARKDOWN":
+      case 'NOT_AUTOREST_MARKDOWN':
         return { code: error.code, url: error.readMeUrl }
-      case "JSON_PARSE":
+      case 'JSON_PARSE':
         return {
           code: error.code,
           url: error.error.url,
@@ -59,11 +59,11 @@ const errorCorrelationId = (error: Error) => {
 
 const validateSpecificationFolder = (cwd: string) =>
   asyncIt.iterable<Error>(async function*() {
-    const specification = path.resolve(path.join(cwd, "specification"))
+    const specification = path.resolve(path.join(cwd, 'specification'))
     if (await fs.exists(specification)) {
       yield* fs
         .recursiveReaddir(specification)
-        .filter(f => path.basename(f).toLowerCase() === "readme.md")
+        .filter(f => path.basename(f).toLowerCase() === 'readme.md')
         .flatMap(validateReadMeFile)
     }
   })
@@ -125,15 +125,15 @@ type Ref = {
 }
 
 const parseRef = (ref: string): Ref => {
-  const i = ref.indexOf("#")
-  return i < 0 ? { url: ref, pointer: "" } : { url: ref.substr(0, i), pointer: ref.substr(i + 1) }
+  const i = ref.indexOf('#')
+  return i < 0 ? { url: ref, pointer: '' } : { url: ref.substr(0, i), pointer: ref.substr(i + 1) }
 }
 
 const getRefs = (j: json.Json): it.IterableEx<string> =>
   json.isObject(j)
     ? stringMap
         .entries(j)
-        .flatMap(([k, v]) => (k === "$ref" && typeof v === "string" ? it.concat([v]) : getRefs(v)))
+        .flatMap(([k, v]) => (k === '$ref' && typeof v === 'string' ? it.concat([v]) : getRefs(v)))
     : it.isArray(j)
     ? it.flatMap(j, getRefs)
     : it.empty()
@@ -142,7 +142,7 @@ const getReferencedFileNames = (fileName: string, doc: json.Json) => {
   const dir = path.dirname(fileName)
   return getRefs(doc)
     .map(v => parseRef(v).url)
-    .filter(u => u !== "")
+    .filter(u => u !== '')
     .map(u => path.resolve(path.join(dir, u)))
 }
 
@@ -150,7 +150,7 @@ const jsonParse = (fileName: string, file: string) => {
   // tslint:disable-next-line:readonly-array
   const errors: Error[] = []
   const reportError = (e: jsonParser.ParseError) =>
-    errors.push({ code: "JSON_PARSE", message: "The file is not valid JSON file.", error: e })
+    errors.push({ code: 'JSON_PARSE', message: 'The file is not valid JSON file.', error: e })
   const document = jsonParser.parse(fileName, file.toString(), reportError)
   return {
     errors,
@@ -179,8 +179,8 @@ const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
           file = await fs.readFile(fileName)
         } catch (e) {
           yield {
-            code: "NO_JSON_FILE_FOUND",
-            message: "The JSON file is not found but it is referenced from the readme file.",
+            code: 'NO_JSON_FILE_FOUND',
+            message: 'The JSON file is not found but it is referenced from the readme file.',
             readMeUrl: readMePath,
             jsonUrl: fileName
           }
@@ -212,18 +212,18 @@ const markDownIterate = (node: commonmark.Node | null) =>
 
 const isAutoRestMd = (m: md.MarkDownEx) =>
   markDownIterate(m.markDown.firstChild).some(v => {
-    if (v.type !== "block_quote") {
+    if (v.type !== 'block_quote') {
       return false
     }
     const p = v.firstChild
-    if (p === null || p.type !== "paragraph") {
+    if (p === null || p.type !== 'paragraph') {
       return false
     }
     const t = p.firstChild
-    if (t === null || t.type !== "text") {
+    if (t === null || t.type !== 'text') {
       return false
     }
-    return t.literal === "see https://aka.ms/autorest"
+    return t.literal === 'see https://aka.ms/autorest'
   })
 
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> =>
@@ -233,11 +233,12 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
     const m = md.parse(file.toString())
     if (!isAutoRestMd(m)) {
       yield {
-        code: "NOT_AUTOREST_MARKDOWN",
-        message: "The `readme.md` is not AutoRest markdown file.",
+        code: 'NOT_AUTOREST_MARKDOWN',
+        message: 'The `readme.md` is not AutoRest markdown file.',
         readMeUrl: readMePath,
         helpUrl:
-          "http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format"
+          // tslint:disable-next-line:max-line-length
+          'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format'
       }
     }
     const dir = path.dirname(readMePath)
@@ -245,17 +246,17 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
     const inputFiles = openApiMd.getInputFiles(m.markDown).toArray()
     // normalize the file names.
     const inputFileSet = inputFiles
-      .map(f => path.resolve(path.join(dir, ...f.split("\\"))))
+      .map(f => path.resolve(path.join(dir, ...f.split('\\'))))
       .reduce((s, v) => s.add(v), new Set<string>())
     // add all referenced files to the `set`
     yield* resolveFileReferences(readMePath, inputFileSet)
     // report errors if the `dir` folder has JSON files which are not referenced.
     yield* fs
       .recursiveReaddir(dir)
-      .filter(filePath => path.extname(filePath) === ".json" && !inputFileSet.has(filePath))
+      .filter(filePath => path.extname(filePath) === '.json' && !inputFileSet.has(filePath))
       .map<Error>(filePath => ({
-        code: "UNREFERENCED_JSON_FILE",
-        message: "The JSON file is not referenced from the readme file.",
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: readMePath,
         jsonUrl: path.resolve(filePath)
       }))
