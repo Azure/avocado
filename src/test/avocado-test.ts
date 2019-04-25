@@ -38,18 +38,52 @@ describe('avocado', () => {
     assert.deepStrictEqual(r, e)
   })
 
-  it('unreferenced file', async () => {
-    const r = await avocado.avocado({ cwd: 'src/test/unreferenced_file', env: {} }).toArray()
-    const r0 = r[0]
-    if (r0.code === 'JSON_PARSE') {
-      throw new Error('r0.code === "JSON_PARSE"')
-    }
+  it('unreferenced example file', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/unreferenced_example', env: {} }).toArray()
     const e: ReadonlyArray<avocado.Error> = [
       {
         code: 'UNREFERENCED_JSON_FILE',
-        message: r0.message,
-        readMeUrl: path.resolve('src/test/unreferenced_file/specification/readme.md'),
-        jsonUrl: path.resolve('src/test/unreferenced_file/specification/specs/some.json')
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/unreferenced_example/specification/readme.md'),
+        // tslint:disable-next-line: max-line-length
+        jsonUrl: path.resolve('src/test/unreferenced_example/specification/specs/examples/orphan_example.json')
+      }
+    ]
+    assert.deepStrictEqual(r, e)
+  })
+
+  it('unreferenced spec file', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/unreferenced_spec', env: {} }).toArray()
+    const e: ReadonlyArray<avocado.Error> = [
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/unreferenced_spec/specification/readme.md'),
+        // tslint:disable-next-line:prettier
+        jsonUrl: path.resolve('src/test/unreferenced_spec/specification/specs/some.json')
+      }
+    ]
+    assert.deepStrictEqual(r, e)
+  })
+
+  it('unreferenced spec file with referenced examples', async () => {
+    const r = await avocado
+      .avocado({ cwd: 'src/test/unreferenced_spec_with_examples', env: {} })
+      .toArray()
+    const e: ReadonlyArray<avocado.Error> = [
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
+        // tslint:disable-next-line: max-line-length
+        jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/examples/referenced_example.json')
+      },
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
+        // tslint:disable-next-line: max-line-length
+        jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json')
       }
     ]
     assert.deepStrictEqual(r, e)
