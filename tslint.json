@@ -2,7 +2,7 @@
     "defaultSeverity": "error",
     "extends": [
         "tslint:recommended",
-        "tslint-config-prettier",
+        "tslint-config-standard",
         "tslint-immutable"
     ],
     "jsRules": {},
@@ -19,6 +19,8 @@
         "no-var-keyword": true,
         "no-parameter-reassignment": true,
         "typedef": true,
+        "quotemark": [true, "single"],
+        "max-line-length": [true, 100],
 
         // Immutability rules
         "readonly-keyword": true,
@@ -31,14 +33,9 @@
         // Functional style rules
         "no-this": false,
         "no-class": true,
-        "no-mixed-interface": true,
+        "no-mixed-interface": true
         // "no-expression-statement": true,
         // "no-if-statement": true,
         // "no-loop-statement": true
-
-        "ter-arrow-parens": false,
-
-        "prettier": true
-    },
-    "rulesDirectory": ["tslint-plugin-prettier"]
+    }
 }

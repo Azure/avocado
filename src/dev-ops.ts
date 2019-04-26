@@ -1,9 +1,9 @@
-import * as cli from "./cli"
-import * as git from "./git"
-import * as path from "path"
-import * as fs from "@ts-common/fs"
+import * as cli from './cli'
+import * as git from './git'
+import * as path from 'path'
+import * as fs from '@ts-common/fs'
 
-export type FileChangeKind = "Added" | "Deleted" | "Modified"
+export type FileChangeKind = 'Added' | 'Deleted' | 'Modified'
 
 export type FileChange = {
   readonly kind: FileChangeKind
@@ -20,27 +20,27 @@ export type PullRequestProperties = {
   // Source Branch, for example `myname/newchanges`.
   readonly sourceBranch: string
 
-  // Working folder for a cloned directory. We can't switch branches in the original Git repository so we use cloned repository.
+  // Working folder for a cloned directory. We can't switch branches in the original Git repository
+  // so we use cloned repository.
   readonly workingDir: string
 
   // Checkout Git branch, for example, it can be `targetBranch` or `sourceBranch`.
   readonly checkout: (branch: string) => Promise<void>
 
   // The method returns a set of changes between `targetBranch` and `sourceBranch`.
-  // tslint:disable-next-line:prettier
   readonly diff: () => Promise<readonly FileChange[]>
 }
 
-const sourceBranch = "source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8"
+const sourceBranch = 'source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8'
 
 const parseGitFileChangeKind = (line: string) => {
   switch (line[0]) {
-    case "A":
-      return "Added"
-    case "D":
-      return "Deleted"
+    case 'A':
+      return 'Added'
+    case 'D':
+      return 'Deleted'
     default:
-      return "Modified"
+      return 'Modified'
   }
 }
 
@@ -54,10 +54,9 @@ const parseGitFileChangeKind = (line: string) => {
  * Currently, the algorithm is recognizing Azure Dev Ops Pull Request if the `env` has
  * `SYSTEM_PULLREQUEST_TARGETBRANCH`. `cwd` should point to the source Git repository.
  */
-export const createPullRequestProperties = async (
-  // tslint:disable-next-line:prettier
-  { cwd, env }: cli.Config
-): Promise<PullRequestProperties | undefined> => {
+export const createPullRequestProperties = async ({ cwd, env }: cli.Config)
+  : Promise<PullRequestProperties | undefined> => {
+
   const targetBranch = env.SYSTEM_PULLREQUEST_TARGETBRANCH
   if (targetBranch === undefined) {
     return undefined
@@ -71,10 +70,10 @@ export const createPullRequestProperties = async (
   // we have to clone the repository because we need to switch branches.
   // Switching branches in the current repository can be dangerous because Avocado
   // may be running from it.
-  const workingDir = path.resolve(path.join(cwd, "..", "c93b354fd9c14905bb574a8834c4d69b"))
+  const workingDir = path.resolve(path.join(cwd, '..', 'c93b354fd9c14905bb574a8834c4d69b'))
   await fs.mkdir(workingDir)
   const workingGitRepository = git.repository(workingDir)
-  await workingGitRepository({ clone: [cwd, "."] })
+  await workingGitRepository({ clone: [cwd, '.'] })
   return {
     targetBranch,
     sourceBranch,
@@ -84,11 +83,11 @@ export const createPullRequestProperties = async (
     },
     diff: async () => {
       const { stdout } = await originGitRepository({
-        diff: ["--name-status", "--no-renames", targetBranch, sourceBranch]
+        diff: ['--name-status', '--no-renames', targetBranch, sourceBranch]
       })
       return stdout
-        .split("\n")
-        .filter(v => v !== "")
+        .split('\n')
+        .filter(v => v !== '')
         .map(line => ({
           kind: parseGitFileChangeKind(line),
           path: line.substr(2)

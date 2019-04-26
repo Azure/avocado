@@ -1,13 +1,13 @@
-import * as stringMap from "@ts-common/string-map"
-import * as yaml from "js-yaml"
+import * as stringMap from '@ts-common/string-map'
+import * as yaml from 'js-yaml'
 
 export type Report = {
   readonly error: (error: unknown) => void
   readonly info: (info: unknown) => void
 }
 
-const consoleRed = "\x1b[31m"
-const consoleReset = "\x1b[0m"
+const consoleRed = '\x1b[31m'
+const consoleReset = '\x1b[0m'
 
 export type Config = {
   readonly cwd: string
@@ -30,7 +30,7 @@ export const run = async <T>(
   report: Report = { error: console.error, info: console.log }
 ): Promise<void> => {
   try {
-    const errors = await tool(defaultConfig())
+    const errors = tool(defaultConfig())
     // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {

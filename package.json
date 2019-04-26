@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,30 +15,47 @@
   "bin": {
     "avocado": "./bin/cli.js"
   },
+  "standard": {
+    "parser": "typescript-eslint-parser",
+    "plugins": [
+      "typescript"
+    ]
+  },
   "scripts": {
     "integration": "tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
     "cli": "tsc && node ./bin/cli.js",
     "tsc": "tsc",
     "prettier": "prettier ./src/**/*.ts",
     "tslint": "tslint --project ./",
-    "tslint-check": "tslint-config-prettier-check ./tslint.json",
-    "test": "tsc && tslint --project ./ && nyc mocha ./dist/test/*.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-multi-reporters.json",
+    "test": "tsc && tslint --project ./ && jest",
+    "standard": "standard src/**/*.ts",
     "prepack": "npm install && tsc"
   },
-  "nyc": {
-    "reporter": [
-      "html",
-      "text",
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/dist/test/*.js"
+    ],
+    "reporters": [
+      "jest-junit",
+      "default"
+    ],
+    "collectCoverage": true,
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    },
+    "coverageReporters": [
       "cobertura"
-    ],
-    "include": [
-      "dist/*.js"
-    ],
-    "check-coverage": true,
-    "lines": 100,
-    "statements": 100,
-    "functions": 100,
-    "branches": 100
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": ".",
+    "outputName": "test-results.xml"
   },
   "repository": {
     "type": "git",
@@ -66,17 +83,14 @@
     "node-object-hash": "^1.4.2"
   },
   "devDependencies": {
-    "@types/mocha": "^5.2.6",
+    "@types/jest": "^24.0.11",
     "@types/node": "^11.10.4",
-    "mocha": "^6.1.4",
-    "mocha-junit-reporter": "^1.22.0",
-    "mocha-multi-reporters": "^1.1.7",
-    "nyc": "^14.0.0",
+    "jest": "^24.7.1",
+    "jest-junit": "^6.3.0",
     "prettier": "^1.17.0",
     "tslint": "^5.16.0",
-    "tslint-config-prettier": "^1.18.0",
+    "tslint-config-standard": "^8.0.1",
     "tslint-immutable": "^5.5.2",
-    "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.4.3"
+    "typescript": "^3.4.5"
   }
 }

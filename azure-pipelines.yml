@@ -32,10 +32,12 @@ jobs:
       verbose: false
       customCommand: test
   - task: PublishTestResults@2
+    condition: succeededOrFailed()
     inputs:
       testResultsFiles: '**/test-results.xml'
       testRunTitle: 'Test results for JavaScript'
   - task: PublishCodeCoverageResults@1
+    condition: succeededOrFailed()
     inputs:
       codeCoverageTool: Cobertura
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
