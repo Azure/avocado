@@ -3,8 +3,14 @@
 
 import * as iterator from '@ts-common/iterator'
 
-export const generate = () => iterator.repeat('Hello world!', 1)
+/**
+ * The function generates a lot of `Hello world!` strings to test `exec` stdout buffer.
+ */
+export const generate = () => iterator.repeat('Hello world!', 100000)
 
+/**
+ * The function prints to `stdout` a lot of `Hello world!` strings to test `exec` function.
+ */
 export const print = () => {
   for (const v of generate()) {
     // tslint:disable-next-line:no-console
