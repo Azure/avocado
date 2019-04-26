@@ -6,7 +6,8 @@ import * as assert from 'assert'
 import { generate } from './generate-stdout'
 
 describe('child-process', () => {
-  it('exec', async () => {
+  it('exec maxBuffer', async () => {
+    // call `generate-stdout.print()` as a separate process.
     const { stdout } = await childProcess.exec(
       'node -e "require(\'./dist/test/generate-stdout.js\').print()"',
       {}
