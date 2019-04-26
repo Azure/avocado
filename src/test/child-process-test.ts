@@ -5,7 +5,7 @@ import { childProcess } from '../index'
 import * as assert from 'assert'
 import { generate } from './generate-output'
 
-describe('git', () => {
+describe('child-process', () => {
   it('exec', async () => {
     const { stdout } = await childProcess.exec(
       'node -e "require(\'./dist/test/generate-output.js\').print()"',
