@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.3
+
+- Fix `exec` maxBuffer bug https://github.com/Azure/avocado/issues/27.
+
 ## 0.4.2
 
 - restore test coverage

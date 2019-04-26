@@ -1,4 +1,7 @@
 import * as util from 'util'
 import * as childProcess from 'child_process'
 
-export const exec = util.promisify(childProcess.exec)
+const execAsync = util.promisify(childProcess.exec)
+
+export const exec = (command: string, options: childProcess.ExecOptions) =>
+  execAsync(command, { maxBuffer: Infinity, ...options })

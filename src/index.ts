@@ -10,10 +10,11 @@ import * as stringMap from '@ts-common/string-map'
 import * as commonmark from 'commonmark'
 import * as cli from './cli'
 import * as git from './git'
+import * as childProcess from './child-process'
 import nodeObjectHash = require('node-object-hash')
 import * as devOps from './dev-ops'
 
-export { devOps, cli, git }
+export { devOps, cli, git, childProcess }
 
 export type JsonParseError = {
   readonly code: 'JSON_PARSE'
