@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 import { childProcess } from '../index'
 import * as assert from 'assert'
 import { generate } from './generate-output'
