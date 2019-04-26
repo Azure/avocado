@@ -34,7 +34,7 @@
   "jest": {
     "testEnvironment": "node",
     "testMatch": [
-      "**/dist/test/*.js"
+      "**/dist/test/*test.js"
     ],
     "reporters": [
       "jest-junit",
@@ -49,8 +49,12 @@
         "statements": 100
       }
     },
+    "coveragePathIgnorePatterns": [
+      "/dist/test/"
+    ],
     "coverageReporters": [
-      "cobertura"
+      "cobertura",
+      "text"
     ]
   },
   "jest-junit": {
