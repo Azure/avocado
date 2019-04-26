@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -34,7 +34,7 @@
   "jest": {
     "testEnvironment": "node",
     "testMatch": [
-      "**/dist/test/*.js"
+      "**/dist/test/*test.js"
     ],
     "reporters": [
       "jest-junit",
@@ -49,8 +49,12 @@
         "statements": 100
       }
     },
+    "coveragePathIgnorePatterns": [
+      "/dist/test/"
+    ],
     "coverageReporters": [
-      "cobertura"
+      "cobertura",
+      "text"
     ]
   },
   "jest-junit": {
