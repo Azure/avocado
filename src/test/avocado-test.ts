@@ -45,8 +45,9 @@ describe('avocado', () => {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_example/specification/readme.md'),
-        // tslint:disable-next-line: max-line-length
-        jsonUrl: path.resolve('src/test/unreferenced_example/specification/specs/examples/orphan_example.json')
+        jsonUrl: path.resolve(
+          'src/test/unreferenced_example/specification/specs/examples/orphan_example.json'
+        )
       }
     ]
     assert.deepStrictEqual(r, e)
@@ -59,7 +60,6 @@ describe('avocado', () => {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec/specification/readme.md'),
-        // tslint:disable-next-line:prettier
         jsonUrl: path.resolve('src/test/unreferenced_spec/specification/specs/some.json')
       }
     ]
@@ -75,15 +75,18 @@ describe('avocado', () => {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
-        // tslint:disable-next-line: max-line-length
-        jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/examples/referenced_example.json')
+        jsonUrl: path.resolve(
+          // tslint:disable-next-line:max-line-length
+          'src/test/unreferenced_spec_with_examples/specification/specs/examples/referenced_example.json'
+        )
       },
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
-        // tslint:disable-next-line: max-line-length
-        jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json')
+        jsonUrl: path.resolve(
+          'src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json'
+        )
       }
     ]
     assert.deepStrictEqual(r, e)
