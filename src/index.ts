@@ -54,7 +54,7 @@ const errorCorrelationId = (error: Error) => {
         return {
           code: error.code,
           url: error.error.url,
-          position: error.error.position
+          position: error.error.position,
         }
     }
   }
@@ -161,7 +161,7 @@ const jsonParse = (fileName: string, file: string) => {
   const document = jsonParser.parse(fileName, file.toString(), reportError)
   return {
     errors,
-    document
+    document,
   }
 }
 
@@ -189,7 +189,7 @@ const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
             code: 'NO_JSON_FILE_FOUND',
             message: 'The JSON file is not found but it is referenced from the readme file.',
             readMeUrl: readMePath,
-            jsonUrl: fileName
+            jsonUrl: fileName,
           }
           continue
         }
@@ -245,7 +245,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
         readMeUrl: readMePath,
         helpUrl:
           // tslint:disable-next-line:max-line-length
-          'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format'
+          'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
       }
     }
     const dir = path.dirname(readMePath)
@@ -265,6 +265,6 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: readMePath,
-        jsonUrl: path.resolve(filePath)
+        jsonUrl: path.resolve(filePath),
       }))
   })

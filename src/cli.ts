@@ -19,7 +19,7 @@ export type Config = {
 
 export const defaultConfig = () => ({
   cwd: process.cwd(),
-  env: process.env
+  env: process.env,
 })
 
 /**

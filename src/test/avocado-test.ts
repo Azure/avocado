@@ -15,8 +15,8 @@ describe('avocado', () => {
         readMeUrl: path.resolve('src/test/not_autorest_markdown/specification/readme.md'),
         helpUrl:
           // tslint:disable-next-line:max-line-length
-          'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format'
-      }
+          'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
+      },
     ]
     assert.deepStrictEqual(r, expected)
   })
@@ -32,8 +32,8 @@ describe('avocado', () => {
         code: 'NO_JSON_FILE_FOUND',
         message: r0.message,
         readMeUrl: path.resolve('src/test/no_file_found/specification/readme.md'),
-        jsonUrl: path.resolve('src/test/no_file_found/specification/specs/some.json')
-      }
+        jsonUrl: path.resolve('src/test/no_file_found/specification/specs/some.json'),
+      },
     ]
     assert.deepStrictEqual(r, e)
   })
@@ -47,8 +47,8 @@ describe('avocado', () => {
         readMeUrl: path.resolve('src/test/unreferenced_example/specification/readme.md'),
         jsonUrl: path.resolve(
           'src/test/unreferenced_example/specification/specs/examples/orphan_example.json'
-        )
-      }
+        ),
+      },
     ]
     assert.deepStrictEqual(r, e)
   })
@@ -60,8 +60,8 @@ describe('avocado', () => {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec/specification/readme.md'),
-        jsonUrl: path.resolve('src/test/unreferenced_spec/specification/specs/some.json')
-      }
+        jsonUrl: path.resolve('src/test/unreferenced_spec/specification/specs/some.json'),
+      },
     ]
     assert.deepStrictEqual(r, e)
   })
@@ -78,7 +78,7 @@ describe('avocado', () => {
         jsonUrl: path.resolve(
           // tslint:disable-next-line:max-line-length
           'src/test/unreferenced_spec_with_examples/specification/specs/examples/referenced_example.json'
-        )
+        ),
       },
       {
         code: 'UNREFERENCED_JSON_FILE',
@@ -86,8 +86,8 @@ describe('avocado', () => {
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
         jsonUrl: path.resolve(
           'src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json'
-        )
-      }
+        ),
+      },
     ]
     assert.deepStrictEqual(r, e)
   })
@@ -106,12 +106,12 @@ describe('avocado', () => {
           message: 'unexpected token, token: }, line: 3, column: 1',
           position: {
             column: 1,
-            line: 3
+            line: 3,
           },
           token: '}',
-          url: path.resolve('src/test/invalid_json_trailing_comma/specification/specs/some.json')
-        }
-      }
+          url: path.resolve('src/test/invalid_json_trailing_comma/specification/specs/some.json'),
+        },
+      },
     ])
   })
 
@@ -127,12 +127,12 @@ describe('avocado', () => {
           message: 'invalid symbol, token: \uFEFF, line: 1, column: 1',
           position: {
             column: 1,
-            line: 1
+            line: 1,
           },
           token: '\uFEFF',
-          url: path.resolve('src/test/invalid_json_with_bom/specification/specs/some.json')
-        }
-      }
+          url: path.resolve('src/test/invalid_json_with_bom/specification/specs/some.json'),
+        },
+      },
     ])
   })
 
@@ -144,8 +144,8 @@ describe('avocado', () => {
         code: 'NO_JSON_FILE_FOUND',
         message: r[0].message,
         jsonUrl: path.resolve('src/test/invalid_ref/specification/specs/a.json'),
-        readMeUrl: path.resolve('src/test/invalid_ref/specification/readme.md')
-      }
+        readMeUrl: path.resolve('src/test/invalid_ref/specification/readme.md'),
+      },
     ] as const
     assert.deepStrictEqual(r, expected)
   })

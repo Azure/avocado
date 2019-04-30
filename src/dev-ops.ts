@@ -67,7 +67,7 @@ export const createPullRequestProperties = async (
   const originGitRepository = git.repository(config.cwd)
   await originGitRepository({ branch: [sourceBranch] })
   await originGitRepository({
-    branch: [targetBranch, `remotes/origin/${targetBranch}`]
+    branch: [targetBranch, `remotes/origin/${targetBranch}`],
   })
 
   // we have to clone the repository because we need to switch branches.
@@ -86,15 +86,15 @@ export const createPullRequestProperties = async (
     },
     diff: async () => {
       const { stdout } = await originGitRepository({
-        diff: ['--name-status', '--no-renames', targetBranch, sourceBranch]
+        diff: ['--name-status', '--no-renames', targetBranch, sourceBranch],
       })
       return stdout
         .split('\n')
         .filter(v => v !== '')
         .map(line => ({
           kind: parseGitFileChangeKind(line),
-          path: line.substr(2)
+          path: line.substr(2),
         }))
-    }
+    },
   }
 }

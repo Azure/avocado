@@ -24,7 +24,7 @@ describe('cli', () => {
     let info: string = ''
     const report: cli.Report = {
       error: s => (error += s),
-      info: s => (info += s)
+      info: s => (info += s),
     }
     await cli.run(() => ai.fromSequence(), report)
     assert.strictEqual(process.exitCode, 0)
@@ -38,7 +38,7 @@ describe('cli', () => {
     let info: string = ''
     const report: cli.Report = {
       error: s => (error += s),
-      info: s => (info += s)
+      info: s => (info += s),
     }
     await cli.run(() => ai.fromSequence('some error'), report)
     assert.strictEqual(process.exitCode, 1)
@@ -52,7 +52,7 @@ describe('cli', () => {
     let info: string = ''
     const report: cli.Report = {
       error: s => (error += s),
-      info: s => (info += s)
+      info: s => (info += s),
     }
     const f = () => {
       throw new Error('critical error')
