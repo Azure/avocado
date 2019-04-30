@@ -3,7 +3,8 @@
     "extends": [
         "tslint:recommended",
         "tslint-config-standard",
-        "tslint-immutable"
+        "tslint-immutable",
+        "tslint-config-prettier"
     ],
     "jsRules": {},
     "rules": {
@@ -14,6 +15,7 @@
         "arrow-parens": false,
         "object-literal-sort-keys": false,
         "no-floating-promises": true,
+        "array-type": false,
 
         // Recommended built-in rules
         "no-var-keyword": true,
@@ -33,9 +35,12 @@
         // Functional style rules
         "no-this": false,
         "no-class": true,
-        "no-mixed-interface": true
+        "no-mixed-interface": true,
         // "no-expression-statement": true,
         // "no-if-statement": true,
-        // "no-loop-statement": true
-    }
+        // "no-loop-statement": true,
+
+        "prettier": true
+    },
+    "rulesDirectory": ["tslint-plugin-prettier"]
 }

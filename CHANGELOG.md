@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.4
+
+- Add `prettier` back but use it together with `standard`.
+
 ## 0.4.3
 
 - Fix `exec` maxBuffer bug https://github.com/Azure/avocado/issues/27.

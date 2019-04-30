@@ -6,5 +6,10 @@ import * as childProcess from 'child_process'
 
 const nodeJsExec = util.promisify(childProcess.exec)
 
-export const exec = (command: string, options: childProcess.ExecOptions) =>
+export type ExecResult = {
+  readonly stdout: string
+  readonly stderr: string
+}
+
+export const exec = (command: string, options: childProcess.ExecOptions): Promise<ExecResult> =>
   nodeJsExec(command, { maxBuffer: Infinity, ...options })

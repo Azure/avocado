@@ -12,7 +12,9 @@ describe('child-process', () => {
       'node -e "require(\'./dist/test/generate-stdout.js\').print()"',
       {}
     )
-    const expected = generate().map(v => v + '\n').reduce((a, b) => a + b)
+    const expected = generate()
+      .map(v => v + '\n')
+      .reduce((a, b) => a + b)
     assert.deepStrictEqual(expected, stdout)
   })
 })
