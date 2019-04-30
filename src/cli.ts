@@ -30,7 +30,7 @@ export const defaultConfig = () => ({
 export const run = async <T>(
   tool: (config: Config) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console
-  report: Report = { error: console.error, info: console.log }
+  report: Report = { error: console.error, info: console.log },
 ): Promise<void> => {
   // tslint:disable-next-line:no-try
   try {

@@ -46,7 +46,7 @@ describe('avocado', () => {
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_example/specification/readme.md'),
         jsonUrl: path.resolve(
-          'src/test/unreferenced_example/specification/specs/examples/orphan_example.json'
+          'src/test/unreferenced_example/specification/specs/examples/orphan_example.json',
         ),
       },
     ]
@@ -77,7 +77,7 @@ describe('avocado', () => {
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
         jsonUrl: path.resolve(
           // tslint:disable-next-line:max-line-length
-          'src/test/unreferenced_spec_with_examples/specification/specs/examples/referenced_example.json'
+          'src/test/unreferenced_spec_with_examples/specification/specs/examples/referenced_example.json',
         ),
       },
       {
@@ -85,7 +85,7 @@ describe('avocado', () => {
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
         jsonUrl: path.resolve(
-          'src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json'
+          'src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json',
         ),
       },
     ]

@@ -10,7 +10,7 @@ describe('child-process', () => {
     // call `generate-stdout.print()` as a separate process.
     const { stdout } = await childProcess.exec(
       'node -e "require(\'./dist/test/generate-stdout.js\').print()"',
-      {}
+      {},
     )
     const expected = generate()
       .map(v => v + '\n')
