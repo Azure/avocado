@@ -38,25 +38,61 @@ describe('avocado', () => {
     assert.deepStrictEqual(r, e)
   })
 
-  it('unreferenced file', async () => {
-    const r = await avocado.avocado({ cwd: 'src/test/unreferenced_file', env: {} }).toArray()
-    const r0 = r[0]
-    if (r0.code === 'JSON_PARSE') {
-      throw new Error('r0.code === "JSON_PARSE"')
-    }
+  it('unreferenced example file', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/unreferenced_example', env: {} }).toArray()
     const e: ReadonlyArray<avocado.Error> = [
       {
         code: 'UNREFERENCED_JSON_FILE',
-        message: r0.message,
-        readMeUrl: path.resolve('src/test/unreferenced_file/specification/readme.md'),
-        jsonUrl: path.resolve('src/test/unreferenced_file/specification/specs/some.json')
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/unreferenced_example/specification/readme.md'),
+        // tslint:disable-next-line: max-line-length
+        jsonUrl: path.resolve('src/test/unreferenced_example/specification/specs/examples/orphan_example.json')
+      }
+    ]
+    assert.deepStrictEqual(r, e)
+  })
+
+  it('unreferenced spec file', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/unreferenced_spec', env: {} }).toArray()
+    const e: ReadonlyArray<avocado.Error> = [
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/unreferenced_spec/specification/readme.md'),
+        // tslint:disable-next-line:prettier
+        jsonUrl: path.resolve('src/test/unreferenced_spec/specification/specs/some.json')
+      }
+    ]
+    assert.deepStrictEqual(r, e)
+  })
+
+  it('unreferenced spec file with referenced examples', async () => {
+    const r = await avocado
+      .avocado({ cwd: 'src/test/unreferenced_spec_with_examples', env: {} })
+      .toArray()
+    const e: ReadonlyArray<avocado.Error> = [
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
+        // tslint:disable-next-line: max-line-length
+        jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/examples/referenced_example.json')
+      },
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
+        // tslint:disable-next-line: max-line-length
+        jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json')
       }
     ]
     assert.deepStrictEqual(r, e)
   })
 
   it('invalid JSON', async () => {
-    const r = await avocado.avocado({ cwd: 'src/test/invalid_json', env: {} }).toArray()
+    const r = await avocado
+      .avocado({ cwd: 'src/test/invalid_json_trailing_comma', env: {} })
+      .toArray()
     assert.deepStrictEqual(r, [
       {
         code: 'JSON_PARSE',
@@ -70,7 +106,28 @@ describe('avocado', () => {
             line: 3
           },
           token: '}',
-          url: path.resolve('src/test/invalid_json/specification/specs/some.json')
+          url: path.resolve('src/test/invalid_json_trailing_comma/specification/specs/some.json')
+        }
+      }
+    ])
+  })
+
+  it('invalid JSON with BOM', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/invalid_json_with_bom', env: {} }).toArray()
+    assert.deepStrictEqual(r, [
+      {
+        code: 'JSON_PARSE',
+        message: 'The file is not valid JSON file.',
+        error: {
+          code: 'invalid symbol',
+          kind: 'syntax',
+          message: 'invalid symbol, token: \uFEFF, line: 1, column: 1',
+          position: {
+            column: 1,
+            line: 1
+          },
+          token: '\uFEFF',
+          url: path.resolve('src/test/invalid_json_with_bom/specification/specs/some.json')
         }
       }
     ])
@@ -78,6 +135,7 @@ describe('avocado', () => {
 
   it('invalid ref', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/invalid_ref', env: {} }).toArray()
+    // tslint:disable-next-line:prettier
     const expected: readonly avocado.Error[] = [
       {
         code: 'NO_JSON_FILE_FOUND',
