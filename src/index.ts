@@ -182,6 +182,7 @@ const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
       for (const fileName of fileNamesToCheck) {
         // tslint:disable-next-line:no-let
         let file: Buffer
+        // tslint:disable-next-line:no-try
         try {
           file = await fs.readFile(fileName)
         } catch (e) {

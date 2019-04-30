@@ -25,7 +25,7 @@ describe('avocado', () => {
     const r = await avocado.avocado({ cwd: 'src/test/no_file_found', env: {} }).toArray()
     const r0 = r[0]
     if (r0.code === 'JSON_PARSE') {
-      throw new Error('r0.code === "JSON_PARSE"')
+      assert.fail()
     }
     const e: ReadonlyArray<avocado.Error> = [
       {

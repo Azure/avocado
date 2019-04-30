@@ -32,6 +32,7 @@ export const run = async <T>(
   // tslint:disable-next-line:no-console
   report: Report = { error: console.error, info: console.log }
 ): Promise<void> => {
+  // tslint:disable-next-line:no-try
   try {
     const errors = tool(defaultConfig())
     // tslint:disable-next-line:no-let

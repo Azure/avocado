@@ -31,6 +31,7 @@
         "no-object-mutation": true,
         "no-delete": true,
         "no-method-signature": true,
+        "no-delete": true,
 
         // Functional style rules
         "no-this": false,
@@ -39,6 +40,9 @@
         // "no-expression-statement": true,
         // "no-if-statement": true,
         // "no-loop-statement": true,
+        "no-throw": true,
+        "no-try": true,
+        "no-reject": true,
 
         "prettier": true
     },

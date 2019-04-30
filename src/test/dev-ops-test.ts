@@ -75,6 +75,7 @@ describe('Azure DevOps', () => {
     const cfg = await createDevOpsEnv('cb48-4995-9348-af800342b723')
     const pr = await devOps.createPullRequestProperties(cfg)
     if (pr === undefined) {
+      // tslint:disable-next-line:no-throw
       throw new Error('pr === undefined')
     }
     const files = await pr.diff()

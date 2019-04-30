@@ -55,6 +55,7 @@ describe('cli', () => {
       info: s => (info += s),
     }
     const f = () => {
+      // tslint:disable-next-line:no-throw
       throw new Error('critical error')
     }
     await cli.run(f, report)
