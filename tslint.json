@@ -25,7 +25,7 @@
         "no-parameter-reassignment": true,
         "typedef": true,
         "quotemark": [true, "single"],
-        "max-line-length": [true, 100],
+        "max-line-length": [true, 120],
 
         // Immutability rules
         "readonly-keyword": true,
