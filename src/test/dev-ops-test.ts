@@ -45,7 +45,7 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   await pfs.writeFile(path.join(remote, 'license'), 'MIT')
   await gitRemote({ add: ['.'] })
   await gitRemote({
-    commit: ['-m', '"second commit"', '--no-gpg-sign']
+    commit: ['-m', '"second commit"', '--no-gpg-sign'],
   })
 
   // create local Git repository
@@ -57,8 +57,8 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   return {
     cwd: local,
     env: {
-      SYSTEM_PULLREQUEST_TARGETBRANCH: 'master'
-    }
+      SYSTEM_PULLREQUEST_TARGETBRANCH: 'master',
+    },
   }
 }
 
@@ -75,13 +75,14 @@ describe('Azure DevOps', () => {
     const cfg = await createDevOpsEnv('cb48-4995-9348-af800342b723')
     const pr = await devOps.createPullRequestProperties(cfg)
     if (pr === undefined) {
+      // tslint:disable-next-line:no-throw
       throw new Error('pr === undefined')
     }
     const files = await pr.diff()
     const expected = [
       { kind: 'Modified', path: 'license' },
       { kind: 'Deleted', path: 'specification/readme.md' },
-      { kind: 'Added', path: 'textfile.txt' }
+      { kind: 'Added', path: 'textfile.txt' },
     ] as const
     assert.deepStrictEqual(files, expected)
   })

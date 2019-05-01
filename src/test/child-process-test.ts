@@ -8,11 +8,10 @@ import { generate } from './generate-stdout'
 describe('child-process', () => {
   it('exec maxBuffer', async () => {
     // call `generate-stdout.print()` as a separate process.
-    const { stdout } = await childProcess.exec(
-      'node -e "require(\'./dist/test/generate-stdout.js\').print()"',
-      {}
-    )
-    const expected = generate().map(v => v + '\n').reduce((a, b) => a + b)
+    const { stdout } = await childProcess.exec('node -e "require(\'./dist/test/generate-stdout.js\').print()"', {})
+    const expected = generate()
+      .map(v => `${v}\n`)
+      .reduce((a, b) => a + b)
     assert.deepStrictEqual(expected, stdout)
   })
 })

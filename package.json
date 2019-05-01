@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -54,7 +54,8 @@
     ],
     "coverageReporters": [
       "cobertura",
-      "text"
+      "text",
+      "html"
     ]
   },
   "jest-junit": {
@@ -80,9 +81,12 @@
     "@ts-common/async-iterator": "^0.2.0",
     "@ts-common/commonmark-to-markdown": "^1.2.0",
     "@ts-common/fs": "^0.2.0",
+    "@ts-common/iterator": "^0.3.1",
+    "@ts-common/json": "^0.3.0",
     "@ts-common/json-parser": "^0.7.0",
     "@ts-common/string-map": "^0.3.0",
     "@types/js-yaml": "^3.12.1",
+    "commonmark": "^0.29.0",
     "js-yaml": "^3.13.1",
     "node-object-hash": "^1.4.2"
   },
@@ -93,8 +97,10 @@
     "jest-junit": "^6.3.0",
     "prettier": "^1.17.0",
     "tslint": "^5.16.0",
+    "tslint-config-prettier": "^1.18.0",
     "tslint-config-standard": "^8.0.1",
     "tslint-immutable": "^5.5.2",
+    "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.4.5"
   }
 }

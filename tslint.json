@@ -1,26 +1,31 @@
 {
     "defaultSeverity": "error",
     "extends": [
-        "tslint:recommended",
+        "tslint:all",
         "tslint-config-standard",
-        "tslint-immutable"
+        "tslint-immutable",
+        "tslint-config-prettier"
     ],
     "jsRules": {},
     "rules": {
-        "semicolon": false,
-        "ordered-imports": false,
-        "interface-over-type-literal": false,
-        "trailing-comma": false,
-        "arrow-parens": false,
         "object-literal-sort-keys": false,
-        "no-floating-promises": true,
+        "ordered-imports": false,
+        "file-name-casing": [true, "kebab-case"],
+        "interface-over-type-literal": false,
+        "prefer-method-signature": false,
+        "member-ordering": false,
+        "no-magic-numbers": false,
+        "newline-before-return": false,
+        "unnecessary-else": false,
+        "completed-docs": false,
+        "no-void-expression": false,
 
         // Recommended built-in rules
         "no-var-keyword": true,
         "no-parameter-reassignment": true,
         "typedef": true,
         "quotemark": [true, "single"],
-        "max-line-length": [true, 100],
+        "max-line-length": [true, 120],
 
         // Immutability rules
         "readonly-keyword": true,
@@ -29,13 +34,20 @@
         "no-object-mutation": true,
         "no-delete": true,
         "no-method-signature": true,
+        "no-delete": true,
 
         // Functional style rules
         "no-this": false,
         "no-class": true,
-        "no-mixed-interface": true
+        "no-mixed-interface": true,
         // "no-expression-statement": true,
         // "no-if-statement": true,
-        // "no-loop-statement": true
-    }
+        // "no-loop-statement": true,
+        "no-throw": true,
+        "no-try": true,
+        "no-reject": true,
+
+        "prettier": true
+    },
+    "rulesDirectory": ["tslint-plugin-prettier"]
 }
