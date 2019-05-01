@@ -45,9 +45,7 @@ describe('avocado', () => {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_example/specification/readme.md'),
-        jsonUrl: path.resolve(
-          'src/test/unreferenced_example/specification/specs/examples/orphan_example.json',
-        ),
+        jsonUrl: path.resolve('src/test/unreferenced_example/specification/specs/examples/orphan_example.json'),
       },
     ]
     assert.deepStrictEqual(r, e)
@@ -67,9 +65,7 @@ describe('avocado', () => {
   })
 
   it('unreferenced spec file with referenced examples', async () => {
-    const r = await avocado
-      .avocado({ cwd: 'src/test/unreferenced_spec_with_examples', env: {} })
-      .toArray()
+    const r = await avocado.avocado({ cwd: 'src/test/unreferenced_spec_with_examples', env: {} }).toArray()
     const e: ReadonlyArray<avocado.Error> = [
       {
         code: 'UNREFERENCED_JSON_FILE',
@@ -84,18 +80,14 @@ describe('avocado', () => {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
-        jsonUrl: path.resolve(
-          'src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json',
-        ),
+        jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json'),
       },
     ]
     assert.deepStrictEqual(r, e)
   })
 
   it('invalid JSON', async () => {
-    const r = await avocado
-      .avocado({ cwd: 'src/test/invalid_json_trailing_comma', env: {} })
-      .toArray()
+    const r = await avocado.avocado({ cwd: 'src/test/invalid_json_trailing_comma', env: {} }).toArray()
     assert.deepStrictEqual(r, [
       {
         code: 'JSON_PARSE',
