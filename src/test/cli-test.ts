@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import { cli } from '../index'
-import assert from 'assert'
+import * as assert from 'assert'
 import * as ai from '@ts-common/async-iterator'
 import * as path from 'path'
 
@@ -19,9 +19,9 @@ describe('cli', () => {
   })
   it('no errors', async () => {
     // tslint:disable-next-line:no-let
-    let error: string = ''
+    let error = ''
     // tslint:disable-next-line:no-let
-    let info: string = ''
+    let info = ''
     const report: cli.Report = {
       error: s => (error += s),
       info: s => (info += s),
@@ -33,9 +33,9 @@ describe('cli', () => {
   })
   it('with errors', async () => {
     // tslint:disable-next-line:no-let
-    let error: string = ''
+    let error = ''
     // tslint:disable-next-line:no-let
-    let info: string = ''
+    let info = ''
     const report: cli.Report = {
       error: s => (error += s),
       info: s => (info += s),
@@ -47,9 +47,9 @@ describe('cli', () => {
   })
   it('internal error', async () => {
     // tslint:disable-next-line:no-let
-    let error: string = ''
+    let error = ''
     // tslint:disable-next-line:no-let
-    let info: string = ''
+    let info = ''
     const report: cli.Report = {
       error: s => (error += s),
       info: s => (info += s),

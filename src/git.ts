@@ -19,10 +19,8 @@ export type Command =
 
 export type RunCommand = (command: Command) => Promise<childProcess.ExecResult>
 
-export const repository = (repositoryPath: string): RunCommand => {
-  return async (command: Command) => {
-    const g: GenericCommand = command
-    const [cmd, args] = stringMap.entries(g).toArray()[0]
-    return childProcess.exec(`git ${cmd} ${args.join(' ')}`, { cwd: repositoryPath })
-  }
+export const repository = (repositoryPath: string): RunCommand => async (command: Command) => {
+  const g: GenericCommand = command
+  const [cmd, args] = stringMap.entries(g).toArray()[0]
+  return childProcess.exec(`git ${cmd} ${args.join(' ')}`, { cwd: repositoryPath })
 }

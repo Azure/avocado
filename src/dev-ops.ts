@@ -9,7 +9,13 @@ import * as fs from '@ts-common/fs'
 export type FileChangeKind = 'Added' | 'Deleted' | 'Modified'
 
 export type FileChange = {
+  /**
+   * A kind of file change.
+   */
   readonly kind: FileChangeKind
+  /**
+   * A path to the file.
+   */
   readonly path: string
 }
 
@@ -17,20 +23,30 @@ export type FileChange = {
  * Properties of Pull Request in Azure DevOps CI.
  */
 export type PullRequestProperties = {
-  // Target Branch, for example `master`.
+  /**
+   * Target Branch, for example `master`.
+   */
   readonly targetBranch: string
 
-  // Source Branch, for example `myname/newchanges`.
+  /**
+   * Source Branch, for example `myname/newchanges`.
+   */
   readonly sourceBranch: string
 
-  // Working folder for a cloned directory. We can't switch branches in the original Git repository
-  // so we use cloned repository.
+  /**
+   * Working folder for a cloned directory. We can't switch branches in the original Git repository
+   * so we use cloned repository.
+   */
   readonly workingDir: string
 
-  // Checkout Git branch, for example, it can be `targetBranch` or `sourceBranch`.
+  /**
+   * Checkout Git branch, for example, it can be `targetBranch` or `sourceBranch`.
+   */
   readonly checkout: (branch: string) => Promise<void>
 
-  // The method returns a set of changes between `targetBranch` and `sourceBranch`.
+  /**
+   * The method returns a set of changes between `targetBranch` and `sourceBranch`.
+   */
   readonly diff: () => Promise<readonly FileChange[]>
 }
 
@@ -77,6 +93,7 @@ export const createPullRequestProperties = async (
   await fs.mkdir(workingDir)
   const workingGitRepository = git.repository(workingDir)
   await workingGitRepository({ clone: [config.cwd, '.'] })
+
   return {
     targetBranch,
     sourceBranch,
@@ -88,6 +105,7 @@ export const createPullRequestProperties = async (
       const { stdout } = await originGitRepository({
         diff: ['--name-status', '--no-renames', targetBranch, sourceBranch],
       })
+
       return stdout
         .split('\n')
         .filter(v => v !== '')

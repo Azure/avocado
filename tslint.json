@@ -1,21 +1,24 @@
 {
     "defaultSeverity": "error",
     "extends": [
-        "tslint:recommended",
+        "tslint:all",
         "tslint-config-standard",
         "tslint-immutable",
         "tslint-config-prettier"
     ],
     "jsRules": {},
     "rules": {
-        "semicolon": false,
-        "ordered-imports": false,
-        "interface-over-type-literal": false,
-        "trailing-comma": false,
-        "arrow-parens": false,
         "object-literal-sort-keys": false,
-        "no-floating-promises": true,
-        "array-type": false,
+        "ordered-imports": false,
+        "file-name-casing": [true, "kebab-case"],
+        "interface-over-type-literal": false,
+        "prefer-method-signature": false,
+        "member-ordering": false,
+        "no-magic-numbers": false,
+        "newline-before-return": false,
+        "unnecessary-else": false,
+        "completed-docs": false,
+        "no-void-expression": false,
 
         // Recommended built-in rules
         "no-var-keyword": true,

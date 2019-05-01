@@ -54,7 +54,8 @@
     ],
     "coverageReporters": [
       "cobertura",
-      "text"
+      "text",
+      "html"
     ]
   },
   "jest-junit": {
@@ -80,9 +81,12 @@
     "@ts-common/async-iterator": "^0.2.0",
     "@ts-common/commonmark-to-markdown": "^1.2.0",
     "@ts-common/fs": "^0.2.0",
+    "@ts-common/iterator": "^0.3.1",
+    "@ts-common/json": "^0.3.0",
     "@ts-common/json-parser": "^0.7.0",
     "@ts-common/string-map": "^0.3.0",
     "@types/js-yaml": "^3.12.1",
+    "commonmark": "^0.29.0",
     "js-yaml": "^3.13.1",
     "node-object-hash": "^1.4.2"
   },

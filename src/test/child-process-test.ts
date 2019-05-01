@@ -13,7 +13,7 @@ describe('child-process', () => {
       {},
     )
     const expected = generate()
-      .map(v => v + '\n')
+      .map(v => `${v}\n`)
       .reduce((a, b) => a + b)
     assert.deepStrictEqual(expected, stdout)
   })

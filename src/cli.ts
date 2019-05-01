@@ -5,7 +5,13 @@ import * as stringMap from '@ts-common/string-map'
 import * as yaml from 'js-yaml'
 
 export type Report = {
+  /**
+   * This is a callback function to report an error.
+   */
   readonly error: (error: unknown) => void
+  /**
+   * This is a callback function to report an info.
+   */
   readonly info: (info: unknown) => void
 }
 
@@ -13,7 +19,13 @@ const consoleRed = '\x1b[31m'
 const consoleReset = '\x1b[0m'
 
 export type Config = {
+  /**
+   * Current working directory.
+   */
   readonly cwd: string
+  /**
+   * Environment variables.
+   */
   readonly env: stringMap.StringMap<string>
 }
 
@@ -29,7 +41,7 @@ export const defaultConfig = () => ({
  */
 export const run = async <T>(
   tool: (config: Config) => AsyncIterable<T>,
-  // tslint:disable-next-line:no-console
+  // tslint:disable-next-line:no-console no-unbound-method
   report: Report = { error: console.error, info: console.log },
 ): Promise<void> => {
   // tslint:disable-next-line:no-try
@@ -40,7 +52,7 @@ export const run = async <T>(
     for await (const e of errors) {
       report.error(`${consoleRed}error: ${consoleReset}`)
       report.error(yaml.safeDump(e))
-      ++errorsNumber
+      errorsNumber += 1
     }
     report.info(`errors: ${errorsNumber}`)
     // tslint:disable-next-line:no-object-mutation

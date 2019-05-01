@@ -7,7 +7,13 @@ import * as childProcess from 'child_process'
 const nodeJsExec = util.promisify(childProcess.exec)
 
 export type ExecResult = {
+  /**
+   * Standard Output
+   */
   readonly stdout: string
+  /**
+   * Standard Error
+   */
   readonly stderr: string
 }
 
