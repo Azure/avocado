@@ -73,9 +73,7 @@ const parseGitFileChangeKind = (line: string) => {
  * Currently, the algorithm is recognizing Azure Dev Ops Pull Request if the `env` has
  * `SYSTEM_PULLREQUEST_TARGETBRANCH`. `cwd` should point to the source Git repository.
  */
-export const createPullRequestProperties = async (
-  config: cli.Config,
-): Promise<PullRequestProperties | undefined> => {
+export const createPullRequestProperties = async (config: cli.Config): Promise<PullRequestProperties | undefined> => {
   const targetBranch = config.env.SYSTEM_PULLREQUEST_TARGETBRANCH
   if (targetBranch === undefined) {
     return undefined
