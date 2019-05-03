@@ -8,7 +8,7 @@ import * as path from 'path'
 describe('avocado', () => {
   it('not autorest markdown', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/not_autorest_markdown', env: {} }).toArray()
-    const expected: unknown = [
+    const expected = [
       {
         code: 'NOT_AUTOREST_MARKDOWN',
         message: 'The `readme.md` is not AutoRest markdown file.',
@@ -17,7 +17,7 @@ describe('avocado', () => {
           // tslint:disable-next-line:max-line-length
           'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
       },
-    ]
+    ] as const
     assert.deepStrictEqual(r, expected)
   })
 
@@ -27,14 +27,14 @@ describe('avocado', () => {
     if (r0.code === 'JSON_PARSE') {
       assert.fail()
     }
-    const e: ReadonlyArray<avocado.Error> = [
+    const e = [
       {
         code: 'NO_JSON_FILE_FOUND',
         message: r0.message,
         readMeUrl: path.resolve('src/test/no_file_found/specification/readme.md'),
         jsonUrl: path.resolve('src/test/no_file_found/specification/specs/some.json'),
       },
-    ]
+    ] as const
     assert.deepStrictEqual(r, e)
   })
 
@@ -53,20 +53,20 @@ describe('avocado', () => {
 
   it('unreferenced spec file', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/unreferenced_spec', env: {} }).toArray()
-    const e: ReadonlyArray<avocado.Error> = [
+    const e = [
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec/specification/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_spec/specification/specs/some.json'),
       },
-    ]
+    ] as const
     assert.deepStrictEqual(r, e)
   })
 
   it('unreferenced spec file with referenced examples', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/unreferenced_spec_with_examples', env: {} }).toArray()
-    const e: ReadonlyArray<avocado.Error> = [
+    const e = [
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
@@ -82,7 +82,7 @@ describe('avocado', () => {
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json'),
       },
-    ]
+    ] as const
     assert.deepStrictEqual(r, e)
   })
 
@@ -130,8 +130,7 @@ describe('avocado', () => {
 
   it('invalid ref', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/invalid_ref', env: {} }).toArray()
-    // tslint:disable-next-line:prettier
-    const expected: readonly avocado.Error[] = [
+    const expected = [
       {
         code: 'NO_JSON_FILE_FOUND',
         message: r[0].message,
@@ -144,7 +143,27 @@ describe('avocado', () => {
 
   it('backslash', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/backslash', env: {} }).toArray()
-    const expected: unknown = []
+    const expected = [] as const
+    assert.deepStrictEqual(r, expected)
+  })
+
+  it('diamond dependencies', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/diamond_dependencies', env: {} }).toArray()
+    // we expect only one error for `common.json` even if the file is referenced multiple times.
+    const expected = [
+      {
+        code: 'JSON_PARSE',
+        error: {
+          code: 'unexpected end of file',
+          kind: 'structure',
+          message: 'unexpected end of file, token: , line: 1, column: 1',
+          position: { column: 1, line: 1 },
+          token: '',
+          url: path.resolve('src/test/diamond_dependencies/specification/specs/common.json'),
+        },
+        message: 'The file is not valid JSON file.',
+      },
+    ] as const
     assert.deepStrictEqual(r, expected)
   })
 })

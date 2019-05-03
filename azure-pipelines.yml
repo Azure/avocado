@@ -8,14 +8,14 @@ jobs:
       Linux.Node10:
         node.version: 10.x
         vm.image: 'Ubuntu 16.04'
-      Linux.Node11:
-        node.version: 11.x
+      Linux.Node12:
+        node.version: 12.x
         vm.image: 'Ubuntu 16.04'
       Win.Node10:
         node.version: 10.x
         vm.image: 'vs2017-win2016'
-      Win.Node11:
-        node.version: 11.x
+      Win.Node12:
+        node.version: 12.x
         vm.image: 'vs2017-win2016'
   pool:
     vmImage: $(vm.image)
