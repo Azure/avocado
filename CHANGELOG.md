@@ -1,5 +1,8 @@
 # Changelog
 
+- A test for diamond dependencies.
+- CI should test Node 12 instead of Node 11.
+
 ## 0.4.4
 
 - Add `prettier` back but use it together with `standard`.
