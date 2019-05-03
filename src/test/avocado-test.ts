@@ -149,6 +149,7 @@ describe('avocado', () => {
 
   it('diamond dependencies', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/diamond_dependencies', env: {} }).toArray()
+    // we expect only one error for `common.json` even if the file is referenced multiple times.
     const expected = [
       {
         code: 'JSON_PARSE',
