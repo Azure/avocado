@@ -1,7 +1,10 @@
 # Changelog
 
+## 0.4.5
+
 - A test for diamond dependencies.
 - CI should test Node 12 instead of Node 11.
+- `@types/js-yaml` is a dev dependency.
 
 ## 0.4.4
 
