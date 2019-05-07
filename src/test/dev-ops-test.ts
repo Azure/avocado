@@ -15,7 +15,7 @@ import * as tmpDir from './tmp-dir'
 const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   const tmp = await tmpDir.create(name)
 
-  // Create 'tmp/remote' folder.
+  // Create '"${tmp}/remote"' folder.
   const remote = path.join(tmp, 'remote')
   await pfs.mkdir(remote)
 
