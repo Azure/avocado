@@ -60,7 +60,7 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
 
 describe('Azure DevOps', () => {
   it('Azure DevOps and Avocado', async () => {
-    const cfg = await createDevOpsEnv('458e3de4-ca9c-4f98-858a-6bb9863189e6')
+    const cfg = await createDevOpsEnv('devops')
 
     // run avocado as AzureDevOps pull request.
     const errors = await avocado(cfg).toArray()
@@ -68,7 +68,7 @@ describe('Azure DevOps', () => {
   })
 
   it('PR diff', async () => {
-    const cfg = await createDevOpsEnv('cb48-4995-9348-af800342b723')
+    const cfg = await createDevOpsEnv('devops-pr-diff')
     const pr = await devOps.createPullRequestProperties(cfg)
     if (pr === undefined) {
       // tslint:disable-next-line:no-throw

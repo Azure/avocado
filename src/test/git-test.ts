@@ -6,7 +6,7 @@ import { git } from '../index'
 
 describe('git', () => {
   it('git should not ask for credentials', async () => {
-    const dir = await tmpDir.create('1b68e2d1-771e-4f2b-9fc8-ea287e46cd56')
+    const dir = await tmpDir.create('git-credentials')
     const repo = git.repository(dir)
     // tslint:disable-next-line:no-try
     try {
