@@ -5,6 +5,7 @@ import * as path from 'path'
 import * as pfs from '@ts-common/fs'
 import { git, cli, devOps, avocado } from '../index'
 import * as assert from 'assert'
+import * as tmpDir from './tmp-dir'
 
 /**
  * Create Azure DevOps environment for testing.
@@ -12,14 +13,9 @@ import * as assert from 'assert'
  * @param name an environment name. It's used as a unique directory suffix.
  */
 const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
-  const tmp = path.resolve(path.join('..', `avocado-tmp-${name}`))
-
-  if (await pfs.exists(tmp)) {
-    await pfs.recursiveRmdir(tmp)
-  }
+  const tmp = await tmpDir.create(name)
 
   // Create 'tmp/remote' folder.
-  await pfs.mkdir(tmp)
   const remote = path.join(tmp, 'remote')
   await pfs.mkdir(remote)
 
