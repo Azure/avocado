@@ -5,6 +5,7 @@ import * as path from 'path'
 import * as pfs from '@ts-common/fs'
 import { git, cli, devOps, avocado } from '../index'
 import * as assert from 'assert'
+import * as tmpDir from './tmp-dir'
 
 /**
  * Create Azure DevOps environment for testing.
@@ -12,14 +13,9 @@ import * as assert from 'assert'
  * @param name an environment name. It's used as a unique directory suffix.
  */
 const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
-  const tmp = path.resolve(path.join('..', `avocado-tmp-${name}`))
+  const tmp = await tmpDir.create(name)
 
-  if (await pfs.exists(tmp)) {
-    await pfs.recursiveRmdir(tmp)
-  }
-
-  // Create 'tmp/remote' folder.
-  await pfs.mkdir(tmp)
+  // Create '"${tmp}/remote"' folder.
   const remote = path.join(tmp, 'remote')
   await pfs.mkdir(remote)
 
@@ -64,7 +60,7 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
 
 describe('Azure DevOps', () => {
   it('Azure DevOps and Avocado', async () => {
-    const cfg = await createDevOpsEnv('458e3de4-ca9c-4f98-858a-6bb9863189e6')
+    const cfg = await createDevOpsEnv('devops')
 
     // run avocado as AzureDevOps pull request.
     const errors = await avocado(cfg).toArray()
@@ -72,7 +68,7 @@ describe('Azure DevOps', () => {
   })
 
   it('PR diff', async () => {
-    const cfg = await createDevOpsEnv('cb48-4995-9348-af800342b723')
+    const cfg = await createDevOpsEnv('devops-pr-diff')
     const pr = await devOps.createPullRequestProperties(cfg)
     if (pr === undefined) {
       // tslint:disable-next-line:no-throw

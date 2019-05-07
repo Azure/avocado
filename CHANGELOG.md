@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.6
+
+- Git commands should never ask for credentials.
+
 ## 0.4.5
 
 - A test for diamond dependencies.
