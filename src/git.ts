@@ -22,5 +22,14 @@ export type RunCommand = (command: Command) => Promise<childProcess.ExecResult>
 export const repository = (repositoryPath: string): RunCommand => async (command: Command) => {
   const g: GenericCommand = command
   const [cmd, args] = stringMap.entries(g).toArray()[0]
-  return childProcess.exec(`git ${cmd} ${args.join(' ')}`, { cwd: repositoryPath })
+  const options = {
+    cwd: repositoryPath,
+    env: {
+      // switch off Git interactive login window pop up.
+      GCM_INTERACTIVE: 'never',
+      // switch off Git terminal  prompt.
+      GIT_TERMINAL_PROMPT: '0',
+    },
+  }
+  return childProcess.exec(`git ${cmd} ${args.join(' ')}`, options)
 }
