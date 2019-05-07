@@ -27,7 +27,7 @@ export const repository = (repositoryPath: string): RunCommand => async (command
     env: {
       // switch off Git interactive login window pop up.
       GCM_INTERACTIVE: 'never',
-      // switch off Git terminal  prompt.
+      // switch off Git terminal prompt.
       GIT_TERMINAL_PROMPT: '0',
     },
   }
