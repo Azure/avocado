@@ -273,20 +273,20 @@ const avocadoForDir = async (cwd: string) => {
   return map
 }
 
-/**
- * Run Avocado in Azure DevOps for a Pull Request.
- *
- * @param pr Pull Request properties
- */
-const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterableEx<Error> =>
-  asyncIt.iterable<Error>(async function*() {
-    // collect all errors from the 'targetBranch'
-    await pr.checkout(pr.targetBranch)
-    const targetMap = await avocadoForDir(pr.workingDir)
+export type GetDir = () => Promise<string>
 
-    // collect all errors from the 'sourceBranch'
-    await pr.checkout(pr.sourceBranch)
-    const sourceMap = await avocadoForDir(pr.workingDir)
+export type DiffDirs = {
+  readonly getTargetDir: GetDir
+  readonly getSourceDir: GetDir
+}
+
+export const avocadoForDiff = ({ getTargetDir, getSourceDir }: DiffDirs): asyncIt.AsyncIterableEx<Error> =>
+  asyncIt.iterable<Error>(async function*() {
+    // collect all errors from the 'target' directory
+    const targetMap = await avocadoForDir(await getTargetDir())
+
+    // collect all errors from the 'source' directory
+    const sourceMap = await avocadoForDir(await getSourceDir())
 
     // remove existing errors.
     for (const e of targetMap.keys()) {
@@ -294,6 +294,22 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
     }
     yield* sourceMap.values()
   })
+
+/**
+ * Run Avocado in Azure DevOps for a Pull Request.
+ *
+ * @param pr Pull Request properties
+ */
+const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterableEx<Error> => {
+  const createGetDir = (branch: string) => async () => {
+    await pr.checkout(branch)
+    return pr.workingDir
+  }
+  return avocadoForDiff({
+    getTargetDir: createGetDir(pr.targetBranch),
+    getSourceDir: createGetDir(pr.sourceBranch),
+  })
+}
 
 /**
  * The function validates files in the given `cwd` folder and returns errors.

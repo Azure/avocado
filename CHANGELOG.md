@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.7
+
+- `avocadoForDiff()` function to compare two folders.
+
 ## 0.4.6
 
 - Git commands should never ask for credentials.
