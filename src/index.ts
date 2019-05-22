@@ -238,9 +238,9 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<Error> 
       .reduce((s, v) => s.add(v), new Set<string>())
     // add all referenced files to the `set`
     yield* resolveFileReferences(readMePath, inputFileSet)
+    const files = await fs.recursiveReaddir(dir).toArray()
     // report errors if the `dir` folder has JSON files which are not referenced.
-    yield* fs
-      .recursiveReaddir(dir)
+    yield* files
       .filter(filePath => path.extname(filePath) === '.json' && !inputFileSet.has(filePath))
       .map<Error>(filePath => ({
         code: 'UNREFERENCED_JSON_FILE',
