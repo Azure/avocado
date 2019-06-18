@@ -48,6 +48,11 @@ export type PullRequestProperties = {
    * The method returns a set of changes between `targetBranch` and `sourceBranch`.
    */
   readonly diff: () => Promise<readonly FileChange[]>
+
+  /**
+   * The method returns a set of json files with structural changes between `targetBranch` and `sourceBranch`.
+   */
+  readonly jsonStructuralDiff: () => Promise<readonly string[]>
 }
 
 const sourceBranch = 'source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8'
@@ -111,6 +116,39 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
           kind: parseGitFileChangeKind(line),
           path: line.substr(2),
         }))
+    },
+    jsonStructuralDiff: async () => {
+      const allDiffsStdout = (await originGitRepository({
+        diff: ['--name-status', '--no-renames', targetBranch, sourceBranch],
+      })).stdout
+
+      const specsWithSomeDiff = allDiffsStdout
+        .split('\n')
+        .filter(v => v !== '')
+        .filter(v => v.endsWith('.json'))
+        .map(line => line.substr(2))
+
+      const specsWithStructuralChanges = new Array<string>()
+
+      for (const filePath of specsWithSomeDiff) {
+        const sourceSpecStdout = JSON.parse(
+          (await originGitRepository({
+            show: [`${sourceBranch}:${filePath}`],
+          })).stdout,
+        )
+
+        const targetSpecStdout = JSON.parse(
+          (await originGitRepository({
+            show: [`${targetBranch}:${filePath}`],
+          })).stdout,
+        )
+
+        if (JSON.stringify(sourceSpecStdout) !== JSON.stringify(targetSpecStdout)) {
+          specsWithStructuralChanges.push(filePath)
+        }
+      }
+
+      return specsWithStructuralChanges
     },
   }
 }
