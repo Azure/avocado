@@ -5,6 +5,7 @@ import * as cli from './cli'
 import * as git from './git'
 import * as path from 'path'
 import * as fs from '@ts-common/fs'
+import * as asyncIt from '@ts-common/async-iterator'
 
 export type FileChangeKind = 'Added' | 'Deleted' | 'Modified'
 
@@ -48,6 +49,11 @@ export type PullRequestProperties = {
    * The method returns a set of changes between `targetBranch` and `sourceBranch`.
    */
   readonly diff: () => Promise<readonly FileChange[]>
+
+  /**
+   * The method returns a set of json files with structural changes between `targetBranch` and `sourceBranch`.
+   */
+  readonly jsonStructuralDiff: () => asyncIt.AsyncIterableEx<string>
 }
 
 const sourceBranch = 'source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8'
@@ -91,6 +97,31 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
   await fs.mkdir(workingDir)
   const workingGitRepository = git.repository(workingDir)
   await workingGitRepository({ clone: [config.cwd, '.'] })
+  const diff: () => Promise<readonly FileChange[]> = async () => {
+    const { stdout } = await originGitRepository({
+      diff: ['--name-status', '--no-renames', targetBranch, sourceBranch],
+    })
+
+    return stdout
+      .split('\n')
+      .filter(v => v !== '')
+      .map(line => ({
+        kind: parseGitFileChangeKind(line),
+        path: line.substr(2),
+      }))
+  }
+
+  const getJsonString = async (filePath: string, branch: string) => {
+    // tslint:disable-next-line:no-try
+    try {
+      const { stdout } = await originGitRepository({
+        show: [`${branch}:${filePath}`],
+      })
+      return JSON.stringify(JSON.parse(stdout))
+    } catch (e) {
+      return filePath
+    }
+  }
 
   return {
     targetBranch,
@@ -99,18 +130,15 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
     checkout: async (branch: string) => {
       await workingGitRepository({ checkout: [branch] })
     },
-    diff: async () => {
-      const { stdout } = await originGitRepository({
-        diff: ['--name-status', '--no-renames', targetBranch, sourceBranch],
-      })
-
-      return stdout
-        .split('\n')
-        .filter(v => v !== '')
-        .map(line => ({
-          kind: parseGitFileChangeKind(line),
-          path: line.substr(2),
-        }))
-    },
+    diff,
+    jsonStructuralDiff: (): asyncIt.AsyncIterableEx<string> =>
+      asyncIt.iterable<string>(async function*() {
+        const result = (await diff()).map(x => x.path).filter(filePath => filePath.endsWith('.json'))
+        for (const filePath of result) {
+          if ((await getJsonString(filePath, sourceBranch)) !== (await getJsonString(filePath, targetBranch))) {
+            yield filePath
+          }
+        }
+      }),
   }
 }

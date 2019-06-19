@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.7
+
+- Add jsonStructuralDiff to PullRequestProperties.
+
 ## 0.4.6
 
 - Git commands should never ask for credentials.

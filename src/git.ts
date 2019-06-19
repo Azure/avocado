@@ -16,6 +16,7 @@ export type Command =
   | { readonly remote: readonly ['add', string, string] }
   | { readonly clone: readonly [string, string] }
   | { readonly diff: readonly ['--name-status' | '--name-only', '--no-renames', string, string] }
+  | { readonly show: readonly [string] }
 
 export type RunCommand = (command: Command) => Promise<childProcess.ExecResult>
 
