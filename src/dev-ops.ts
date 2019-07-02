@@ -137,8 +137,7 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
         for (const filePath of result) {
           if (
             !filePath.endsWith('.json') ||
-            (filePath.endsWith('.json') &&
-              (await getJsonString(filePath, sourceBranch)) !== (await getJsonString(filePath, targetBranch)))
+            (await getJsonString(filePath, sourceBranch)) !== (await getJsonString(filePath, targetBranch))
           ) {
             yield filePath
           }
