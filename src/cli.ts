@@ -63,4 +63,6 @@ export const run = async <T>(
     // tslint:disable-next-line:no-object-mutation
     process.exitCode = 1
   }
+
+  return
 }
