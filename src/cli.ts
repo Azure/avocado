@@ -39,6 +39,7 @@ export const defaultConfig = () => ({
  *
  * @param tool is a function which returns errors as `AsyncIterable`.
  */
+// tslint:disable-next-line:no-async-without-await
 export const run = async <T>(
   tool: (config: Config) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console no-unbound-method

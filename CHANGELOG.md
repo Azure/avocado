@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.8
+
+- Replaced jsonStructuralDiff for structuralDiff.
+
 ## 0.4.7
 
 - Add jsonStructuralDiff to PullRequestProperties.
