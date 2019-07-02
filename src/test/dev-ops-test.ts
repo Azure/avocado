@@ -152,8 +152,15 @@ describe('Azure DevOps', () => {
       // tslint:disable-next-line:no-throw
       throw new Error('pr === undefined')
     }
-    const files = await pr.jsonStructuralDiff().toArray()
-    const expected = ['specification/file2.json', 'specification/file3.json', 'specification/file4.json'] as const
+    const files = await pr.structuralDiff().toArray()
+    const expected = [
+      'license',
+      'specification/file2.json',
+      'specification/file3.json',
+      'specification/file4.json',
+      'specification/readme.md',
+      'textfile.txt',
+    ] as const
     assert.deepStrictEqual(files, expected)
   })
 

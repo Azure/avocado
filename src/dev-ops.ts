@@ -53,7 +53,7 @@ export type PullRequestProperties = {
   /**
    * The method returns a set of json files with structural changes between `targetBranch` and `sourceBranch`.
    */
-  readonly jsonStructuralDiff: () => asyncIt.AsyncIterableEx<string>
+  readonly structuralDiff: () => asyncIt.AsyncIterableEx<string>
 }
 
 const sourceBranch = 'source-b6791c5f-e0a5-49b1-9175-d7fd3e341cb8'
@@ -131,11 +131,15 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
       await workingGitRepository({ checkout: [branch] })
     },
     diff,
-    jsonStructuralDiff: (): asyncIt.AsyncIterableEx<string> =>
+    structuralDiff: (): asyncIt.AsyncIterableEx<string> =>
       asyncIt.iterable<string>(async function*() {
-        const result = (await diff()).map(x => x.path).filter(filePath => filePath.endsWith('.json'))
+        const result = (await diff()).map(x => x.path)
         for (const filePath of result) {
-          if ((await getJsonString(filePath, sourceBranch)) !== (await getJsonString(filePath, targetBranch))) {
+          if (
+            !filePath.endsWith('.json') ||
+            (filePath.endsWith('.json') &&
+              (await getJsonString(filePath, sourceBranch)) !== (await getJsonString(filePath, targetBranch)))
+          ) {
             yield filePath
           }
         }
