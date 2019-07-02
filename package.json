@@ -26,8 +26,8 @@
     "cli": "tsc && node ./bin/cli.js",
     "tsc": "tsc",
     "prettier": "prettier ./src/**/*.ts",
-    "tslint": "tslint --project ./",
-    "test": "tsc && tslint --project ./ && jest",
+    "tslint": "tslint -t verbose --project ./",
+    "test": "tsc && tslint -t verbose --project ./ && jest",
     "standard": "standard src/**/*.ts",
     "prepack": "npm install && tsc"
   },
