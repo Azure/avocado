@@ -46,7 +46,7 @@
         // "no-loop-statement": true,
         "no-throw": true,
         "no-try": true,
-        "no-reject": true,        
+        "no-reject": true,
         "prettier": true
     },
     "rulesDirectory": ["tslint-plugin-prettier"]

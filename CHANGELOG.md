@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.9
+
+- Simplify structuralDiff and update packages.
+
 ## 0.4.8
 
 - Replaced jsonStructuralDiff for structuralDiff.
