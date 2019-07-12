@@ -37,6 +37,12 @@ const errorCorrelationId = (error: err.Error) => {
           url: error.error.url,
           position: error.error.position,
         }
+      case 'CIRCULAR_REFERENCE': {
+        return {
+          code: error.code,
+          url: error.jsonUrl,
+        }
+      }
     }
   }
 
@@ -117,53 +123,79 @@ const getReferencedFileNames = (fileName: string, doc: json.Json) => {
     .map(u => path.resolve(path.join(dir, u)))
 }
 
+export const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
+  b.add(key)
+  a.delete(key)
+  return key
+}
+
 /**
- * The function finds all referenced files and put them in the `fileNames` set.
+ * The function will validate file reference as a directed graph and will detect circular reference.
+ * Detect circular reference in a directed graph using colors.
  *
- * @param readMePath a path to `readme.md` as the original source of `fileNames` set.
- * @param fileNames a set of file names from `readme.md` file.
+ * + WHITE: Vertex is not precessed yet. Initially all files mentioned in 'readme.md' is in `whiteSet`.
+ * + GRAY:  Vertex is being processed (DFS for this vertex has started, but not finished which means that
+ * all descendants (ind DFS tree) of this vertex are not processed yet (or this vertex is in function call stack)
+ * + BLACK: Vertex and all its descendants are processed
+ *
+ * For more detail: https://www.geeksforgeeks.org/detect-cycle-direct-graph-using-colors/
+ *
+ * @param current current file path
+ * @param readMePath current readme.md
+ * @param whiteSet files set which haven't been explored yet
+ * @param graySet files currently being explored
+ * @param blackSet files have been explored
  */
-const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
+export const DFSTraversalValidate = (
+  current: string,
+  readMePath: string,
+  whiteSet: Set<string>,
+  graySet: Set<string>,
+  blackSet: Set<string>,
+  inputFileSet: Set<string>,
+): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
+    const fileName = moveTo(whiteSet, graySet, current)
     // tslint:disable-next-line:no-let
-    let fileNamesToCheck = it.toArray(fileNames)
-    // read references from `fileNamesToCheck` until there are no files are left.
-    while (fileNamesToCheck.length !== 0) {
-      // tslint:disable-next-line:readonly-array
-      const newFileNames = []
-      for (const fileName of fileNamesToCheck) {
-        // tslint:disable-next-line:no-let
-        let file: Buffer
-        // tslint:disable-next-line:no-try
-        try {
-          file = await fs.readFile(fileName)
-        } catch (e) {
-          yield {
-            code: 'NO_JSON_FILE_FOUND',
-            message: 'The JSON file is not found but it is referenced from the readme file.',
-            readMeUrl: readMePath,
-            jsonUrl: fileName,
-          }
-          continue
-        }
-        const { errors, document } = jsonParse(fileName, file.toString())
-        yield* errors
-        const refFileNames = getReferencedFileNames(fileName, document)
-        for (const refFileName of refFileNames) {
-          if (!fileNames.has(refFileName)) {
-            fileNames.add(refFileName)
-            newFileNames.push(refFileName)
-          }
-        }
+    let file
+
+    // tslint:disable-next-line:no-try
+    try {
+      file = await fs.readFile(fileName)
+    } catch (e) {
+      yield {
+        code: 'NO_JSON_FILE_FOUND',
+        message: 'The JSON file is not found but it is referenced from the readme file.',
+        readMeUrl: readMePath,
+        jsonUrl: fileName,
       }
-      fileNamesToCheck = newFileNames
+      return
     }
+    const { errors, document } = jsonParse(fileName, file.toString())
+    yield* errors
+    const refFileNames = getReferencedFileNames(fileName, document)
+    for (const refFileName of refFileNames) {
+      inputFileSet.add(refFileName)
+      if (graySet.has(refFileName)) {
+        yield {
+          code: 'CIRCULAR_REFERENCE',
+          message: `The JSON exist circular reference`,
+          readMeUrl: readMePath,
+          jsonUrl: current,
+        }
+        moveTo(graySet, blackSet, refFileName)
+      }
+
+      if (!blackSet.has(refFileName)) {
+        yield* DFSTraversalValidate(refFileName, readMePath, whiteSet, graySet, blackSet, inputFileSet)
+      }
+    }
+    moveTo(graySet, blackSet, current)
   })
 
-const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
+export const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
     const file = await fs.readFile(readMePath)
-    // parse the `readme.md` file
     const m = md.parse(file.toString())
     if (!isAutoRestMd(m)) {
       yield {
@@ -175,19 +207,24 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
           'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
       }
     }
+
     const dir = path.dirname(readMePath)
-    // get all input files from the `readme.md`.
     const inputFiles = openApiMd.getInputFiles(m.markDown).toArray()
-    // normalize the file names.
     const inputFileSet = inputFiles
       .map(f => path.resolve(path.join(dir, ...f.split('\\'))))
       .reduce((s, v) => s.add(v), new Set<string>())
-    // add all referenced files to the `set`
-    yield* resolveFileReferences(readMePath, inputFileSet)
-    // report errors if the `dir` folder has JSON files which are not referenced.
+
+    const whiteSet = new Set<string>(inputFileSet)
+    const graySet = new Set<string>()
+    const blackSet = new Set<string>()
+
+    while (whiteSet.size > 0) {
+      const current = whiteSet.values().next().value
+      yield* DFSTraversalValidate(current, readMePath, whiteSet, graySet, blackSet, inputFileSet)
+    }
     yield* fs
       .recursiveReaddir(dir)
-      .filter(filePath => path.extname(filePath) === '.json' && !inputFileSet.has(filePath))
+      .filter(filePath => path.extname(filePath) === '.json' && !inputFileSet.has(path.resolve(filePath)))
       .map<err.Error>(filePath => ({
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',

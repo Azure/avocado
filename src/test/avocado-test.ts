@@ -167,4 +167,17 @@ describe('avocado', () => {
     ] as const
     assert.deepStrictEqual(r, expected)
   })
+
+  it('circular reference', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/circular_reference', env: {} }).toArray()
+    const expected = [
+      {
+        code: 'CIRCULAR_REFERENCE',
+        message: 'The JSON exist circular reference',
+        readMeUrl: path.resolve('src/test/circular_reference/specification/readme.md'),
+        jsonUrl: path.resolve('src/test/circular_reference/specification/specs/c.json'),
+      },
+    ] as const
+    assert.deepStrictEqual(r, expected)
+  })
 })

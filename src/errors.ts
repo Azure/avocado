@@ -53,4 +53,26 @@ export type FileError = {
   readonly jsonUrl: string
 }
 
-export type Error = JsonParseError | FileError | NotAutoRestMarkDown
+export type CircularReferenceError = {
+  /**
+   * Error code.
+   */
+  readonly code: 'CIRCULAR_REFERENCE'
+
+  /**
+   * Error message.
+   */
+  readonly message: string
+
+  /**
+   * URL of `readme.md` file.
+   */
+  readonly readMeUrl: string
+
+  /**
+   * URL of JSON file.
+   */
+  readonly jsonUrl: string
+}
+
+export type Error = JsonParseError | FileError | NotAutoRestMarkDown | CircularReferenceError
