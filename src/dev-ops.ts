@@ -131,16 +131,14 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
       await workingGitRepository({ checkout: [branch] })
     },
     diff,
-    structuralDiff: (): asyncIt.AsyncIterableEx<string> => asyncIt.iterable<string>(async function* () {
-      const result = (await diff()).map(x => x.path)
-      for (const filePath of result) {
-        if (
-          !filePath.endsWith('.json') ||
-          (await getJsonString(filePath, sourceBranch)) !== (await getJsonString(filePath, targetBranch))
-        ) {
-          yield filePath
-        }
-      }
-    }),
+    structuralDiff: (): asyncIt.AsyncIterableEx<string> =>
+      asyncIt
+        .fromPromise(diff())
+        .map(x => x.path)
+        .filter(
+          async filePath =>
+            !filePath.endsWith('.json') ||
+            (await getJsonString(filePath, sourceBranch)) !== (await getJsonString(filePath, targetBranch)),
+        ),
   }
 }
