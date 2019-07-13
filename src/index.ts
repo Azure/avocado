@@ -17,12 +17,11 @@ import * as childProcess from './child-process'
 // tslint:disable-next-line:no-require-imports
 import nodeObjectHash = require('node-object-hash')
 import * as devOps from './dev-ops'
-import * as error from './errors'
+import * as err from './errors'
 
 export { devOps, cli, git, childProcess }
 
-
-const errorCorrelationId = (error: error.Error) => {
+const errorCorrelationId = (error: err.Error) => {
   const toObject = () => {
     // tslint:disable-next-line:switch-default
     switch (error.code) {
@@ -45,7 +44,7 @@ const errorCorrelationId = (error: error.Error) => {
 }
 
 const markDownIterate = (node: commonmark.Node | null) =>
-  it.iterable(function* () {
+  it.iterable(function*() {
     // tslint:disable-next-line:no-let
     let i = node
     while (i !== null) {
@@ -72,7 +71,7 @@ const isAutoRestMd = (m: md.MarkDownEx) =>
 
 const jsonParse = (fileName: string, file: string) => {
   // tslint:disable-next-line:readonly-array
-  const errors: error.Error[] = []
+  const errors: err.Error[] = []
   const reportError = (e: jsonParser.ParseError) =>
     errors.push({ code: 'JSON_PARSE', message: 'The file is not valid JSON file.', error: e })
   const document = jsonParser.parse(fileName, file.toString(), reportError)
@@ -125,7 +124,7 @@ const getReferencedFileNames = (fileName: string, doc: json.Json) => {
  * @param fileNames a set of file names from `readme.md` file.
  */
 const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
-  asyncIt.iterable<error.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     // tslint:disable-next-line:no-let
     let fileNamesToCheck = it.toArray(fileNames)
     // read references from `fileNamesToCheck` until there are no files are left.
@@ -161,8 +160,8 @@ const resolveFileReferences = (readMePath: string, fileNames: Set<string>) =>
     }
   })
 
-const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<error.Error> =>
-  asyncIt.iterable<error.Error>(async function* () {
+const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
+  asyncIt.iterable<err.Error>(async function*() {
     const file = await fs.readFile(readMePath)
     // parse the `readme.md` file
     const m = md.parse(file.toString())
@@ -189,7 +188,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<error.E
     yield* fs
       .recursiveReaddir(dir)
       .filter(filePath => path.extname(filePath) === '.json' && !inputFileSet.has(filePath))
-      .map<error.Error>(filePath => ({
+      .map<err.Error>(filePath => ({
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
         readMeUrl: readMePath,
@@ -198,7 +197,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<error.E
   })
 
 const validateSpecificationFolder = (cwd: string) =>
-  asyncIt.iterable<error.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     const specification = path.resolve(path.join(cwd, 'specification'))
     if (await fs.exists(specification)) {
       yield* fs
@@ -212,7 +211,7 @@ const validateSpecificationFolder = (cwd: string) =>
  * Creates a map of unique errors for the given folder `cwd`.
  */
 const avocadoForDir = async (cwd: string) => {
-  const map = new Map<string, error.Error>()
+  const map = new Map<string, err.Error>()
   for await (const e of validateSpecificationFolder(cwd)) {
     map.set(errorCorrelationId(e), e)
   }
@@ -225,8 +224,8 @@ const avocadoForDir = async (cwd: string) => {
  *
  * @param pr Pull Request properties
  */
-const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterableEx<error.Error> =>
-  asyncIt.iterable<error.Error>(async function* () {
+const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterableEx<err.Error> =>
+  asyncIt.iterable<err.Error>(async function*() {
     // collect all errors from the 'targetBranch'
     await pr.checkout(pr.targetBranch)
     const targetMap = await avocadoForDir(pr.workingDir)
@@ -245,8 +244,8 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
 /**
  * The function validates files in the given `cwd` folder and returns errors.
  */
-export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<error.Error> =>
-  asyncIt.iterable<error.Error>(async function* () {
+export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> =>
+  asyncIt.iterable<err.Error>(async function*() {
     const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
     if (pr !== undefined) {
