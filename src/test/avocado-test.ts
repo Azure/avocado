@@ -4,6 +4,7 @@
 import * as avocado from '../index'
 import * as assert from 'assert'
 import * as path from 'path'
+import * as error from '../errors'
 
 describe('avocado', () => {
   it('not autorest markdown', async () => {
@@ -40,7 +41,7 @@ describe('avocado', () => {
 
   it('unreferenced example file', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/unreferenced_example', env: {} }).toArray()
-    const e: ReadonlyArray<avocado.Error> = [
+    const e: ReadonlyArray<error.Error> = [
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
