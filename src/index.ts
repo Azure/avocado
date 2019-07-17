@@ -123,7 +123,7 @@ const getReferencedFileNames = (fileName: string, doc: json.Json) => {
     .map(u => path.resolve(path.join(dir, u)))
 }
 
-export const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
+const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
   b.add(key)
   a.delete(key)
   return key
@@ -141,12 +141,13 @@ export const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
  * For more detail: https://www.geeksforgeeks.org/detect-cycle-direct-graph-using-colors/
  *
  * @param current current file path
- * @param readMePath current readme.md
+ * @param readMePath current `readme.md` path
  * @param whiteSet files set which haven't been explored yet
  * @param graySet files currently being explored
  * @param blackSet files have been explored
+ * @param inputFileSet: all referenced file
  */
-export const DFSTraversalValidate = (
+const DFSTraversalValidate = (
   current: string,
   readMePath: string,
   whiteSet: Set<string>,
@@ -193,7 +194,7 @@ export const DFSTraversalValidate = (
     moveTo(graySet, blackSet, current)
   })
 
-export const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
+const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
     const file = await fs.readFile(readMePath)
     const m = md.parse(file.toString())
@@ -209,7 +210,10 @@ export const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<
     }
 
     const dir = path.dirname(readMePath)
+    // get all input files from the `readme.md`
     const inputFiles = openApiMd.getInputFiles(m.markDown).toArray()
+
+    // normalize the file names
     const inputFileSet = inputFiles
       .map(f => path.resolve(path.join(dir, ...f.split('\\'))))
       .reduce((s, v) => s.add(v), new Set<string>())
@@ -222,6 +226,8 @@ export const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<
       const current = whiteSet.values().next().value
       yield* DFSTraversalValidate(current, readMePath, whiteSet, graySet, blackSet, inputFileSet)
     }
+
+    // report errors if the `dir` folder has JSON files which are not referenced
     yield* fs
       .recursiveReaddir(dir)
       .filter(filePath => path.extname(filePath) === '.json' && !inputFileSet.has(path.resolve(filePath)))
