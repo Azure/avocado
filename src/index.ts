@@ -153,11 +153,8 @@ const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
  * For more detail: https://www.geeksforgeeks.org/detect-cycle-direct-graph-using-colors/
  *
  * @param current current file path
- * @param readMePath current `readme.md` path
- * @param whiteSet files set which haven't been explored yet
  * @param graySet files currently being explored
  * @param blackSet files have been explored
- * @param inputFileSet: all referenced file
  */
 const DFSTraversalValidate = (
   current: Specification,
@@ -204,6 +201,9 @@ const DFSTraversalValidate = (
     moveTo(graySet, blackSet, current.path)
   })
 
+/**
+ * validate given `readme.md` format
+ */
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
     const file = await fs.readFile(readMePath)
@@ -220,6 +220,15 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
     }
   })
 
+/**
+ * Validate spec files in two steps:
+ * 1. `DFSTraversalValidate`: Analyze specs as a directed graph to detect circular reference and
+ *     generate `blackSet` that contains all explored specs.
+ * 2.  Get difference set between `allInputFileSet` and `blackSet`, and then report `UNREFERENCED_JSON_FILE` error.
+ *
+ * @param inputFileSet files referenced from 'readme.md' is the subset of `allInputFileSet`
+ * @param allInputFileSet files appear in specification folder.
+ */
 const validateInputFiles = (
   inputFileSet: Set<Specification>,
   allInputFileSet: Set<Specification>,
@@ -268,6 +277,9 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
       .map<Specification>(filePath => ({ path: filePath, readMePath }))
   })
 
+/**
+ * Validate global specification folder and prepare arguments for `validateInputFiles`.
+ */
 const validateSpecificationFolder = (cwd: string) =>
   asyncIt.iterable<err.Error>(async function*() {
     const specification = path.resolve(path.join(cwd, 'specification'))

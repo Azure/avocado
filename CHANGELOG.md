@@ -4,6 +4,7 @@
 
 - Support circular reference detection for specs
 - A test for circular reference
+- Analyze globally. analyze references between different spec folder instead of only readme folder.
 
 ## 0.4.10
 
