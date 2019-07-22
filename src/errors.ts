@@ -53,6 +53,25 @@ export type FileError = {
   readonly jsonUrl: string
 }
 
+export type UnreferencedJsonError = {
+  /**
+   * Error code.
+   */
+  readonly code: 'UNREFERENCED_JSON_FILE'
+  /**
+   * Error message.
+   */
+  readonly message: string
+  /**
+   * Directory.
+   */
+  readonly readMeUrl: string
+  /**
+   * URL of JSON file.
+   */
+  readonly jsonUrl: string
+}
+
 export type CircularReferenceError = {
   /**
    * Error code.
@@ -75,4 +94,4 @@ export type CircularReferenceError = {
   readonly jsonUrl: string
 }
 
-export type Error = JsonParseError | FileError | NotAutoRestMarkDown | CircularReferenceError
+export type Error = JsonParseError | FileError | NotAutoRestMarkDown | CircularReferenceError | UnreferencedJsonError

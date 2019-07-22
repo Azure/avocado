@@ -110,6 +110,18 @@ type Ref = {
   readonly pointer: string
 }
 
+type Specification = {
+  /**
+   * Path of `specs` JSON file
+   */
+  readonly path: string
+
+  /**
+   * readme referenced
+   */
+  readonly readMePath: string
+}
+
 const parseRef = (ref: string): Ref => {
   const i = ref.indexOf('#')
   return i < 0 ? { url: ref, pointer: '' } : { url: ref.substr(0, i), pointer: ref.substr(i + 1) }
@@ -148,50 +160,48 @@ const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
  * @param inputFileSet: all referenced file
  */
 const DFSTraversalValidate = (
-  current: string,
-  readMePath: string,
-  whiteSet: Set<string>,
+  current: Specification,
   graySet: Set<string>,
   blackSet: Set<string>,
-  inputFileSet: Set<string>,
 ): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
-    const fileName = moveTo(whiteSet, graySet, current)
+    if (!blackSet.has(current.path)) {
+      graySet.add(current.path)
+    }
     // tslint:disable-next-line:no-let
     let file
 
     // tslint:disable-next-line:no-try
     try {
-      file = await fs.readFile(fileName)
+      file = await fs.readFile(current.path)
     } catch (e) {
       yield {
         code: 'NO_JSON_FILE_FOUND',
         message: 'The JSON file is not found but it is referenced from the readme file.',
-        readMeUrl: readMePath,
-        jsonUrl: fileName,
+        readMeUrl: current.readMePath,
+        jsonUrl: current.path,
       }
       return
     }
-    const { errors, document } = jsonParse(fileName, file.toString())
+    const { errors, document } = jsonParse(current.path, file.toString())
     yield* errors
-    const refFileNames = getReferencedFileNames(fileName, document)
+    const refFileNames = getReferencedFileNames(current.path, document)
     for (const refFileName of refFileNames) {
-      inputFileSet.add(refFileName)
       if (graySet.has(refFileName)) {
         yield {
           code: 'CIRCULAR_REFERENCE',
           message: `The JSON exist circular reference`,
-          readMeUrl: readMePath,
-          jsonUrl: current,
+          readMeUrl: current.readMePath,
+          jsonUrl: current.path,
         }
         moveTo(graySet, blackSet, refFileName)
       }
 
       if (!blackSet.has(refFileName)) {
-        yield* DFSTraversalValidate(refFileName, readMePath, whiteSet, graySet, blackSet, inputFileSet)
+        yield* DFSTraversalValidate({ path: refFileName, readMePath: current.readMePath }, graySet, blackSet)
       }
     }
-    moveTo(graySet, blackSet, current)
+    moveTo(graySet, blackSet, current.path)
   })
 
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
@@ -208,45 +218,82 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
           'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
       }
     }
+  })
 
-    const dir = path.dirname(readMePath)
-    // get all input files from the `readme.md`
-    const inputFiles = openApiMd.getInputFiles(m.markDown).toArray()
-
-    // normalize the file names
-    const inputFileSet = inputFiles
-      .map(f => path.resolve(path.join(dir, ...f.split('\\'))))
-      .reduce((s, v) => s.add(v), new Set<string>())
-
-    const whiteSet = new Set<string>(inputFileSet)
+const validateInputFiles = (
+  inputFileSet: Set<Specification>,
+  allInputFileSet: Set<Specification>,
+): asyncIt.AsyncIterableEx<err.Error> =>
+  // tslint:disable-next-line: no-async-without-await
+  asyncIt.iterable<err.Error>(async function*() {
+    // report errors if the `dir` folder has JSON files where exist circular reference
     const graySet = new Set<string>()
     const blackSet = new Set<string>()
-
-    while (whiteSet.size > 0) {
-      const current = whiteSet.values().next().value
-      yield* DFSTraversalValidate(current, readMePath, whiteSet, graySet, blackSet, inputFileSet)
+    for (const current of inputFileSet) {
+      yield* DFSTraversalValidate(current, graySet, blackSet)
     }
 
     // report errors if the `dir` folder has JSON files which are not referenced
-    yield* fs
-      .recursiveReaddir(dir)
-      .filter(filePath => path.extname(filePath) === '.json' && !inputFileSet.has(path.resolve(filePath)))
-      .map<err.Error>(filePath => ({
+    yield* asyncIt
+      .fromSync(allInputFileSet.values())
+      .filter(spec => !blackSet.has(spec.path))
+      .map<err.Error>(spec => ({
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The JSON file is not referenced from the readme file.',
-        readMeUrl: readMePath,
-        jsonUrl: path.resolve(filePath),
+        readMeUrl: spec.readMePath,
+        jsonUrl: spec.path,
       }))
+  })
+
+const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
+  asyncIt.iterable<Specification>(async function*() {
+    const file = await fs.readFile(readMePath)
+    const m = md.parse(file.toString())
+    const dir = path.dirname(readMePath)
+
+    yield* openApiMd
+      .getInputFiles(m.markDown)
+      .uniq()
+      .map(f => path.resolve(path.join(dir, ...f.split('\\'))))
+      .map<Specification>(f => ({ path: f, readMePath }))
+  })
+
+const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
+  // tslint:disable-next-line: no-async-without-await
+  asyncIt.iterable<Specification>(async function*() {
+    const dir = path.dirname(readMePath)
+    yield* fs
+      .recursiveReaddir(dir)
+      .filter(filePath => path.extname(filePath) === '.json')
+      .map<Specification>(filePath => ({ path: filePath, readMePath }))
   })
 
 const validateSpecificationFolder = (cwd: string) =>
   asyncIt.iterable<err.Error>(async function*() {
     const specification = path.resolve(path.join(cwd, 'specification'))
+
     if (await fs.exists(specification)) {
-      yield* fs
+      const allReadMeFiles = fs
         .recursiveReaddir(specification)
         .filter(f => path.basename(f).toLowerCase() === 'readme.md')
-        .flatMap(validateReadMeFile)
+
+      yield* allReadMeFiles.flatMap(validateReadMeFile)
+
+      const referencedFiles = await allReadMeFiles
+        .flatMap(getInputFilesFromReadme)
+        .fold((fileSet: Set<Specification>, spec) => {
+          fileSet.add(spec)
+          return fileSet
+        }, new Set<Specification>())
+
+      const allFiles = await allReadMeFiles
+        .flatMap(getAllInputFilesUnderReadme)
+        .fold((fileSet: Set<Specification>, spec) => {
+          fileSet.add(spec)
+          return fileSet
+        }, new Set<Specification>())
+
+      yield* validateInputFiles(referencedFiles, allFiles)
     }
   })
 
@@ -258,7 +305,6 @@ const avocadoForDir = async (cwd: string) => {
   for await (const e of validateSpecificationFolder(cwd)) {
     map.set(errorCorrelationId(e), e)
   }
-
   return map
 }
 

@@ -180,4 +180,24 @@ describe('avocado', () => {
     ] as const
     assert.deepStrictEqual(r, expected)
   })
+
+  it('analyze globally', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/referenced_common_spec', env: {} }).toArray()
+    const expected = [
+      {
+        code: 'NO_JSON_FILE_FOUND',
+        message: 'The JSON file is not found but it is referenced from the readme file.',
+        readMeUrl: '/home/ruowan/work/avocado/src/test/referenced_common_spec/specification/service/readme.md',
+        jsonUrl:
+          '/home/ruowan/work/avocado/src/test/referenced_common_spec/specification/common/specs/no_such_file.json',
+      },
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: '/home/ruowan/work/avocado/src/test/referenced_common_spec/specification/common/readme.md',
+        jsonUrl: '/home/ruowan/work/avocado/src/test/referenced_common_spec/specification/common/specs/orphan.json',
+      },
+    ] as const
+    assert.deepStrictEqual(r, expected)
+  })
 })
