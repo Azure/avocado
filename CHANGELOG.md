@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.0
+
+- Support circular reference detection for specs
+- A test for circular reference
+- Analyze globally. analyze references between different spec folder instead of only readme folder.
+
+## 0.4.10
+
+- Restructure `index.ts` move 'error' type to `errors.ts`
+- code format
+
 ## 0.4.9
 
 - Simplify structuralDiff and update packages.

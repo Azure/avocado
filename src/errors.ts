@@ -38,7 +38,7 @@ export type FileError = {
   /**
    * Error code.
    */
-  readonly code: 'NO_JSON_FILE_FOUND' | 'UNREFERENCED_JSON_FILE'
+  readonly code: 'NO_JSON_FILE_FOUND' | 'UNREFERENCED_JSON_FILE' | 'CIRCULAR_REFERENCE'
   /**
    * Error message.
    */

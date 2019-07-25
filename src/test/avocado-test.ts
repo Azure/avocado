@@ -167,4 +167,36 @@ describe('avocado', () => {
     ] as const
     assert.deepStrictEqual(r, expected)
   })
+
+  it('circular reference', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/circular_reference', env: {} }).toArray()
+    const expected = [
+      {
+        code: 'CIRCULAR_REFERENCE',
+        message: 'The JSON exist circular reference',
+        readMeUrl: path.resolve('src/test/circular_reference/specification/readme.md'),
+        jsonUrl: path.resolve('src/test/circular_reference/specification/specs/c.json'),
+      },
+    ] as const
+    assert.deepStrictEqual(r, expected)
+  })
+
+  it('analyze globally', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/referenced_common_spec', env: {} }).toArray()
+    const expected = [
+      {
+        code: 'NO_JSON_FILE_FOUND',
+        message: 'The JSON file is not found but it is referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/referenced_common_spec/specification/service/readme.md'),
+        jsonUrl: path.resolve('src/test/referenced_common_spec/specification/common/specs/no_such_file.json'),
+      },
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The JSON file is not referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/referenced_common_spec/specification/common/readme.md'),
+        jsonUrl: path.resolve('src/test/referenced_common_spec/specification/common/specs/orphan.json'),
+      },
+    ] as const
+    assert.deepStrictEqual(r, expected)
+  })
 })
