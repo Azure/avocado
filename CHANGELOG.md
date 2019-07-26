@@ -3,7 +3,7 @@
 ## 0.5.1
 
 - Distinguish between example and swagger, and ignore analyzing '\$ref' in example file.
-- More specific error message about UNREFERENCED_JSON_FILE, see [issus[](https://github.com/Azure/avocado/issues/22)
+- More specific error message about UNREFERENCED_JSON_FILE, see [issue 22](https://github.com/Azure/avocado/issues/22)
 
 ## 0.5.0
 
