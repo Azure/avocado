@@ -44,7 +44,7 @@ describe('avocado', () => {
     const e: ReadonlyArray<error.Error> = [
       {
         code: 'UNREFERENCED_JSON_FILE',
-        message: 'The JSON file is not referenced from the readme file.',
+        message: 'The example JSON file is not referenced from the swagger file.',
         readMeUrl: path.resolve('src/test/unreferenced_example/specification/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_example/specification/specs/examples/orphan_example.json'),
       },
@@ -57,7 +57,7 @@ describe('avocado', () => {
     const e = [
       {
         code: 'UNREFERENCED_JSON_FILE',
-        message: 'The JSON file is not referenced from the readme file.',
+        message: 'The swagger JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec/specification/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_spec/specification/specs/some.json'),
       },
@@ -70,7 +70,7 @@ describe('avocado', () => {
     const e = [
       {
         code: 'UNREFERENCED_JSON_FILE',
-        message: 'The JSON file is not referenced from the readme file.',
+        message: 'The example JSON file is not referenced from the swagger file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
         jsonUrl: path.resolve(
           // tslint:disable-next-line:max-line-length
@@ -79,11 +79,12 @@ describe('avocado', () => {
       },
       {
         code: 'UNREFERENCED_JSON_FILE',
-        message: 'The JSON file is not referenced from the readme file.',
+        message: 'The swagger JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json'),
       },
     ] as const
+
     assert.deepStrictEqual(r, e)
   })
 
@@ -173,7 +174,7 @@ describe('avocado', () => {
     const expected = [
       {
         code: 'CIRCULAR_REFERENCE',
-        message: 'The JSON exist circular reference',
+        message: 'The JSON file exist circular reference.',
         readMeUrl: path.resolve('src/test/circular_reference/specification/readme.md'),
         jsonUrl: path.resolve('src/test/circular_reference/specification/specs/c.json'),
       },
@@ -192,11 +193,17 @@ describe('avocado', () => {
       },
       {
         code: 'UNREFERENCED_JSON_FILE',
-        message: 'The JSON file is not referenced from the readme file.',
+        message: 'The swagger JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/referenced_common_spec/specification/common/readme.md'),
         jsonUrl: path.resolve('src/test/referenced_common_spec/specification/common/specs/orphan.json'),
       },
     ] as const
     assert.deepStrictEqual(r, expected)
+  })
+
+  it('ignore example file $ref', async () => {
+    // Test distinguish example file and swagger file and ignore $ref in example file
+    const r = await avocado.avocado({ cwd: 'src/test/example_file_ignored_reference', env: {} }).toArray()
+    assert.strictEqual(r.length, 0)
   })
 })
