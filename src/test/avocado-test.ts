@@ -202,7 +202,7 @@ describe('avocado', () => {
   })
 
   it('ignore example file $ref', async () => {
-    // Test distinguish example file and swagger file and ignore $ref in example file
+    // Test distinguish between example file and swagger file and ignore $ref in example file
     const r = await avocado.avocado({ cwd: 'src/test/example_file_ignored_reference', env: {} }).toArray()
     assert.strictEqual(r.length, 0)
   })
