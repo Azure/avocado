@@ -79,7 +79,7 @@ const jsonParse = (fileName: string, file: string) => {
   // tslint:disable-next-line:readonly-array
   const errors: err.Error[] = []
   const reportError = (e: jsonParser.ParseError) =>
-    errors.push({ code: 'JSON_PARSE', message: 'The file is not valid JSON file.', error: e })
+    errors.push({ code: 'JSON_PARSE', message: 'The file is not a valid JSON file.', error: e })
   const document = jsonParser.parse(fileName, file.toString(), reportError)
   return {
     errors,
@@ -197,7 +197,7 @@ const DFSTraversalValidate = (
       if (graySet.has(refFileName)) {
         yield {
           code: 'CIRCULAR_REFERENCE',
-          message: 'The JSON file exist circular reference.',
+          message: 'The JSON file has a circular reference.',
           readMeUrl: current.readMePath,
           jsonUrl: current.path,
         }
@@ -225,7 +225,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
     if (!isAutoRestMd(m)) {
       yield {
         code: 'NOT_AUTOREST_MARKDOWN',
-        message: 'The `readme.md` is not AutoRest markdown file.',
+        message: 'The `readme.md` is not an AutoRest markdown file.',
         readMeUrl: readMePath,
         helpUrl:
           // tslint:disable-next-line:max-line-length

@@ -6,10 +6,10 @@ import * as jsonParser from '@ts-common/json-parser'
 type ErrorMessage =
   | 'The example JSON file is not referenced from the swagger file.'
   | 'The swagger JSON file is not referenced from the readme file.'
-  | 'The `readme.md` is not AutoRest markdown file.'
+  | 'The `readme.md` is not an AutoRest markdown file.'
   | 'The JSON file is not found but it is referenced from the readme file.'
-  | 'The JSON file exist circular reference.'
-  | 'The file is not valid JSON file.'
+  | 'The JSON file has a circular reference.'
+  | 'The file is not a valid JSON file.'
 
 export type JsonParseError = {
   /**
