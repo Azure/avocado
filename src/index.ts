@@ -146,8 +146,7 @@ const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
   return key
 }
 
-const isExample = (filePath: string): boolean =>
-  filePath.split('/').some(name => name === 'examples') || filePath.split('\\').some(name => name === 'examples')
+const isExample = (filePath: string): boolean => filePath.split(path.sep).some(name => name === 'examples')
 
 /**
  * The function will validate file reference as a directed graph and will detect circular reference.
