@@ -79,7 +79,7 @@ const jsonParse = (fileName: string, file: string) => {
   // tslint:disable-next-line:readonly-array
   const errors: err.Error[] = []
   const reportError = (e: jsonParser.ParseError) =>
-    errors.push({ code: 'JSON_PARSE', message: 'The file is not valid JSON file.', error: e })
+    errors.push({ code: 'JSON_PARSE', message: 'The file is not a valid JSON file.', error: e })
   const document = jsonParser.parse(fileName, file.toString(), reportError)
   return {
     errors,
@@ -120,6 +120,11 @@ type Specification = {
    * readme referenced
    */
   readonly readMePath: string
+
+  /**
+   * kind
+   */
+  readonly kind: 'EXAMPLE' | 'SWAGGER'
 }
 
 const parseRef = (ref: string): Ref => {
@@ -140,6 +145,8 @@ const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
   a.delete(key)
   return key
 }
+
+const isExample = (filePath: string): boolean => filePath.split(path.sep).some(name => name === 'examples')
 
 /**
  * The function will validate file reference as a directed graph and will detect circular reference.
@@ -182,12 +189,14 @@ const DFSTraversalValidate = (
     }
     const { errors, document } = jsonParse(current.path, file.toString())
     yield* errors
-    const refFileNames = getReferencedFileNames(current.path, document)
+
+    // Example file should ignore `$ref` because it's usually meaningless.
+    const refFileNames = current.kind === 'SWAGGER' ? getReferencedFileNames(current.path, document) : []
     for (const refFileName of refFileNames) {
       if (graySet.has(refFileName)) {
         yield {
           code: 'CIRCULAR_REFERENCE',
-          message: `The JSON exist circular reference`,
+          message: 'The JSON file has a circular reference.',
           readMeUrl: current.readMePath,
           jsonUrl: current.path,
         }
@@ -195,7 +204,11 @@ const DFSTraversalValidate = (
       }
 
       if (!blackSet.has(refFileName)) {
-        yield* DFSTraversalValidate({ path: refFileName, readMePath: current.readMePath }, graySet, blackSet)
+        yield* DFSTraversalValidate(
+          { path: refFileName, readMePath: current.readMePath, kind: isExample(refFileName) ? 'EXAMPLE' : 'SWAGGER' },
+          graySet,
+          blackSet,
+        )
       }
     }
     moveTo(graySet, blackSet, current.path)
@@ -211,7 +224,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
     if (!isAutoRestMd(m)) {
       yield {
         code: 'NOT_AUTOREST_MARKDOWN',
-        message: 'The `readme.md` is not AutoRest markdown file.',
+        message: 'The `readme.md` is not an AutoRest markdown file.',
         readMeUrl: readMePath,
         helpUrl:
           // tslint:disable-next-line:max-line-length
@@ -248,7 +261,10 @@ const validateInputFiles = (
       .filter(spec => !blackSet.has(spec.path))
       .map<err.Error>(spec => ({
         code: 'UNREFERENCED_JSON_FILE',
-        message: 'The JSON file is not referenced from the readme file.',
+        message:
+          spec.kind === 'SWAGGER'
+            ? 'The swagger JSON file is not referenced from the readme file.'
+            : 'The example JSON file is not referenced from the swagger file.',
         readMeUrl: spec.readMePath,
         jsonUrl: spec.path,
       }))
@@ -264,7 +280,7 @@ const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Sp
       .getInputFiles(m.markDown)
       .uniq()
       .map(f => path.resolve(path.join(dir, ...f.split('\\'))))
-      .map<Specification>(f => ({ path: f, readMePath }))
+      .map<Specification>(f => ({ path: f, readMePath, kind: isExample(f) ? 'EXAMPLE' : 'SWAGGER' }))
   })
 
 const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
@@ -274,7 +290,11 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
     yield* fs
       .recursiveReaddir(dir)
       .filter(filePath => path.extname(filePath) === '.json')
-      .map<Specification>(filePath => ({ path: filePath, readMePath }))
+      .map<Specification>(filePath => ({
+        path: filePath,
+        readMePath,
+        kind: isExample(filePath) ? 'EXAMPLE' : 'SWAGGER',
+      }))
   })
 
 /**
