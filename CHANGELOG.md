@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- Add error level to Error. Now support `Error` and `Warning` level.
+- `Error`: Must be fixed, blocking CI process.
+- `Warning`:Hints. Needn't be fixed, not blocking CI process.
+- Circular reference is `Warning` level. Other errors are `Error` level.
+
 ## 0.5.1
 
 - Distinguish between example and swagger, and ignore analyzing '\$ref' in example file.

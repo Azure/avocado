@@ -17,6 +17,7 @@ describe('avocado', () => {
         helpUrl:
           // tslint:disable-next-line:max-line-length
           'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
+        level: 'Error',
       },
     ] as const
     assert.deepStrictEqual(r, expected)
@@ -34,6 +35,7 @@ describe('avocado', () => {
         message: r0.message,
         readMeUrl: path.resolve('src/test/no_file_found/specification/readme.md'),
         jsonUrl: path.resolve('src/test/no_file_found/specification/specs/some.json'),
+        level: 'Error',
       },
     ] as const
     assert.deepStrictEqual(r, e)
@@ -47,6 +49,7 @@ describe('avocado', () => {
         message: 'The example JSON file is not referenced from the swagger file.',
         readMeUrl: path.resolve('src/test/unreferenced_example/specification/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_example/specification/specs/examples/orphan_example.json'),
+        level: 'Error',
       },
     ]
     assert.deepStrictEqual(r, e)
@@ -60,6 +63,7 @@ describe('avocado', () => {
         message: 'The swagger JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec/specification/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_spec/specification/specs/some.json'),
+        level: 'Error',
       },
     ] as const
     assert.deepStrictEqual(r, e)
@@ -76,12 +80,14 @@ describe('avocado', () => {
           // tslint:disable-next-line:max-line-length
           'src/test/unreferenced_spec_with_examples/specification/specs/examples/referenced_example.json',
         ),
+        level: 'Error',
       },
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The swagger JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json'),
+        level: 'Error',
       },
     ] as const
 
@@ -105,6 +111,7 @@ describe('avocado', () => {
           token: '}',
           url: path.resolve('src/test/invalid_json_trailing_comma/specification/specs/some.json'),
         },
+        level: 'Error',
       },
     ])
   })
@@ -126,6 +133,7 @@ describe('avocado', () => {
           token: '\uFEFF',
           url: path.resolve('src/test/invalid_json_with_bom/specification/specs/some.json'),
         },
+        level: 'Error',
       },
     ])
   })
@@ -138,6 +146,7 @@ describe('avocado', () => {
         message: r[0].message,
         jsonUrl: path.resolve('src/test/invalid_ref/specification/specs/a.json'),
         readMeUrl: path.resolve('src/test/invalid_ref/specification/readme.md'),
+        level: 'Error',
       },
     ] as const
     assert.deepStrictEqual(r, expected)
@@ -164,6 +173,7 @@ describe('avocado', () => {
           url: path.resolve('src/test/diamond_dependencies/specification/specs/common.json'),
         },
         message: 'The file is not a valid JSON file.',
+        level: 'Error',
       },
     ] as const
     assert.deepStrictEqual(r, expected)
@@ -177,6 +187,7 @@ describe('avocado', () => {
         message: 'The JSON file has a circular reference.',
         readMeUrl: path.resolve('src/test/circular_reference/specification/readme.md'),
         jsonUrl: path.resolve('src/test/circular_reference/specification/specs/c.json'),
+        level: 'Warning',
       },
     ] as const
     assert.deepStrictEqual(r, expected)
@@ -190,12 +201,14 @@ describe('avocado', () => {
         message: 'The JSON file is not found but it is referenced from the readme file.',
         readMeUrl: path.resolve('src/test/referenced_common_spec/specification/service/readme.md'),
         jsonUrl: path.resolve('src/test/referenced_common_spec/specification/common/specs/no_such_file.json'),
+        level: 'Error',
       },
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The swagger JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/referenced_common_spec/specification/common/readme.md'),
         jsonUrl: path.resolve('src/test/referenced_common_spec/specification/common/specs/orphan.json'),
+        level: 'Error',
       },
     ] as const
     assert.deepStrictEqual(r, expected)

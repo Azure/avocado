@@ -3,6 +3,7 @@
 
 import * as stringMap from '@ts-common/string-map'
 import * as yaml from 'js-yaml'
+import { IErrorLevel } from './errors'
 
 export type Report = {
   /**
@@ -16,6 +17,7 @@ export type Report = {
 }
 
 const consoleRed = '\x1b[31m'
+const consoleYellow = '\x1b[33m'
 const consoleReset = '\x1b[0m'
 
 export type Config = {
@@ -40,7 +42,7 @@ export const defaultConfig = () => ({
  * @param tool is a function which returns errors as `AsyncIterable`.
  */
 // tslint:disable-next-line:no-async-without-await
-export const run = async <T>(
+export const run = async <T extends IErrorLevel>(
   tool: (config: Config) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console no-unbound-method
   report: Report = { error: console.error, info: console.log },
@@ -51,9 +53,16 @@ export const run = async <T>(
     // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
-      report.error(`${consoleRed}error: ${consoleReset}`)
+      if (e.level === 'Warning') {
+        report.error(`${consoleYellow}warning: ${consoleReset}`)
+      } else if (e.level === 'Error') {
+        report.error(`${consoleRed}error: ${consoleReset}`)
+        errorsNumber += 1
+      } else {
+        report.error(`${consoleRed}INTERNAL ERROR: undefined error level. level: ${e.level}. ${consoleReset}`)
+        errorsNumber += 1
+      }
       report.error(yaml.safeDump(e))
-      errorsNumber += 1
     }
     report.info(`errors: ${errorsNumber}`)
     // tslint:disable-next-line:no-object-mutation
