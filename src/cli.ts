@@ -3,7 +3,7 @@
 
 import * as stringMap from '@ts-common/string-map'
 import * as yaml from 'js-yaml'
-import { IErrorLevel } from './errors'
+import { IErrorBase } from './errors'
 
 export type Report = {
   /**
@@ -42,7 +42,7 @@ export const defaultConfig = () => ({
  * @param tool is a function which returns errors as `AsyncIterable`.
  */
 // tslint:disable-next-line:no-async-without-await
-export const run = async <T extends IErrorLevel>(
+export const run = async <T extends IErrorBase>(
   tool: (config: Config) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console no-unbound-method
   report: Report = { error: console.error, info: console.log },

@@ -5,17 +5,17 @@ import { cli } from '../index'
 import * as assert from 'assert'
 import * as ai from '@ts-common/async-iterator'
 import * as path from 'path'
-import { IErrorLevel } from '../errors'
+import { IErrorBase } from '../errors'
 
 describe('cli', () => {
-  type MyError = { readonly message: string } & IErrorLevel
+  type MyError = { readonly message: string } & IErrorBase
 
   it('no errors, default output', async () => {
     // tslint:disable-next-line:no-let
     let cwd: unknown
     await cli.run(c => {
       cwd = c.cwd
-      return ai.fromSequence<IErrorLevel>()
+      return ai.fromSequence<IErrorBase>()
     })
     assert.strictEqual(cwd, path.resolve('./'))
     assert.strictEqual(process.exitCode, 0)
@@ -29,7 +29,7 @@ describe('cli', () => {
       error: s => (error += s),
       info: s => (info += s),
     }
-    await cli.run(() => ai.fromSequence<IErrorLevel>(), report)
+    await cli.run(() => ai.fromSequence<IErrorBase>(), report)
     assert.strictEqual(process.exitCode, 0)
     assert.strictEqual(error, '')
     assert.strictEqual(info, 'errors: 0')
