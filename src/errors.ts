@@ -11,6 +11,10 @@ type ErrorMessage =
   | 'The JSON file has a circular reference.'
   | 'The file is not a valid JSON file.'
 
+export interface IErrorBase {
+  readonly level: 'Warning' | 'Error'
+}
+
 export type JsonParseError = {
   /**
    * Error code. Always 'JSON_PARSE'
@@ -24,7 +28,7 @@ export type JsonParseError = {
    * JSON Error.
    */
   readonly error: jsonParser.ParseError
-}
+} & IErrorBase
 
 export type NotAutoRestMarkDown = {
   /**
@@ -43,7 +47,7 @@ export type NotAutoRestMarkDown = {
    * Help URL.
    */
   readonly helpUrl: string
-}
+} & IErrorBase
 
 export type FileError = {
   /**
@@ -62,6 +66,6 @@ export type FileError = {
    * URL of JSON file.
    */
   readonly jsonUrl: string
-}
+} & IErrorBase
 
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown

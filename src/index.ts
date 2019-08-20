@@ -79,7 +79,7 @@ const jsonParse = (fileName: string, file: string) => {
   // tslint:disable-next-line:readonly-array
   const errors: err.Error[] = []
   const reportError = (e: jsonParser.ParseError) =>
-    errors.push({ code: 'JSON_PARSE', message: 'The file is not a valid JSON file.', error: e })
+    errors.push({ code: 'JSON_PARSE', message: 'The file is not a valid JSON file.', error: e, level: 'Error' })
   const document = jsonParser.parse(fileName, file.toString(), reportError)
   return {
     errors,
@@ -183,6 +183,7 @@ const DFSTraversalValidate = (
         code: 'NO_JSON_FILE_FOUND',
         message: 'The JSON file is not found but it is referenced from the readme file.',
         readMeUrl: current.readMePath,
+        level: 'Error',
         jsonUrl: current.path,
       }
       return
@@ -198,6 +199,7 @@ const DFSTraversalValidate = (
           code: 'CIRCULAR_REFERENCE',
           message: 'The JSON file has a circular reference.',
           readMeUrl: current.readMePath,
+          level: 'Warning',
           jsonUrl: current.path,
         }
         moveTo(graySet, blackSet, refFileName)
@@ -226,6 +228,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
         code: 'NOT_AUTOREST_MARKDOWN',
         message: 'The `readme.md` is not an AutoRest markdown file.',
         readMeUrl: readMePath,
+        level: 'Error',
         helpUrl:
           // tslint:disable-next-line:max-line-length
           'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
@@ -265,6 +268,7 @@ const validateInputFiles = (
           spec.kind === 'SWAGGER'
             ? 'The swagger JSON file is not referenced from the readme file.'
             : 'The example JSON file is not referenced from the swagger file.',
+        level: 'Error',
         readMeUrl: spec.readMePath,
         jsonUrl: spec.path,
       }))
