@@ -34,7 +34,7 @@ describe('cli', () => {
     assert.strictEqual(error, '')
     assert.strictEqual(info, 'errors: 0')
   })
-  it('Error errors', async () => {
+  it('with errors', async () => {
     // tslint:disable-next-line:no-let
     let error = ''
     // tslint:disable-next-line:no-let
@@ -48,7 +48,7 @@ describe('cli', () => {
     assert.strictEqual(error, '\u001b[31merror: \u001b[0mlevel: Error\nmessage: some error\n')
     assert.strictEqual(info, 'errors: 1')
   })
-  it('Warning errors', async () => {
+  it('with warnings', async () => {
     // tslint:disable-next-line:no-let
     let error = ''
     // tslint:disable-next-line:no-let
