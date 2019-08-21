@@ -2,7 +2,8 @@
 
 ## 0.6.1
 
-- Update `Readme.md`.  
+- Update `Readme.md`.
+- Add `package-lock.json`. restrict tslint version `~5.18.0`
 
 ## 0.6.0
 
