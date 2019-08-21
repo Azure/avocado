@@ -18,15 +18,15 @@ Avocado major functions are listed below:
 - Validate whether `readme.md` is autorest specific file which must contain `see https://aka.ms/autorest`
 - Validate whether `swagger file` is valid json file, and check all referenced `json` file (`referenced json` file marked in json object has the key name `"$ref"`).
 - Validate whether the folder has any files without being referenced. `swagger file` must be referenced by `readme.md` or other `swagger file`.
-- Validate whether `swagger file` has a circular reference and report a warning. For more detail, see [CIRCULAR REFERENCE](#CIRCULAR REFERENCE)
+- Validate whether `swagger file` has a circular reference and report a warning. For more detail, see [CIRCULAR REFERENCE](#circular-reference)
 
 ## How to use
 
-### install
+### Install
 
 `npm install -g Azure/avocado`
 
-### usage
+### Usage
 
 `avocado`
 
@@ -34,11 +34,10 @@ When type avocado in command line, avocado will validate in the current director
 
 NOTE: When running in azure devops Avocado only report new errors involved in PR, but ignore the previous existing errors. When running in local machine, Avocado report all errors.
 
-### example
+### Example
 
-Run all specs: Clone the repo `azure/azure-rest-api-specs` and run "avocado" in folder `azure/azure-rest-api-specs`.
-
-Run single service specs: create a folder `specification`. and move your service specs folder in `specification`. run "avocado"
+- Run all specs: Clone the repo `azure/azure-rest-api-specs` and run "avocado" in folder `azure/azure-rest-api-specs`.
+- Run single service specs: create a folder `specification`. and move your service specs folder in `specification`. run "avocado"
 
 ## How to solve errors
 
@@ -46,29 +45,23 @@ Run single service specs: create a folder `specification`. and move your service
 
 Level: WARNING
 
-To solve circular reference, you should break the circular chain. 
+To solve circular reference, you should break the circular chain.
 
 Example: `a.json` -> `b.json`->`c.json`
 
 ```json
 // a.json
-{
-	$ref: "b.json"
-}
+{ "$ref": "b.json" }
 ```
 
 ```json
 // b.json
-{
-	$ref: "c.json"
-}
+{ "$ref": "c.json" }
 ```
 
 ```json
 // c.json
-{
-	$ref: "a.json"
-}
+{ "$ref": "a.json" }
 ```
 
 ```mermaid
