@@ -24,7 +24,7 @@ Avocado major functions are listed below:
 
 ### Install
 
-`npm install -g Azure/avocado`
+`npm install -g @azure/avocado`
 
 ### Usage
 
