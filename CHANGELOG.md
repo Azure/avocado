@@ -1,8 +1,13 @@
 # Changelog
 
+## 0.6.1
+
+- Update `Readme.md`.
+- Add `package-lock.json`. restrict tslint version `~5.18.0`
+
 ## 0.6.0
 
-- Add error level to Error. Now support `Error` and `Warning` level.
+- Add error level. Now support `Error` and `Warning` level.
 - `Error`: Must be fixed, blocking CI process.
 - `Warning`:Hints. Needn't be fixed, not blocking CI process.
 - Circular reference is `Warning` level. Other errors are `Error` level.

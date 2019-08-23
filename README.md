@@ -6,9 +6,76 @@ Another Validator of OpenAPI spec repository Configuration And Directories.
 
 NPM: https://www.npmjs.com/package/@azure/avocado
 
+## Overview
+
+Avocado validates folder structure and configuration.
+
+Avocado can be integrated into Azure pipeline to validate OpenAPI spec repository. For example, Avocado is used by `Azure/azure-rest-api-specs` now that will trigger automatically by azure DevOps pipeline when a new pull request is created.
+
+Avocado major functions are listed below:
+
+- For a given directory validate whether exists `specification` and filter `readme.md` under the `specification` folder.
+- Validate whether `readme.md` is autorest specific file which must contain `see https://aka.ms/autorest`
+- Validate whether `swagger file` is valid json file, and check all referenced `json` file (`referenced json` file marked in json object has the key name `"$ref"`).
+- Validate whether the folder has any files without being referenced. `swagger file` must be referenced by `readme.md` or other `swagger file`.
+- Validate whether `swagger file` has a circular reference and report a warning. For more detail, see [CIRCULAR REFERENCE](#circular-reference)
+
+## How to use
+
+### Install
+
+`npm install -g @azure/avocado`
+
+### Usage
+
+`avocado`
+
+When type avocado in command line, avocado will validate in the current directory.
+
+NOTE: When running in azure devops Avocado only report new errors involved in PR, but ignore the previous existing errors. When running in local machine, Avocado report all errors.
+
+### Example
+
+- Run all specs: Clone the repo `azure/azure-rest-api-specs` and run "avocado" in folder `azure/azure-rest-api-specs`.
+- Run single service specs: create a folder `specification`. and move your service specs folder in `specification`. run "avocado"
+
+## How to solve errors
+
+### CIRCULAR REFERENCE
+
+Level: WARNING
+
+To solve circular reference, you should break the circular chain.
+
+Example: `a.json` -> `b.json`->`c.json`
+
+```json
+// a.json
+{ "$ref": "b.json" }
+```
+
+```json
+// b.json
+{ "$ref": "c.json" }
+```
+
+```json
+// c.json
+{ "$ref": "a.json" }
+```
+
+```mermaid
+graph TD
+
+A((a.json))-->B((b.json))
+B-->C((c.json))
+C-->A
+
+```
+
 ## Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.microsoft.com.
 
