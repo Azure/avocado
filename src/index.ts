@@ -282,6 +282,7 @@ const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Sp
 
     yield* openApiMd
       .getInputFiles(m.markDown)
+      .map(f => f.replace('$(this-folder)', '.'))
       .uniq()
       .map(f => path.resolve(path.join(dir, ...f.split('\\'))))
       .map<Specification>(f => ({ path: f, readMePath, kind: isExample(f) ? 'EXAMPLE' : 'SWAGGER' }))
