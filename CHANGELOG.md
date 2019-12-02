@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
+- Support $(this-folder)
+
 ## 0.6.1
 
 - Update `Readme.md`.
