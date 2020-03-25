@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.3
+
+- Add rule MISSING_README to validate each RP folder must have readme.md.
+- Modify unit test.
+
 ## 0.6.2
 
 - Support $(this-folder)
