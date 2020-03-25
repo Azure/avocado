@@ -10,6 +10,7 @@ type ErrorMessage =
   | 'The JSON file is not found but it is referenced from the readme file.'
   | 'The JSON file has a circular reference.'
   | 'The file is not a valid JSON file.'
+  | 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation'
 
 export interface IErrorBase {
   readonly level: 'Warning' | 'Error'
@@ -68,4 +69,10 @@ export type FileError = {
   readonly jsonUrl: string
 } & IErrorBase
 
-export type Error = JsonParseError | FileError | NotAutoRestMarkDown
+export type MissingReadmeError = {
+  readonly code: 'MISSING_README'
+  readonly message: ErrorMessage
+  readonly folderUrl: string
+} & IErrorBase
+
+export type Error = JsonParseError | FileError | NotAutoRestMarkDown | MissingReadmeError

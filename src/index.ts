@@ -43,6 +43,12 @@ const errorCorrelationId = (error: err.Error) => {
           url: error.jsonUrl,
         }
       }
+      case 'MISSING_README': {
+        return {
+          code: error.code,
+          url: error.folderUrl,
+        }
+      }
     }
   }
 
@@ -147,6 +153,50 @@ const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
 }
 
 const isExample = (filePath: string): boolean => filePath.split(path.sep).some(name => name === 'examples')
+
+const isFolderContainsReadme = async (folder: string): Promise<boolean> => {
+  const readmePath = path.resolve(folder, 'readme.md')
+  return fs.exists(readmePath)
+}
+
+/**
+ * Validate each RP folder must have its readme file.
+ *
+ * @param specification specification folder
+ */
+const validateRPFolderMustContainReadme = (specification: string): asyncIt.AsyncIterableEx<err.Error> =>
+  asyncIt.iterable<err.Error>(async function*() {
+    const allJsonDir = fs
+      .recursiveReaddir(specification)
+      .filter(filePath => path.extname(filePath) === '.json')
+      .map(filepath => path.dirname(filepath))
+
+    const allJsonSet = new Set<string>()
+    for await (const dir of allJsonDir) {
+      if (allJsonSet.has(dir)) {
+        continue
+      }
+      allJsonSet.add(dir)
+      // tslint:disable-next-line: no-let
+      let curDir = dir
+      // tslint:disable-next-line: no-let
+      let found = false
+      while (curDir !== specification) {
+        if (await isFolderContainsReadme(curDir)) {
+          found = true
+        }
+        curDir = path.dirname(curDir)
+      }
+      if (!found) {
+        yield {
+          level: 'Error',
+          code: 'MISSING_README',
+          message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation',
+          folderUrl: curDir,
+        }
+      }
+    }
+  })
 
 /**
  * The function will validate file reference as a directed graph and will detect circular reference.
@@ -313,6 +363,8 @@ const validateSpecificationFolder = (cwd: string) =>
       const allReadMeFiles = fs
         .recursiveReaddir(specification)
         .filter(f => path.basename(f).toLowerCase() === 'readme.md')
+
+      yield* validateRPFolderMustContainReadme(specification)
 
       yield* allReadMeFiles.flatMap(validateReadMeFile)
 
