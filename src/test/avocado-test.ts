@@ -226,14 +226,14 @@ describe('avocado', () => {
     assert.strictEqual(r.length, 0)
   })
 
-  it('no readme.file', async () => {
+  it('no readme file', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/no_readme', env: {} }).toArray()
     const expected = [
       {
         level: 'Error',
         code: 'MISSING_README',
         message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation',
-        folderUrl: '/home/ruowan/work/avocado/src/test/no_readme/specification',
+        folderUrl: path.resolve('src/test/no_readme/specification/resource-provider-A'),
       },
     ] as const
     assert.deepStrictEqual(expected, r)
