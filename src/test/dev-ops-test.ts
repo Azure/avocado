@@ -1,3 +1,4 @@
+import { isPRRelatedError, FileChange } from './../dev-ops'
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
@@ -7,13 +8,16 @@ import { git, cli, devOps, avocado } from '../index'
 import * as assert from 'assert'
 import * as tmpDir from './tmp-dir'
 import { hasCommonRPFolder } from '../dev-ops'
+import * as err from '../errors'
+
+type MockAction = 'remove readme' | 'modify json' | 'add file'
 
 /**
  * Create Azure DevOps environment for testing.
  *
  * @param name an environment name. It's used as a unique directory suffix.
  */
-const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
+const createDevOpsEnv = async (name: string, action: readonly MockAction[]): Promise<cli.Config> => {
   const tmp = await tmpDir.create(name)
 
   // Create '"${tmp}/remote"' folder.
@@ -29,10 +33,30 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
 
   // commit invalid 'specification/readme.md' to 'master'.
   const specification = path.join(remote, 'specification')
+  const resourceProviderFolder = path.join(specification, 'testRP')
+  const resourceManagerFolder = path.join(resourceProviderFolder, 'resource-manager')
   await pfs.mkdir(specification)
-  await pfs.writeFile(path.join(specification, 'readme.md'), '')
+  await pfs.mkdir(resourceProviderFolder)
+  await pfs.mkdir(resourceManagerFolder)
+
   await pfs.writeFile(
-    path.join(specification, 'file1.json'),
+    path.join(resourceManagerFolder, 'readme.md'),
+    `
+    # Test RP
+
+    > see https://aka.ms/autorest
+    
+    \`\`\`
+    input-file:
+    - $(this-folder)/file1.json
+    - $(this-folder)/file2.json
+    - $(this-folder)/file3.json
+    
+    \`\`\`
+  `,
+  )
+  await pfs.writeFile(
+    path.join(resourceManagerFolder, 'file1.json'),
     `
   {
     "a": "foo",
@@ -46,7 +70,7 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   )
 
   await pfs.writeFile(
-    path.join(specification, 'file2.json'),
+    path.join(resourceManagerFolder, 'file2.json'),
     `
   {
     "a": "foo"
@@ -55,7 +79,7 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   )
 
   await pfs.writeFile(
-    path.join(specification, 'file3.json'),
+    path.join(resourceManagerFolder, 'file3.json'),
     `
   {
     "a": "foo"
@@ -67,36 +91,44 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
   await gitRemote({ add: ['.'] })
   await gitRemote({ commit: ['-m', '"initial commit"', '--no-gpg-sign'] })
 
-  // commit removing 'specification/readme.md' to 'source'.
   await gitRemote({ checkout: ['-b', 'source'] })
-  await pfs.unlink(path.join(specification, 'readme.md'))
-  await pfs.writeFile(
-    path.join(specification, 'file1.json'),
-    `
-  {
-    "a": "foo",
-    "b": ["bar1","bar2","bar3"]
+  if (action.includes('remove readme')) {
+    // commit removing 'specification/readme.md' to 'source'.
+    await pfs.unlink(path.join(resourceManagerFolder, 'readme.md'))
   }
-  `,
-  )
 
-  await pfs.writeFile(
-    path.join(specification, 'file2.json'),
-    `
-  {
-    "a": "foo",
-    "b": "bar"
+  if (action.includes('modify json')) {
+    await pfs.writeFile(
+      path.join(resourceManagerFolder, 'file1.json'),
+      `
+    {
+      "a": "foo",
+      "b": ["bar1","bar2","bar3"]
+    }
+    `,
+    )
+
+    await pfs.writeFile(
+      path.join(resourceManagerFolder, 'file2.json'),
+      `
+    {
+      "a": "foo",
+      "b": "bar"
+    }
+    `,
+    )
+
+    // file with invalid JSON
+    await pfs.writeFile(path.join(resourceManagerFolder, 'file3.json'), `random string`)
   }
-  `,
-  )
 
-  // file with invalid JSON
-  await pfs.writeFile(path.join(specification, 'file3.json'), `random string`)
+  if (action.includes('add file')) {
+    // json file that did not exist
+    await pfs.writeFile(path.join(resourceManagerFolder, 'file4.json'), `{"foo":"bar"}`)
 
-  // json file that did not exist
-  await pfs.writeFile(path.join(specification, 'file4.json'), `{"foo":"bar"}`)
-
-  await pfs.writeFile(path.join(remote, 'textfile.txt'), '')
+    await pfs.writeFile(path.join(remote, 'textfile.txt'), '')
+    await pfs.writeFile(path.join(remote, 'license'), 'MIT')
+  }
   await pfs.writeFile(path.join(remote, 'license'), 'MIT')
   await gitRemote({ add: ['.'] })
   await gitRemote({
@@ -119,7 +151,7 @@ const createDevOpsEnv = async (name: string): Promise<cli.Config> => {
 
 describe('Azure DevOps', () => {
   it('Azure DevOps and Avocado', async () => {
-    const cfg = await createDevOpsEnv('devops')
+    const cfg = await createDevOpsEnv('devops', [])
 
     // run avocado as AzureDevOps pull request.
     const errors = await avocado(cfg).toArray()
@@ -127,7 +159,7 @@ describe('Azure DevOps', () => {
   })
 
   it('PR diff', async () => {
-    const cfg = await createDevOpsEnv('devops-pr-diff')
+    const cfg = await createDevOpsEnv('devops-pr-diff', ['remove readme', 'add file', 'modify json'])
     const pr = await devOps.createPullRequestProperties(cfg)
     if (pr === undefined) {
       // tslint:disable-next-line:no-throw
@@ -136,18 +168,18 @@ describe('Azure DevOps', () => {
     const files = await pr.diff()
     const expected = [
       { kind: 'Modified', path: 'license' },
-      { kind: 'Modified', path: 'specification/file1.json' },
-      { kind: 'Modified', path: 'specification/file2.json' },
-      { kind: 'Modified', path: 'specification/file3.json' },
-      { kind: 'Added', path: 'specification/file4.json' },
-      { kind: 'Deleted', path: 'specification/readme.md' },
+      { kind: 'Modified', path: 'specification/testRP/resource-manager/file1.json' },
+      { kind: 'Modified', path: 'specification/testRP/resource-manager/file2.json' },
+      { kind: 'Modified', path: 'specification/testRP/resource-manager/file3.json' },
+      { kind: 'Added', path: 'specification/testRP/resource-manager/file4.json' },
+      { kind: 'Deleted', path: 'specification/testRP/resource-manager/readme.md' },
       { kind: 'Added', path: 'textfile.txt' },
     ] as const
     assert.deepStrictEqual(files, expected)
   })
 
   it('PR structural diff', async () => {
-    const cfg = await createDevOpsEnv('devops-pr-diff')
+    const cfg = await createDevOpsEnv('devops-pr-diff', ['remove readme', 'add file', 'modify json'])
     const pr = await devOps.createPullRequestProperties(cfg)
     if (pr === undefined) {
       // tslint:disable-next-line:no-throw
@@ -156,10 +188,10 @@ describe('Azure DevOps', () => {
     const files = await pr.structuralDiff().toArray()
     const expected = [
       'license',
-      'specification/file2.json',
-      'specification/file3.json',
-      'specification/file4.json',
-      'specification/readme.md',
+      'specification/testRP/resource-manager/file2.json',
+      'specification/testRP/resource-manager/file3.json',
+      'specification/testRP/resource-manager/file4.json',
+      'specification/testRP/resource-manager/readme.md',
       'textfile.txt',
     ] as const
     assert.deepStrictEqual(files, expected)
@@ -194,6 +226,22 @@ describe('Azure DevOps', () => {
     const errors = await avocado({ cwd: local, env: { SYSTEM_PULLREQUEST_TARGETBRANCH: 'master' } }).toArray()
     assert.deepStrictEqual(errors, [])
   })
+
+  it('PR with missing readme.md error', async () => {
+    const cfg = await createDevOpsEnv('devops-no-readme', ['remove readme'])
+    const errors = await avocado(cfg).toArray()
+    assert.deepStrictEqual(errors, [
+      {
+        level: 'Error',
+        code: 'MISSING_README',
+        message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation',
+        folderUrl: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-no-readme/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager',
+        ),
+      },
+    ])
+  })
   it('File changes has common RP folder', () => {
     assert.ok(hasCommonRPFolder('a/b/c/specification/rp1/sssss', 'a/b/c/specification/rp1/sssss'))
     assert.ok(hasCommonRPFolder('a/b/c/specification/network/sssss/a.json', 'tmp/a/b/c/specification/network/sssss'))
@@ -206,5 +254,43 @@ describe('Azure DevOps', () => {
       hasCommonRPFolder('a/b/c/network/sssss/a.json', 'tmp/a/b/c/specification/computer/sssss'),
       false,
     )
+  })
+
+  it('Is PR related changes', () => {
+    const fileChanges: readonly FileChange[] = [
+      {
+        kind: 'Modified',
+        path: 'specification/network/resource-manager/dns.json',
+      },
+      {
+        kind: 'Added',
+        path: 'specification/network/data-plane/2019-01-01/a.json',
+      },
+    ]
+
+    const networkError: err.Error = {
+      code: 'MISSING_README',
+      message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation',
+      level: 'Error',
+      folderUrl: 'specification/network/data-plane',
+    }
+
+    const computeError: err.Error = {
+      code: 'MISSING_README',
+      message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation',
+      level: 'Error',
+      folderUrl: 'specification/compute/data-plane',
+    }
+
+    const jsonReferenceError: err.Error = {
+      code: 'UNREFERENCED_JSON_FILE',
+      message: 'The JSON file is not found but it is referenced from the readme file.',
+      level: 'Error',
+      readMeUrl: 'specification/compute/resource-manager/readme.md',
+      jsonUrl: 'specification/compute/resource-manager/2019-01-01/compute.json',
+    }
+    assert.ok(isPRRelatedError(fileChanges, networkError))
+    assert.deepStrictEqual(isPRRelatedError(fileChanges, computeError), false)
+    assert.deepStrictEqual(isPRRelatedError(fileChanges, jsonReferenceError), false)
   })
 })

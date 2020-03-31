@@ -4,13 +4,14 @@
 import * as path from 'path'
 import * as pfs from '@ts-common/fs'
 
+export const getTmpRoot = () => path.resolve(path.join('..', 'avocado-tmp'))
 /**
  * Create a temporary directory for a unit test.
  *
  * @param name a name of the unit test.
  */
 export const create = async (name: string) => {
-  const tmpRoot = path.resolve(path.join('..', 'avocado-tmp'))
+  const tmpRoot = getTmpRoot()
   if (!(await pfs.exists(tmpRoot))) {
     await pfs.mkdir(tmpRoot)
   }
