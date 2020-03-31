@@ -166,9 +166,18 @@ const isFolderContainsReadme = async (folder: string): Promise<boolean> => {
  */
 const validateRPFolderMustContainReadme = (specification: string): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
+    const validDirs: ReadonlyArray<string> = ['data-plane', 'resource-manager']
+    const ignoredDirs: ReadonlyArray<string> = ['common']
     const allJsonDir = fs
       .recursiveReaddir(specification)
-      .filter(filePath => path.extname(filePath) === '.json')
+      .filter(
+        filePath =>
+          path.extname(filePath) === '.json' &&
+          validDirs.some(
+            item =>
+              filePath.includes(item) && !ignoredDirs.some(ignoredItem => filePath.toLowerCase().includes(ignoredItem)),
+          ),
+      )
       .map(filepath => path.dirname(filepath))
 
     const allJsonSet = new Set<string>()
@@ -412,9 +421,16 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
     await pr.checkout(pr.sourceBranch)
     const sourceMap = await avocadoForDir(pr.workingDir)
 
+    const fileChanges = await pr.diff()
+
     // remove existing errors.
+    /* Note: For MISSING_README error if the error is related to the PR changes,
+     avocado will directly report it even though it's not a new involved error in the pull request.*/
     for (const e of targetMap.keys()) {
-      sourceMap.delete(e)
+      const error = sourceMap.get(e)
+      if (error !== undefined && !devOps.isPRRelatedError(fileChanges, error)) {
+        sourceMap.delete(e)
+      }
     }
     yield* sourceMap.values()
   })

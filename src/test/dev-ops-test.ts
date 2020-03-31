@@ -6,6 +6,7 @@ import * as pfs from '@ts-common/fs'
 import { git, cli, devOps, avocado } from '../index'
 import * as assert from 'assert'
 import * as tmpDir from './tmp-dir'
+import { hasCommonRPFolder } from '../dev-ops'
 
 /**
  * Create Azure DevOps environment for testing.
@@ -192,5 +193,18 @@ describe('Azure DevOps', () => {
 
     const errors = await avocado({ cwd: local, env: { SYSTEM_PULLREQUEST_TARGETBRANCH: 'master' } }).toArray()
     assert.deepStrictEqual(errors, [])
+  })
+  it('File changes has common RP folder', () => {
+    assert.ok(hasCommonRPFolder('a/b/c/specification/rp1/sssss', 'a/b/c/specification/rp1/sssss'))
+    assert.ok(hasCommonRPFolder('a/b/c/specification/network/sssss/a.json', 'tmp/a/b/c/specification/network/sssss'))
+
+    assert.deepStrictEqual(
+      hasCommonRPFolder('a/b/c/specification/network/sssss/a.json', 'tmp/a/b/c/specification/computer/sssss'),
+      false,
+    )
+    assert.deepStrictEqual(
+      hasCommonRPFolder('a/b/c/network/sssss/a.json', 'tmp/a/b/c/specification/computer/sssss'),
+      false,
+    )
   })
 })
