@@ -41,6 +41,36 @@ NOTE: When running in azure devops Avocado only report new errors involved in PR
 
 ## How to solve errors
 
+### JSON_PARSE
+
+Level: ERROR
+
+To solve json parse error, you need make sure the json format is valid.
+
+### NO_JSON_FILE_FOUND
+
+Level: ERROR
+
+Readme file references a non-existing json file. To solve the error you need to check whether the json file is existing.
+
+### UNREFERENCED_JSON_FILE
+
+Level: ERROR
+
+Json file must be referenced by the readme input file section or other json files. Eg, example swagger file should be referenced by main swagger json and for SDK generation main swagger should be referenced by the readme input file section. To solve the error you need to place the non-referenced file to proper place.
+
+### MISSING_README
+
+Level: ERROR
+
+Each resource provider folder must have a readme file which is required by downstream SDK generation. To solve the error, you need create a readme file contains SDK generation config.
+
+### NOT_AUTOREST_MARKDOWN
+
+Level: ERROR
+
+Each readme in resource provider folder should follow autorest predefined format. To solve the error, you need check the readme block quote contain whether contains 'see https://aka.ms/autorest'.
+
 ### CIRCULAR REFERENCE
 
 Level: WARNING
