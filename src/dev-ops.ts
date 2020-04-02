@@ -4,6 +4,7 @@
 import * as cli from './cli'
 import * as git from './git'
 import * as path from 'path'
+import * as err from './errors'
 import * as fs from '@ts-common/fs'
 import * as asyncIt from '@ts-common/async-iterator'
 
@@ -67,6 +68,20 @@ const parseGitFileChangeKind = (line: string) => {
     default:
       return 'Modified'
   }
+}
+
+export const hasCommonRPFolder = (pathA: string, pathB: string) => {
+  const regex = new RegExp(/specification\/(\w)+\//)
+  const matchA = pathA.match(regex)
+  const matchB = pathB.match(regex)
+  return matchA !== null && matchB !== null && matchA[0] === matchB[0]
+}
+
+export const isPRRelatedError = (fileChanges: readonly FileChange[], error: err.Error): boolean => {
+  if (error.code === 'MISSING_README') {
+    return fileChanges.some(item => hasCommonRPFolder(item.path, error.folderUrl))
+  }
+  return false
 }
 
 /**

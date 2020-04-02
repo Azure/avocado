@@ -43,6 +43,12 @@ const errorCorrelationId = (error: err.Error) => {
           url: error.jsonUrl,
         }
       }
+      case 'MISSING_README': {
+        return {
+          code: error.code,
+          url: error.folderUrl,
+        }
+      }
     }
   }
 
@@ -147,6 +153,59 @@ const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
 }
 
 const isExample = (filePath: string): boolean => filePath.split(path.sep).some(name => name === 'examples')
+
+const containsReadme = async (folder: string): Promise<boolean> => {
+  const readmePath = path.resolve(folder, 'readme.md')
+  return fs.exists(readmePath)
+}
+
+/**
+ * Validate each RP folder must have its readme file.
+ *
+ * @param specification specification folder
+ */
+const validateRPFolderMustContainReadme = (specification: string): asyncIt.AsyncIterableEx<err.Error> =>
+  asyncIt.iterable<err.Error>(async function*() {
+    const validDirs: ReadonlyArray<string> = ['data-plane', 'resource-manager']
+    const ignoredDirs: ReadonlyArray<string> = ['common']
+    const allJsonDir = fs
+      .recursiveReaddir(specification)
+      .filter(
+        filePath =>
+          path.extname(filePath) === '.json' &&
+          validDirs.some(
+            item =>
+              filePath.includes(item) && !ignoredDirs.some(ignoredItem => filePath.toLowerCase().includes(ignoredItem)),
+          ),
+      )
+      .map(filepath => path.dirname(filepath))
+
+    const allJsonSet = new Set<string>()
+    for await (const dir of allJsonDir) {
+      if (allJsonSet.has(dir)) {
+        continue
+      }
+      allJsonSet.add(dir)
+      // tslint:disable-next-line: no-let
+      let curDir = dir
+      // tslint:disable-next-line: no-let
+      let found = false
+      while (curDir !== specification) {
+        if (await containsReadme(curDir)) {
+          found = true
+        }
+        curDir = path.dirname(curDir)
+      }
+      if (!found) {
+        yield {
+          level: 'Error',
+          code: 'MISSING_README',
+          message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
+          folderUrl: dir,
+        }
+      }
+    }
+  })
 
 /**
  * The function will validate file reference as a directed graph and will detect circular reference.
@@ -314,6 +373,8 @@ const validateSpecificationFolder = (cwd: string) =>
         .recursiveReaddir(specification)
         .filter(f => path.basename(f).toLowerCase() === 'readme.md')
 
+      yield* validateRPFolderMustContainReadme(specification)
+
       yield* allReadMeFiles.flatMap(validateReadMeFile)
 
       const referencedFiles = await allReadMeFiles
@@ -360,9 +421,16 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
     await pr.checkout(pr.sourceBranch)
     const sourceMap = await avocadoForDir(pr.workingDir)
 
+    const fileChanges = await pr.diff()
+
     // remove existing errors.
+    /* Note: For MISSING_README error if the error is related to the PR changes,
+     avocado will directly report it even though it's not a new involved error in the pull request.*/
     for (const e of targetMap.keys()) {
-      sourceMap.delete(e)
+      const error = sourceMap.get(e)
+      if (error !== undefined && !devOps.isPRRelatedError(fileChanges, error)) {
+        sourceMap.delete(e)
+      }
     }
     yield* sourceMap.values()
   })

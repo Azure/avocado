@@ -47,8 +47,8 @@ describe('avocado', () => {
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The example JSON file is not referenced from the swagger file.',
-        readMeUrl: path.resolve('src/test/unreferenced_example/specification/readme.md'),
-        jsonUrl: path.resolve('src/test/unreferenced_example/specification/specs/examples/orphan_example.json'),
+        readMeUrl: path.resolve('src/test/unreferenced_example/specification/testRP/readme.md'),
+        jsonUrl: path.resolve('src/test/unreferenced_example/specification/testRP/specs/examples/orphan_example.json'),
         level: 'Error',
       },
     ]
@@ -61,8 +61,8 @@ describe('avocado', () => {
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The swagger JSON file is not referenced from the readme file.',
-        readMeUrl: path.resolve('src/test/unreferenced_spec/specification/readme.md'),
-        jsonUrl: path.resolve('src/test/unreferenced_spec/specification/specs/some.json'),
+        readMeUrl: path.resolve('src/test/unreferenced_spec/specification/testRP/readme.md'),
+        jsonUrl: path.resolve('src/test/unreferenced_spec/specification/testRP/specs/some.json'),
         level: 'Error',
       },
     ] as const
@@ -75,18 +75,18 @@ describe('avocado', () => {
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The example JSON file is not referenced from the swagger file.',
-        readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
+        readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/testRP/readme.md'),
         jsonUrl: path.resolve(
           // tslint:disable-next-line:max-line-length
-          'src/test/unreferenced_spec_with_examples/specification/specs/examples/referenced_example.json',
+          'src/test/unreferenced_spec_with_examples/specification/testRP/specs/examples/referenced_example.json',
         ),
         level: 'Error',
       },
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The swagger JSON file is not referenced from the readme file.',
-        readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/readme.md'),
-        jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/specs/orphan_spec.json'),
+        readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/testRP/readme.md'),
+        jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/testRP/specs/orphan_spec.json'),
         level: 'Error',
       },
     ] as const
@@ -109,7 +109,7 @@ describe('avocado', () => {
             line: 3,
           },
           token: '}',
-          url: path.resolve('src/test/invalid_json_trailing_comma/specification/specs/some.json'),
+          url: path.resolve('src/test/invalid_json_trailing_comma/specification/testRP/specs/some.json'),
         },
         level: 'Error',
       },
@@ -131,7 +131,7 @@ describe('avocado', () => {
             line: 1,
           },
           token: '\uFEFF',
-          url: path.resolve('src/test/invalid_json_with_bom/specification/specs/some.json'),
+          url: path.resolve('src/test/invalid_json_with_bom/specification/testRP/specs/some.json'),
         },
         level: 'Error',
       },
@@ -144,8 +144,8 @@ describe('avocado', () => {
       {
         code: 'NO_JSON_FILE_FOUND',
         message: r[0].message,
-        jsonUrl: path.resolve('src/test/invalid_ref/specification/specs/a.json'),
-        readMeUrl: path.resolve('src/test/invalid_ref/specification/readme.md'),
+        jsonUrl: path.resolve('src/test/invalid_ref/specification/testRP/specs/a.json'),
+        readMeUrl: path.resolve('src/test/invalid_ref/specification/testRP/readme.md'),
         level: 'Error',
       },
     ] as const
@@ -170,7 +170,7 @@ describe('avocado', () => {
           message: 'unexpected end of file, token: , line: 1, column: 1',
           position: { column: 1, line: 1 },
           token: '',
-          url: path.resolve('src/test/diamond_dependencies/specification/specs/common.json'),
+          url: path.resolve('src/test/diamond_dependencies/specification/testRP/specs/common.json'),
         },
         message: 'The file is not a valid JSON file.',
         level: 'Error',
@@ -185,8 +185,8 @@ describe('avocado', () => {
       {
         code: 'CIRCULAR_REFERENCE',
         message: 'The JSON file has a circular reference.',
-        readMeUrl: path.resolve('src/test/circular_reference/specification/readme.md'),
-        jsonUrl: path.resolve('src/test/circular_reference/specification/specs/c.json'),
+        readMeUrl: path.resolve('src/test/circular_reference/specification/testRP/readme.md'),
+        jsonUrl: path.resolve('src/test/circular_reference/specification/testRP/specs/c.json'),
         level: 'Warning',
       },
     ] as const
@@ -224,5 +224,18 @@ describe('avocado', () => {
     // Test $(this-folder) feature. this-folder will be parsed to current directory.
     const r = await avocado.avocado({ cwd: 'src/test/parse_this_folder', env: {} }).toArray()
     assert.strictEqual(r.length, 0)
+  })
+
+  it('no readme file', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/no_readme', env: {} }).toArray()
+    const expected = [
+      {
+        level: 'Error',
+        code: 'MISSING_README',
+        message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
+        folderUrl: path.resolve('src/test/no_readme/specification/resource-provider-A/resource-manager'),
+      },
+    ] as const
+    assert.deepStrictEqual(expected, r)
   })
 })
