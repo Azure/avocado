@@ -200,7 +200,7 @@ const validateRPFolderMustContainReadme = (specification: string): asyncIt.Async
         yield {
           level: 'Error',
           code: 'MISSING_README',
-          message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation',
+          message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
           folderUrl: dir,
         }
       }

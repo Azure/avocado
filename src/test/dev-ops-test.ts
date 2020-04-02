@@ -234,7 +234,7 @@ describe('Azure DevOps', () => {
       {
         level: 'Error',
         code: 'MISSING_README',
-        message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation',
+        message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
         folderUrl: path.resolve(
           tmpDir.getTmpRoot(),
           'devops-no-readme/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager',
@@ -270,14 +270,14 @@ describe('Azure DevOps', () => {
 
     const networkError: err.Error = {
       code: 'MISSING_README',
-      message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation',
+      message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
       level: 'Error',
       folderUrl: 'specification/network/data-plane',
     }
 
     const computeError: err.Error = {
       code: 'MISSING_README',
-      message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation',
+      message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
       level: 'Error',
       folderUrl: 'specification/compute/data-plane',
     }
