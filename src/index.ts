@@ -154,7 +154,7 @@ const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
 
 const isExample = (filePath: string): boolean => filePath.split(path.sep).some(name => name === 'examples')
 
-const isFolderContainsReadme = async (folder: string): Promise<boolean> => {
+const containsReadme = async (folder: string): Promise<boolean> => {
   const readmePath = path.resolve(folder, 'readme.md')
   return fs.exists(readmePath)
 }
@@ -191,7 +191,7 @@ const validateRPFolderMustContainReadme = (specification: string): asyncIt.Async
       // tslint:disable-next-line: no-let
       let found = false
       while (curDir !== specification) {
-        if (await isFolderContainsReadme(curDir)) {
+        if (await containsReadme(curDir)) {
           found = true
         }
         curDir = path.dirname(curDir)
