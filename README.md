@@ -19,6 +19,7 @@ Avocado major functions are listed below:
 - Validate whether `swagger file` is valid json file, and check all referenced `json` file (`referenced json` file marked in json object has the key name `"$ref"`).
 - Validate whether the folder has any files without being referenced. `swagger file` must be referenced by `readme.md` or other `swagger file`.
 - Validate whether `swagger file` has a circular reference and report a warning. For more detail, see [CIRCULAR REFERENCE](#circular-reference)
+- Validate whether each RP folder contains readme file for SDK generation.
 
 ## How to use
 
@@ -40,6 +41,36 @@ NOTE: When running in azure devops Avocado only report new errors involved in PR
 - Run single service specs: create a folder `specification`. and move your service specs folder in `specification`. run "avocado"
 
 ## How to solve errors
+
+### JSON_PARSE
+
+Level: ERROR
+
+To solve json parse error, you need make sure the json format is valid.
+
+### NO_JSON_FILE_FOUND
+
+Level: ERROR
+
+Readme file references a non-existing json file. To solve the error you need to check whether the json file is existing.
+
+### UNREFERENCED_JSON_FILE
+
+Level: ERROR
+
+Json file must be referenced by the readme input file section or other json files. Eg, example swagger file should be referenced by main swagger json and for SDK generation main swagger should be referenced by the readme input file section. To solve the error you need to place the non-referenced file to proper place.
+
+### MISSING_README
+
+Level: ERROR
+
+Each resource provider folder must have a readme file which is required by downstream SDK generation. To solve the error, you need create a readme file contains SDK generation config.
+
+### NOT_AUTOREST_MARKDOWN
+
+Level: ERROR
+
+Each readme in resource provider folder should follow autorest markdown format. To solve the error, you need check the readme block quote whether contains `see https://aka.ms/autorest` literally.
 
 ### CIRCULAR REFERENCE
 
