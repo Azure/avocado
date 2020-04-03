@@ -70,7 +70,7 @@ Each resource provider folder must have a readme file which is required by downs
 
 Level: ERROR
 
-Each readme in resource provider folder should follow autorest markdown format. To solve the error, you need check the readme block quote contain whether contains `see https://aka.ms/autorest` literally.
+Each readme in resource provider folder should follow autorest markdown format. To solve the error, you need check the readme block quote whether contains `see https://aka.ms/autorest` literally.
 
 ### CIRCULAR REFERENCE
 
