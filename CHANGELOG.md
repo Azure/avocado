@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.4
+
+- Add rule INCONSISTENT_API_VERSION to validate swagger api version must consistent with its file path.
+
 ## 0.6.3
 
 - Add rule MISSING_README to validate each RP folder must have readme.md.
@@ -7,7 +11,7 @@
 
 ## 0.6.2
 
-- Support $(this-folder)
+- Support \$(this-folder)
 
 ## 0.6.1
 

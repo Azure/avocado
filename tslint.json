@@ -10,7 +10,10 @@
     "rules": {
         "object-literal-sort-keys": false,
         "ordered-imports": false,
-        "file-name-casing": [true, "kebab-case"],
+        "file-name-casing": [
+            true,
+            "kebab-case"
+        ],
         "interface-over-type-literal": false,
         "prefer-method-signature": false,
         "member-ordering": false,
@@ -20,14 +23,27 @@
         "completed-docs": false,
         "no-void-expression": false,
         "strict-comparisons": false,
-
+        "strict-boolean-expressions": [
+            true,
+            "allow-null-union",
+            "allow-undefined-union",
+            "allow-string",
+            "allow-enum",
+            "allow-number"
+        ],
+        
         // Recommended built-in rules
         "no-var-keyword": true,
         "no-parameter-reassignment": true,
         "typedef": true,
-        "quotemark": [true, "single"],
-        "max-line-length": [true, 120],
-
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "max-line-length": [
+            true,
+            120
+        ],
         // Immutability rules
         "readonly-keyword": true,
         "readonly-array": true,
@@ -36,7 +52,6 @@
         "no-delete": true,
         "no-method-signature": true,
         "no-delete": true,
-
         // Functional style rules
         "no-this": false,
         "no-class": true,
@@ -49,5 +64,7 @@
         "no-reject": true,
         "prettier": true
     },
-    "rulesDirectory": ["tslint-plugin-prettier"]
+    "rulesDirectory": [
+        "tslint-plugin-prettier"
+    ]
 }
