@@ -11,7 +11,7 @@
 
 ## 0.6.2
 
-- Support \$(this-folder)
+- Support $(this-folder)
 
 ## 0.6.1
 
