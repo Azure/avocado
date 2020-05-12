@@ -49,6 +49,12 @@ const errorCorrelationId = (error: err.Error) => {
           url: error.folderUrl,
         }
       }
+      case 'INCONSISTENT_API_VERSION': {
+        return {
+          code: error.code,
+          url: error.jsonUrl,
+        }
+      }
     }
   }
 
@@ -159,6 +165,22 @@ const containsReadme = async (folder: string): Promise<boolean> => {
   return fs.exists(readmePath)
 }
 
+const validateSpecificationAPIVersion = (current: Specification, document: json.JsonObject): it.IterableEx<err.Error> =>
+  it.iterable<err.Error>(function*() {
+    const info = document.info as json.JsonObject | undefined
+    if (info !== undefined) {
+      if (!current.path.includes(info.version as string)) {
+        yield {
+          code: 'INCONSISTENT_API_VERSION',
+          level: 'Error',
+          message: 'The API version of the swagger is inconsistent with its file path.',
+          jsonUrl: current.path,
+          readMeUrl: current.readMePath,
+        }
+      }
+    }
+  })
+
 /**
  * Validate each RP folder must have its readme file.
  *
@@ -178,7 +200,7 @@ const validateRPFolderMustContainReadme = (specification: string): asyncIt.Async
               filePath.includes(item) && !ignoredDirs.some(ignoredItem => filePath.toLowerCase().includes(ignoredItem)),
           ),
       )
-      .map(filepath => path.dirname(filepath))
+      .map(filePath => path.dirname(filePath))
 
     const allJsonSet = new Set<string>()
     for await (const dir of allJsonDir) {
@@ -249,6 +271,10 @@ const DFSTraversalValidate = (
     }
     const { errors, document } = jsonParse(current.path, file.toString())
     yield* errors
+
+    if (current.kind === 'SWAGGER' && document !== null) {
+      yield* validateSpecificationAPIVersion(current, document as json.JsonObject)
+    }
 
     // Example file should ignore `$ref` because it's usually meaningless.
     const refFileNames = current.kind === 'SWAGGER' ? getReferencedFileNames(current.path, document) : []

@@ -72,6 +72,12 @@ Level: ERROR
 
 Each readme in resource provider folder should follow autorest markdown format. To solve the error, you need check the readme block quote whether contains `see https://aka.ms/autorest` literally.
 
+### INCONSISTENT_API_VERSION
+
+Level: ERROR
+
+Swagger json file api version must consistent with its file path. Swagger can define [swagger 2.0 basic-structure](https://swagger.io/docs/specification/2-0/basic-structure/) which contains api version. To solve the error, you need modify either your swagger file location or swagger file api version to make both of them consistent.
+
 ### CIRCULAR REFERENCE
 
 Level: WARNING

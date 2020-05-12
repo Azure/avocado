@@ -238,4 +238,18 @@ describe('avocado', () => {
     ] as const
     assert.deepStrictEqual(expected, r)
   })
+
+  it('api version inconsistent', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/api_version_inconsistent', env: {} }).toArray()
+    const expected = [
+      {
+        code: 'INCONSISTENT_API_VERSION',
+        level: 'Error',
+        message: 'The API version of the swagger is inconsistent with its file path.',
+        jsonUrl: path.resolve('src/test/api_version_inconsistent/specification/testRP/specs/2020-05-01/b.json'),
+        readMeUrl: path.resolve('src/test/api_version_inconsistent/specification/testRP/readme.md'),
+      },
+    ] as const
+    assert.deepStrictEqual(expected, r)
+  })
 })

@@ -11,6 +11,7 @@ type ErrorMessage =
   | 'The JSON file has a circular reference.'
   | 'The file is not a valid JSON file.'
   | 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.'
+  | 'The API version of the swagger is inconsistent with its file path.'
 
 export interface IErrorBase {
   readonly level: 'Warning' | 'Error'
@@ -54,7 +55,7 @@ export type FileError = {
   /**
    * Error code.
    */
-  readonly code: 'NO_JSON_FILE_FOUND' | 'UNREFERENCED_JSON_FILE' | 'CIRCULAR_REFERENCE'
+  readonly code: 'NO_JSON_FILE_FOUND' | 'UNREFERENCED_JSON_FILE' | 'CIRCULAR_REFERENCE' | 'INCONSISTENT_API_VERSION'
   /**
    * Error message.
    */
