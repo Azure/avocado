@@ -19,6 +19,7 @@ import * as devOps from './dev-ops'
 import * as err from './errors'
 import * as format from '@azure/swagger-validation-common'
 
+// tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
 
 export { devOps, cli, git, childProcess }
@@ -483,12 +484,13 @@ export const UnifiedPipelineReport = (filePath: string | undefined): cli.Report 
     console.log(info)
   },
   logError: (error: Error) => {
-    console.log(JSON.stringify(error))
+    console.log(error.stack)
     if (filePath !== undefined) {
       const result: format.RawMessageRecord = {
         type: 'Raw',
         level: 'Error',
-        message: error.stack || '',
+        // tslint:disable-next-line: no-non-null-assertion
+        message: error.stack!,
         time: new Date(),
       }
       fs.appendFileSync(filePath, JSON.stringify(result) + '\n')
