@@ -1,3 +1,4 @@
+import { avocado, UnifiedPipelineReport } from './../index'
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
@@ -26,8 +27,9 @@ describe('cli', () => {
     // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
-      error: s => (error += s),
-      info: s => (info += s),
+      logError: s => (error += s),
+      logResult: s => (error += s),
+      logInfo: s => (info += s),
     }
     await cli.run(() => ai.fromSequence<IErrorBase>(), report)
     assert.strictEqual(process.exitCode, 0)
@@ -40,8 +42,9 @@ describe('cli', () => {
     // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
-      error: s => (error += s),
-      info: s => (info += s),
+      logResult: s => (error += s),
+      logError: s => (error += s),
+      logInfo: s => (info += s),
     }
     await cli.run(() => ai.fromSequence<MyError>(...Array<MyError>({ level: 'Error', message: 'some error' })), report)
     assert.strictEqual(process.exitCode, 1)
@@ -54,8 +57,9 @@ describe('cli', () => {
     // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
-      error: s => (error += s),
-      info: s => (info += s),
+      logResult: s => (error += s),
+      logError: s => (error += s),
+      logInfo: s => (info += s),
     }
     await cli.run(
       () => ai.fromSequence<MyError>(...Array<MyError>({ level: 'Warning', message: 'some error' })),
@@ -71,8 +75,9 @@ describe('cli', () => {
     // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
-      error: s => (error += s),
-      info: s => (info += s),
+      logResult: s => (error += s),
+      logError: s => (error += s),
+      logInfo: s => (info += s),
     }
     // tslint:disable-next-line: no-any
     await cli.run(() => ai.fromSequence(...Array<any>({ level: 'hint', message: 'some error' })), report)
@@ -89,8 +94,9 @@ describe('cli', () => {
     // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
-      error: s => (error += s),
-      info: s => (info += s),
+      logResult: s => (error += s),
+      logError: s => (error += s),
+      logInfo: s => (info += s),
     }
     const f = () => {
       // tslint:disable-next-line:no-throw
@@ -100,5 +106,9 @@ describe('cli', () => {
     assert.strictEqual(process.exitCode, 1)
     assert.ok(error.startsWith('\x1b[31mINTERNAL ERROR\x1b[0m'))
     assert.strictEqual(info, '')
+  })
+
+  it('unified pipeline reporter', async () => {
+    await cli.run(avocado, UnifiedPipelineReport('pipe.log'), { cwd: 'src/test/api_version_inconsistent', env: {} })
   })
 })

@@ -2,23 +2,22 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import * as stringMap from '@ts-common/string-map'
-import * as yaml from 'js-yaml'
 import { IErrorBase } from './errors'
 
 export type Report = {
   /**
-   * This is a callback function to report an error.
+   * This is a callback function to report validation tools result.
    */
-  readonly error: (error: unknown) => void
+  readonly logResult: (error: any) => void
+  /**
+   * This is a callback function to report validation tools exception.
+   */
+  readonly logError: (error: any) => void
   /**
    * This is a callback function to report an info.
    */
-  readonly info: (info: unknown) => void
+  readonly logInfo: (info: any) => void
 }
-
-const consoleRed = '\x1b[31m'
-const consoleYellow = '\x1b[33m'
-const consoleReset = '\x1b[0m'
 
 export type Config = {
   /**
@@ -45,31 +44,29 @@ export const defaultConfig = () => ({
 export const run = async <T extends IErrorBase>(
   tool: (config: Config) => AsyncIterable<T>,
   // tslint:disable-next-line:no-console no-unbound-method
-  report: Report = { error: console.error, info: console.log },
+  report: Report = { logResult: console.log, logError: console.error, logInfo: console.log },
+  config: Config = defaultConfig(),
 ): Promise<void> => {
-  // tslint:disable-next-line:no-try
   try {
-    const errors = tool(defaultConfig())
+    const errors = tool(config)
     // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
       if (e.level === 'Warning') {
-        report.error(`${consoleYellow}warning: ${consoleReset}`)
+        report.logResult(e)
       } else if (e.level === 'Error') {
-        report.error(`${consoleRed}error: ${consoleReset}`)
         errorsNumber += 1
       } else {
-        report.error(`${consoleRed}INTERNAL ERROR: undefined error level. level: ${e.level}. ${consoleReset}`)
         errorsNumber += 1
       }
-      report.error(yaml.safeDump(e))
+      report.logResult(e)
     }
-    report.info(`errors: ${errorsNumber}`)
+    report.logInfo(`errors: ${errorsNumber}`)
     // tslint:disable-next-line:no-object-mutation
     process.exitCode = errorsNumber === 0 ? 0 : 1
   } catch (e) {
-    report.error(`${consoleRed}INTERNAL ERROR${consoleReset}`)
-    report.error(e)
+    report.logInfo(`INTERNAL ERROR`)
+    report.logError(e)
     // tslint:disable-next-line:no-object-mutation
     process.exitCode = 1
   }

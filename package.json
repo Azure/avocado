@@ -78,6 +78,7 @@
   "homepage": "https://github.com/Azure/avocado#readme",
   "dependencies": {
     "@azure/openapi-markdown": "^0.9.1",
+    "@azure/swagger-validation-common": "0.0.3",
     "@ts-common/async-iterator": "^0.2.2",
     "@ts-common/commonmark-to-markdown": "^1.2.0",
     "@ts-common/fs": "^0.2.0",
@@ -87,13 +88,16 @@
     "@ts-common/string-map": "^0.3.0",
     "commonmark": "^0.29.0",
     "js-yaml": "^3.13.1",
-    "node-object-hash": "^1.4.2"
+    "node-object-hash": "^1.4.2",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "@types/js-yaml": "^3.12.1",
     "@types/jest": "^24.0.15",
+    "@types/js-yaml": "^3.12.1",
     "@types/node": "^10.14.6",
+    "@types/yargs": "^15.0.5",
     "jest": "^24.8.0",
+    
     "jest-junit": "^6.4.0",
     "prettier": "^1.18.2",
     "tslint": "~5.18.0",
