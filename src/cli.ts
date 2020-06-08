@@ -35,6 +35,8 @@ export const defaultConfig = () => ({
   env: process.env,
 })
 
+export const isAzurePipelineEnv = (): boolean => process.env.SYSTEM_PULLREQUEST_TARGETBRANCH !== undefined
+
 /**
  * The function executes the given `tool` and prints errors to `stderr`.
  *
@@ -62,10 +64,23 @@ export const run = async <T extends IErrorBase>(
       report.logResult(e)
     }
     report.logInfo(`errors: ${errorsNumber}`)
+    if (errorsNumber > 0) {
+      if (isAzurePipelineEnv()) {
+        report.logInfo('##vso[task.setVariable variable=ValidationResult]failure')
+      }
+      // tslint:disable-next-line: no-object-mutation
+      process.exitCode = 1
+    } else {
+      if (isAzurePipelineEnv()) {
+        report.logInfo('##vso[task.setVariable variable=ValidationResult]success')
+      }
+      // tslint:disable-next-line: no-object-mutation
+      process.exitCode = 0
+    }
     // tslint:disable-next-line:no-object-mutation
-    process.exitCode = errorsNumber === 0 ? 0 : 1
   } catch (e) {
     report.logInfo(`INTERNAL ERROR`)
+    report.logInfo('##vso[task.setVariable variable=ValidationResult]failure')
     report.logError(e)
     // tslint:disable-next-line:no-object-mutation
     process.exitCode = 1
