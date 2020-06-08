@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -97,7 +97,6 @@
     "@types/node": "^10.14.6",
     "@types/yargs": "^15.0.5",
     "jest": "^24.8.0",
-
     "jest-junit": "^6.4.0",
     "prettier": "^1.18.2",
     "tslint": "~5.18.0",

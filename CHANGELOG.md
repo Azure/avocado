@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.0
+
+- Add detail log file report
+- Use yargs for cli
+
 ## 0.6.4
 
 - Add rule INCONSISTENT_API_VERSION to validate swagger api version must consistent with its file path.
@@ -11,7 +16,7 @@
 
 ## 0.6.2
 
-- Support $(this-folder)
+- Support \$(this-folder)
 
 ## 0.6.1
 
