@@ -12,6 +12,7 @@ import { IErrorBase } from '../errors'
 describe('cli', () => {
   type MyError = { readonly message: string } & IErrorBase
 
+  // tslint:disable-next-line: no-object-mutation
   it('no errors, default output', async () => {
     // tslint:disable-next-line:no-let
     let cwd: unknown
@@ -67,7 +68,7 @@ describe('cli', () => {
       report,
     )
     assert.strictEqual(process.exitCode, 0)
-    assert.strictEqual(error, '{"level":"Warning","message":"some error"}{"level":"Warning","message":"some error"}')
+    assert.strictEqual(error, '{"level":"Warning","message":"some error"}')
     assert.strictEqual(info, 'errors: 0')
   })
   it('internal error: undefined error level', async () => {
@@ -106,7 +107,26 @@ describe('cli', () => {
     assert.strictEqual(info, 'INTERNAL ERROR')
   })
 
+  it('test unified pipeline report result log with warning', async () => {
+    // tslint:disable-next-line: no-object-mutation
+    process.env.SYSTEM_PULLREQUEST_TARGETBRANCH = 'master'
+    await cli.run(avocado, UnifiedPipelineReport('pipe.log'), { cwd: 'src/test/circular_reference', env: {} })
+    const expected = {
+      code: 'CIRCULAR_REFERENCE',
+      message: 'The JSON file has a circular reference.',
+      readMeUrl: path.resolve('src/test/circular_reference/specification/testRP/readme.md'),
+      jsonUrl: path.resolve('src/test/circular_reference/specification/testRP/specs/c.json'),
+      level: 'Warning',
+    }
+    const actual: any = JSON.parse(fs.readFileSync('pipe.log', 'utf8'))
+    assert.deepStrictEqual(expected.code, actual.code)
+    assert.deepStrictEqual(expected.message, actual.message)
+    fs.unlinkSync('pipe.log')
+  })
+
   it('test unified pipeline report result log', async () => {
+    // tslint:disable-next-line: no-object-mutation
+    process.env.SYSTEM_PULLREQUEST_TARGETBRANCH = 'master'
     await cli.run(avocado, UnifiedPipelineReport('pipe.log'), { cwd: 'src/test/api_version_inconsistent', env: {} })
     const expected = {
       code: 'INCONSISTENT_API_VERSION',

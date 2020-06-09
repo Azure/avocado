@@ -54,13 +54,7 @@ export const run = async <T extends IErrorBase>(
     // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
-      if (e.level === 'Warning') {
-        report.logResult(e)
-      } else if (e.level === 'Error') {
-        errorsNumber += 1
-      } else {
-        errorsNumber += 1
-      }
+      errorsNumber += e.level !== 'Warning' && e.level !== 'Info' ? 1 : 0
       report.logResult(e)
     }
     report.logInfo(`errors: ${errorsNumber}`)
@@ -80,7 +74,9 @@ export const run = async <T extends IErrorBase>(
     // tslint:disable-next-line:no-object-mutation
   } catch (e) {
     report.logInfo(`INTERNAL ERROR`)
-    report.logInfo('##vso[task.setVariable variable=ValidationResult]failure')
+    if (isAzurePipelineEnv()) {
+      report.logInfo('##vso[task.setVariable variable=ValidationResult]failure')
+    }
     report.logError(e)
     // tslint:disable-next-line:no-object-mutation
     process.exitCode = 1

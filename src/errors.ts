@@ -16,7 +16,7 @@ type ErrorMessage =
   | 'The API version of the swagger is inconsistent with its file path.'
 
 export interface IErrorBase {
-  readonly level: 'Warning' | 'Error'
+  readonly level: 'Warning' | 'Error' | 'Info'
 }
 
 export type JsonParseError = {

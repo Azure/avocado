@@ -501,7 +501,7 @@ export const UnifiedPipelineReport = (filePath: string | undefined): cli.Report 
     if (filePath !== undefined) {
       const result: format.ResultMessageRecord = {
         type: 'Result',
-        level: error.level as format.MessageLevel,
+        level: error.level,
         code: error.code,
         message: error.message,
         docUrl: 'https://github.com/Azure/avocado/blob/master/README.md',
