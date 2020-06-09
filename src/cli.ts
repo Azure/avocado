@@ -60,13 +60,13 @@ export const run = async <T extends IErrorBase>(
     report.logInfo(`errors: ${errorsNumber}`)
     if (errorsNumber > 0) {
       if (isAzurePipelineEnv()) {
-        report.logInfo('##vso[task.setVariable variable=ValidationResult]failure')
+        console.log('##vso[task.setVariable variable=ValidationResult]failure')
       }
       // tslint:disable-next-line: no-object-mutation
       process.exitCode = 1
     } else {
       if (isAzurePipelineEnv()) {
-        report.logInfo('##vso[task.setVariable variable=ValidationResult]success')
+        console.log('##vso[task.setVariable variable=ValidationResult]success')
       }
       // tslint:disable-next-line: no-object-mutation
       process.exitCode = 0
@@ -75,7 +75,7 @@ export const run = async <T extends IErrorBase>(
   } catch (e) {
     report.logInfo(`INTERNAL ERROR`)
     if (isAzurePipelineEnv()) {
-      report.logInfo('##vso[task.setVariable variable=ValidationResult]failure')
+      console.log('##vso[task.setVariable variable=ValidationResult]failure')
     }
     report.logError(e)
     // tslint:disable-next-line:no-object-mutation

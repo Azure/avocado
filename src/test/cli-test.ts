@@ -13,8 +13,6 @@ describe('cli', () => {
   type MyError = { readonly message: string } & IErrorBase
 
   it('no errors, default output', async () => {
-    // tslint:disable-next-line: no-object-mutation
-    process.env.SYSTEM_PULLREQUEST_TARGETBRANCH = undefined
     // tslint:disable-next-line:no-let
     let cwd: unknown
     await cli.run(c => {
