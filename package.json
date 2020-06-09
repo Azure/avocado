@@ -22,7 +22,7 @@
     ]
   },
   "scripts": {
-    "integration": "npx tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
+    "integration": "tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
     "cli": "tsc && node ./bin/cli.js",
     "tsc": "tsc",
     "prettier": "prettier ./src/**/*.ts",
