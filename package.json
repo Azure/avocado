@@ -23,11 +23,11 @@
   },
   "scripts": {
     "integration": "npx tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
-    "cli": "npx tsc && node ./bin/cli.js",
-    "tsc": "npx tsc",
+    "cli": "tsc && node ./bin/cli.js",
+    "tsc": "tsc",
     "prettier": "prettier ./src/**/*.ts",
     "tslint": "tslint -t verbose --project ./",
-    "test": "npx tsc && tslint -t verbose --project ./ && jest --silent",
+    "test": "tsc && tslint -t verbose --project ./ && jest --silent",
     "standard": "standard src/**/*.ts",
     "prepack": "npm install && tsc"
   },
