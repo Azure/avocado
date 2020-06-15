@@ -47,7 +47,13 @@ describe('cli', () => {
       logError: s => (error += s),
       logInfo: s => (info += s),
     }
-    await cli.run(() => ai.fromSequence<MyError>(...Array<MyError>({ level: 'Error', message: 'some error' })), report)
+    await cli.run(
+      () =>
+        ai.fromSequence<MyError>(
+          ...Array<MyError>({ level: 'Error', message: 'some error' }),
+        ),
+      report,
+    )
     assert.strictEqual(process.exitCode, 1)
     assert.strictEqual(error, '{"level":"Error","message":"some error"}')
     assert.strictEqual(info, 'errors: 1')
@@ -63,7 +69,10 @@ describe('cli', () => {
       logInfo: s => (info += s),
     }
     await cli.run(
-      () => ai.fromSequence<MyError>(...Array<MyError>({ level: 'Warning', message: 'some error' })),
+      () =>
+        ai.fromSequence<MyError>(
+          ...Array<MyError>({ level: 'Warning', message: 'some error' }),
+        ),
       report,
     )
     assert.strictEqual(process.exitCode, 0)
@@ -81,7 +90,13 @@ describe('cli', () => {
       logInfo: s => (info += s),
     }
     // tslint:disable-next-line: no-any
-    await cli.run(() => ai.fromSequence(...Array<any>({ level: 'hint', message: 'some error' })), report)
+    await cli.run(
+      () =>
+        ai.fromSequence(
+          ...Array<any>({ level: 'hint', message: 'some error' }),
+        ),
+      report,
+    )
     assert.strictEqual(process.exitCode, 1)
     console.log(JSON.stringify(error))
     assert.strictEqual(error, '{"level":"hint","message":"some error"}')
