@@ -71,7 +71,7 @@ describe('errors', () => {
       [
         {
           tag: 'readme',
-          path: 'src/test/not_autorest_markdown/specification/readme.md',
+          path: 'https://github.com/undefined/blob/undefined/specification/readme.md',
         },
         {
           tag: 'helpUrl',
@@ -81,21 +81,21 @@ describe('errors', () => {
       [
         {
           tag: 'readme',
-          path: 'src/test/no_file_found/specification/readme.md',
+          path: 'https://github.com/undefined/blob/undefined/specification/readme.md',
         },
         {
           tag: 'json',
-          path: 'src/test/no_file_found/specification/specs/some.json',
+          path: 'https://github.com/undefined/blob/undefined/specification/specs/some.json',
         },
       ],
       [
         {
           tag: 'readme',
-          path: 'src/test/unreferenced_example/specification/testRP/readme.md',
+          path: 'https://github.com/undefined/blob/undefined/specification/testRP/readme.md',
         },
         {
           tag: 'json',
-          path: 'src/test/unreferenced_example/specification/testRP/specs/examples/orphan_example.json',
+          path: 'https://github.com/undefined/blob/undefined/specification/testRP/specs/examples/orphan_example.json',
         },
       ],
       [
@@ -109,27 +109,27 @@ describe('errors', () => {
       [
         {
           tag: 'readme',
-          path: 'src/test/circular_reference/specification/testRP/readme.md',
+          path: 'https://github.com/undefined/blob/undefined/specification/testRP/readme.md',
         },
         {
           tag: 'json',
-          path: 'src/test/circular_reference/specification/testRP/specs/c.json',
+          path: 'https://github.com/undefined/blob/undefined/specification/testRP/specs/c.json',
         },
       ],
       [
         {
           tag: 'folder',
-          path: 'src/test/no_readme/specification/resource-provider-A/resource-manager',
+          path: 'specification/resource-provider-A/resource-manager',
         },
       ],
       [
         {
           tag: 'readme',
-          path: 'src/test/api_version_inconsistent/specification/testRP/readme.md',
+          path: 'https://github.com/undefined/blob/undefined/specification/testRP/readme.md',
         },
         {
           tag: 'json',
-          path: 'src/test/api_version_inconsistent/specification/testRP/specs/2020-05-01/b.json',
+          path: 'https://github.com/undefined/blob/undefined/specification/testRP/specs/2020-05-01/b.json',
         },
       ],
       [],

@@ -50,14 +50,20 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
     case 'JSON_PARSE':
       return [{ tag: 'json', path: JSON.stringify(error.error) }]
     case 'NOT_AUTOREST_MARKDOWN':
-      return [{ tag: 'readme', path: error.readMeUrl }, { tag: 'helpUrl', path: error.helpUrl }]
+      return [
+        { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
+        { tag: 'helpUrl', path: error.helpUrl },
+      ]
     case 'NO_JSON_FILE_FOUND':
     case 'UNREFERENCED_JSON_FILE':
     case 'CIRCULAR_REFERENCE':
     case 'INCONSISTENT_API_VERSION':
-      return [{ tag: 'readme', path: error.readMeUrl }, { tag: 'json', path: error.jsonUrl }]
+      return [
+        { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
+        { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
+      ]
     case 'MISSING_README':
-      return [{ tag: 'folder', path: error.folderUrl }]
+      return [{ tag: 'folder', path: format.getRelativeSwaggerPathToRepo(error.folderUrl) }]
     default:
       return []
   }
