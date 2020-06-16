@@ -78,7 +78,7 @@ Level: ERROR
 
 Swagger json file api version must consistent with its file path. Swagger can define [swagger 2.0 basic-structure](https://swagger.io/docs/specification/2-0/basic-structure/) which contains api version. To solve the error, you need modify either your swagger file location or swagger file api version to make both of them consistent.
 
-### CIRCULAR REFERENCE
+### CIRCULAR_REFERENCE
 
 Level: WARNING
 
