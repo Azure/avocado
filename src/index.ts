@@ -504,7 +504,7 @@ export const UnifiedPipelineReport = (filePath: string | undefined): cli.Report 
         level: error.level,
         code: error.code,
         message: error.message,
-        docUrl: 'https://github.com/Azure/avocado/blob/master/README.md',
+        docUrl: `https://github.com/Azure/avocado/blob/master/README.md#${error.code}`,
         time: new Date(),
         paths: err.getPathInfoFromError(error),
       }
