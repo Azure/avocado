@@ -63,7 +63,7 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
         { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
       ]
     case 'MISSING_README':
-      return [{ tag: 'folder', path: format.getRelativeSwaggerPathToRepo(error.folderUrl) }]
+      return [{ tag: 'folder', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.folderUrl)) }]
     default:
       return []
   }

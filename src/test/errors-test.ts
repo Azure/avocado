@@ -119,7 +119,7 @@ describe('errors', () => {
       [
         {
           tag: 'folder',
-          path: 'specification/resource-provider-A/resource-manager',
+          path: 'https://github.com/undefined/blob/undefined/specification/resource-provider-A/resource-manager',
         },
       ],
       [
