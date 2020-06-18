@@ -24,15 +24,9 @@
         "no-void-expression": false,
         "strict-comparisons": false,
         "strict-boolean-expressions": [
-            true,
-            "allow-null-union",
-            "allow-undefined-union",
-            "allow-string",
-            "allow-enum",
-            "allow-number"
+            false
         ],
-        
-        // Recommended built-in rules
+
         "no-var-keyword": true,
         "no-parameter-reassignment": true,
         "typedef": true,
@@ -44,25 +38,23 @@
             true,
             120
         ],
-        // Immutability rules
+
         "readonly-keyword": true,
-        "readonly-array": true,
         "no-let": true,
         "no-object-mutation": true,
         "no-delete": true,
         "no-method-signature": true,
-        "no-delete": true,
-        // Functional style rules
         "no-this": false,
-        "no-class": true,
+        "no-class": false,
         "no-mixed-interface": true,
-        // "no-expression-statement": true,
-        // "no-if-statement": true,
-        // "no-loop-statement": true,
-        "no-throw": true,
-        "no-try": true,
+        "no-throw": false,
+        "no-try": false,
         "no-reject": true,
-        "prettier": true
+        "prettier": true,
+        "no-any": false,
+        "no-console": false,
+        "prefer-template": false,
+        "no-unsafe-any": false
     },
     "rulesDirectory": [
         "tslint-plugin-prettier"

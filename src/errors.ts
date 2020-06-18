@@ -1,7 +1,9 @@
+import { JsonParseError } from './errors'
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import * as jsonParser from '@ts-common/json-parser'
+import * as format from '@azure/swagger-validation-common'
 
 type ErrorMessage =
   | 'The example JSON file is not referenced from the swagger file.'
@@ -14,59 +16,26 @@ type ErrorMessage =
   | 'The API version of the swagger is inconsistent with its file path.'
 
 export interface IErrorBase {
-  readonly level: 'Warning' | 'Error'
+  readonly level: 'Warning' | 'Error' | 'Info'
 }
 
 export type JsonParseError = {
-  /**
-   * Error code. Always 'JSON_PARSE'
-   */
   readonly code: 'JSON_PARSE'
-  /**
-   * Error Message
-   */
   readonly message: ErrorMessage
-  /**
-   * JSON Error.
-   */
   readonly error: jsonParser.ParseError
 } & IErrorBase
 
 export type NotAutoRestMarkDown = {
-  /**
-   * Error code.
-   */
   readonly code: 'NOT_AUTOREST_MARKDOWN'
-  /**
-   * Error message.
-   */
   readonly message: ErrorMessage
-  /**
-   * URL of `readme.md` file.
-   */
   readonly readMeUrl: string
-  /**
-   * Help URL.
-   */
   readonly helpUrl: string
 } & IErrorBase
 
 export type FileError = {
-  /**
-   * Error code.
-   */
   readonly code: 'NO_JSON_FILE_FOUND' | 'UNREFERENCED_JSON_FILE' | 'CIRCULAR_REFERENCE' | 'INCONSISTENT_API_VERSION'
-  /**
-   * Error message.
-   */
   readonly message: ErrorMessage
-  /**
-   * URL of `readme.md` file.
-   */
   readonly readMeUrl: string
-  /**
-   * URL of JSON file.
-   */
   readonly jsonUrl: string
 } & IErrorBase
 
@@ -75,5 +44,29 @@ export type MissingReadmeError = {
   readonly message: ErrorMessage
   readonly folderUrl: string
 } & IErrorBase
+
+export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
+  switch (error.code) {
+    case 'JSON_PARSE':
+      return [{ tag: 'json', path: JSON.stringify(error.error) }]
+    case 'NOT_AUTOREST_MARKDOWN':
+      return [
+        { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
+        { tag: 'helpUrl', path: error.helpUrl },
+      ]
+    case 'NO_JSON_FILE_FOUND':
+    case 'UNREFERENCED_JSON_FILE':
+    case 'CIRCULAR_REFERENCE':
+    case 'INCONSISTENT_API_VERSION':
+      return [
+        { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
+        { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
+      ]
+    case 'MISSING_README':
+      return [{ tag: 'folder', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.folderUrl)) }]
+    default:
+      return []
+  }
+}
 
 export type Error = JsonParseError | FileError | NotAutoRestMarkDown | MissingReadmeError

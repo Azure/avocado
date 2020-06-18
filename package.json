@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,7 +27,7 @@
     "tsc": "tsc",
     "prettier": "prettier ./src/**/*.ts",
     "tslint": "tslint -t verbose --project ./",
-    "test": "tsc && tslint -t verbose --project ./ && jest",
+    "test": "tsc && tslint -t verbose --project ./ && jest --silent",
     "standard": "standard src/**/*.ts",
     "prepack": "npm install && tsc"
   },
@@ -43,7 +43,7 @@
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 100,
+        "branches": 97,
         "functions": 100,
         "lines": 100,
         "statements": 100
@@ -78,6 +78,7 @@
   "homepage": "https://github.com/Azure/avocado#readme",
   "dependencies": {
     "@azure/openapi-markdown": "^0.9.1",
+    "@azure/swagger-validation-common": "^0.0.5",
     "@ts-common/async-iterator": "^0.2.2",
     "@ts-common/commonmark-to-markdown": "^1.2.0",
     "@ts-common/fs": "^0.2.0",
@@ -87,12 +88,14 @@
     "@ts-common/string-map": "^0.3.0",
     "commonmark": "^0.29.0",
     "js-yaml": "^3.13.1",
-    "node-object-hash": "^1.4.2"
+    "node-object-hash": "^1.4.2",
+    "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "@types/js-yaml": "^3.12.1",
     "@types/jest": "^24.0.15",
+    "@types/js-yaml": "^3.12.1",
     "@types/node": "^10.14.6",
+    "@types/yargs": "^15.0.5",
     "jest": "^24.8.0",
     "jest-junit": "^6.4.0",
     "prettier": "^1.18.2",
@@ -101,6 +104,6 @@
     "tslint-config-standard": "^8.0.1",
     "tslint-immutable": "^6.0.1",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.5.2"
+    "typescript": "3.5.2"
   }
 }

@@ -2,7 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import * as path from 'path'
-import * as fs from '@ts-common/fs'
+import * as tscommonFs from '@ts-common/fs'
+import * as fs from 'fs'
 import * as md from '@ts-common/commonmark-to-markdown'
 import * as openApiMd from '@azure/openapi-markdown'
 import * as asyncIt from '@ts-common/async-iterator'
@@ -14,10 +15,12 @@ import * as commonmark from 'commonmark'
 import * as cli from './cli'
 import * as git from './git'
 import * as childProcess from './child-process'
-// tslint:disable-next-line:no-require-imports
-import nodeObjectHash = require('node-object-hash')
 import * as devOps from './dev-ops'
 import * as err from './errors'
+import * as format from '@azure/swagger-validation-common'
+
+// tslint:disable-next-line: no-require-imports
+import nodeObjectHash = require('node-object-hash')
 
 export { devOps, cli, git, childProcess }
 
@@ -162,7 +165,7 @@ const isExample = (filePath: string): boolean => filePath.split(path.sep).some(n
 
 const containsReadme = async (folder: string): Promise<boolean> => {
   const readmePath = path.resolve(folder, 'readme.md')
-  return fs.exists(readmePath)
+  return tscommonFs.exists(readmePath)
 }
 
 const validateSpecificationAPIVersion = (current: Specification, document: json.JsonObject): it.IterableEx<err.Error> =>
@@ -190,7 +193,7 @@ const validateRPFolderMustContainReadme = (specification: string): asyncIt.Async
   asyncIt.iterable<err.Error>(async function*() {
     const validDirs: ReadonlyArray<string> = ['data-plane', 'resource-manager']
     const ignoredDirs: ReadonlyArray<string> = ['common']
-    const allJsonDir = fs
+    const allJsonDir = tscommonFs
       .recursiveReaddir(specification)
       .filter(
         filePath =>
@@ -258,7 +261,7 @@ const DFSTraversalValidate = (
 
     // tslint:disable-next-line:no-try
     try {
-      file = await fs.readFile(current.path)
+      file = await tscommonFs.readFile(current.path)
     } catch (e) {
       yield {
         code: 'NO_JSON_FILE_FOUND',
@@ -306,7 +309,7 @@ const DFSTraversalValidate = (
  */
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
-    const file = await fs.readFile(readMePath)
+    const file = await tscommonFs.readFile(readMePath)
     const m = md.parse(file.toString())
     if (!isAutoRestMd(m)) {
       yield {
@@ -361,7 +364,7 @@ const validateInputFiles = (
 
 const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
   asyncIt.iterable<Specification>(async function*() {
-    const file = await fs.readFile(readMePath)
+    const file = await tscommonFs.readFile(readMePath)
     const m = md.parse(file.toString())
     const dir = path.dirname(readMePath)
 
@@ -377,7 +380,7 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
   // tslint:disable-next-line: no-async-without-await
   asyncIt.iterable<Specification>(async function*() {
     const dir = path.dirname(readMePath)
-    yield* fs
+    yield* tscommonFs
       .recursiveReaddir(dir)
       .filter(filePath => path.extname(filePath) === '.json')
       .map<Specification>(filePath => ({
@@ -394,8 +397,8 @@ const validateSpecificationFolder = (cwd: string) =>
   asyncIt.iterable<err.Error>(async function*() {
     const specification = path.resolve(path.join(cwd, 'specification'))
 
-    if (await fs.exists(specification)) {
-      const allReadMeFiles = fs
+    if (await tscommonFs.exists(specification)) {
+      const allReadMeFiles = tscommonFs
         .recursiveReaddir(specification)
         .filter(f => path.basename(f).toLowerCase() === 'readme.md')
 
@@ -474,3 +477,38 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
       yield* (await avocadoForDir(config.cwd)).values()
     }
   })
+
+export const UnifiedPipelineReport = (filePath: string | undefined): cli.Report => ({
+  logInfo: (info: any) => {
+    // tslint:disable-next-line: no-console
+    console.log(info)
+  },
+  logError: (error: Error) => {
+    console.log(error.stack)
+    if (filePath !== undefined) {
+      const result: format.RawMessageRecord = {
+        type: 'Raw',
+        level: 'Error',
+        // tslint:disable-next-line: no-non-null-assertion
+        message: error.stack!,
+        time: new Date(),
+      }
+      fs.appendFileSync(filePath, JSON.stringify(result) + '\n')
+    }
+  },
+  logResult: (error: err.Error) => {
+    console.log(JSON.stringify(error))
+    if (filePath !== undefined) {
+      const result: format.ResultMessageRecord = {
+        type: 'Result',
+        level: error.level,
+        code: error.code,
+        message: error.message,
+        docUrl: `https://github.com/Azure/avocado/blob/master/README.md#${error.code}`,
+        time: new Date(),
+        paths: err.getPathInfoFromError(error),
+      }
+      fs.appendFileSync(filePath, JSON.stringify(result) + '\n')
+    }
+  },
+})
