@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+
+- upgrade ts-common/json-parser version
+
 ## 0.7.0
 
 - Add detail log file report
