@@ -119,7 +119,7 @@ export const getDefaultTag = (markDown: commonmark.Node): string => {
   }
   for (const idx of Object.keys(codeBlockMap)) {
     const block = codeBlockMap[idx]
-    if (!block || !block.info || /'^(yaml|json)$'/.test(block.info.trim().toLowerCase())) {
+    if (!block || !block.info || !/^(yaml|json)$/.test(block.info.trim().toLowerCase())) {
       continue
     }
     const latestDefinition = safeLoad(block.literal || '')
@@ -131,7 +131,7 @@ export const getDefaultTag = (markDown: commonmark.Node): string => {
   return ''
 }
 
-const getVersionFromInputFile = (filePath: string): string => {
+export const getVersionFromInputFile = (filePath: string): string => {
   const apiVersionRegex = /^\d{4}-\d{2}-\d{2}(|-preview)$/
   const segments = filePath.split('/').slice(0, -1)
   if (segments && segments.length > 1) {
@@ -144,22 +144,21 @@ const getVersionFromInputFile = (filePath: string): string => {
   return ''
 }
 
-const isContainsMultiVersion = (m: md.MarkDownEx): boolean => {
+export const isContainsMultiVersion = (m: md.MarkDownEx): boolean => {
   const defaultTag = getDefaultTag(m.markDown)
   if (!defaultTag) {
     return false
   }
   const inputFiles = openApiMd.getInputFilesForTag(m.markDown, defaultTag)
-  if (!inputFiles) {
-    return false
-  }
-  const versions = new Set<string>()
-  for (const file of inputFiles) {
-    const version = getVersionFromInputFile(file)
-    if (version) {
-      versions.add(version)
-      if (versions.size > 1) {
-        return true
+  if (inputFiles) {
+    const versions = new Set<string>()
+    for (const file of inputFiles) {
+      const version = getVersionFromInputFile(file)
+      if (version) {
+        versions.add(version)
+        if (versions.size > 1) {
+          return true
+        }
       }
     }
   }
