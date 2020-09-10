@@ -21,6 +21,8 @@ describe('avocado', () => {
   it('get version from input-files ', () => {
     const r = avocado.getVersionFromInputFile('/test/json')
     assert.deepStrictEqual(r, '')
+    const r2 = avocado.getVersionFromInputFile('json')
+    assert.deepStrictEqual(r2, '')
     const r1 = avocado.getVersionFromInputFile('/test/json/2020-05-01-preview/b.json')
     assert.deepStrictEqual(r1, '2020-05-01-preview')
   })

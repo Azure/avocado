@@ -111,19 +111,18 @@ export const getDefaultTag = (markDown: commonmark.Node): string => {
 
   const latestHeader = 'Basic Information'
   const lh = codeBlockMap[latestHeader]
-  if (lh) {
-    const latestDefinition = safeLoad(lh.literal || '')
+  if (lh && lh.literal) {
+    const latestDefinition = safeLoad(lh.literal)
     if (latestDefinition && latestDefinition.tag) {
       return latestDefinition.tag
     }
   }
   for (const idx of Object.keys(codeBlockMap)) {
     const block = codeBlockMap[idx]
-    if (!block || !block.info || !/^(yaml|json)$/.test(block.info.trim().toLowerCase())) {
+    if (!block || !block.info || !block.literal || !/^(yaml|json)$/.test(block.info.trim().toLowerCase())) {
       continue
     }
-    const latestDefinition = safeLoad(block.literal || '')
-
+    const latestDefinition = safeLoad(block.literal)
     if (latestDefinition && latestDefinition.tag) {
       return latestDefinition.tag
     }
