@@ -110,6 +110,14 @@ C-->A
 
 ```
 
+### MULTIPLE_API_VERSION
+
+Level: WARNING
+
+The default tag should contain only one API version swagger.
+
+To solve this warning , you should copy the swaggers of old version into the current version folder. 
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a

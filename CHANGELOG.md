@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2
+
+- Add rule v to validate if the default tag in readme.md contains multiple API version.
+
 ## 0.7.1
 
 - upgrade ts-common/json-parser version
