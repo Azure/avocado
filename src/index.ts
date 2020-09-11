@@ -110,9 +110,9 @@ export const getDefaultTag = (markDown: commonmark.Node): string => {
   const codeBlockMap = openApiMd.getCodeBlocksAndHeadings(startNode)
 
   const latestHeader = 'Basic Information'
-  const lh = codeBlockMap[latestHeader]
-  if (lh && lh.literal) {
-    const latestDefinition = safeLoad(lh.literal)
+  const headerBlock = codeBlockMap[latestHeader]
+  if (headerBlock && headerBlock.literal) {
+    const latestDefinition = safeLoad(headerBlock.literal)
     if (latestDefinition && latestDefinition.tag) {
       return latestDefinition.tag
     }
