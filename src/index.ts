@@ -105,6 +105,9 @@ const safeLoad = (content: string) => {
   }
 }
 
+/**
+ * @return return empty string indicates not found, otherwise return non-empty string.
+ */
 export const getDefaultTag = (markDown: commonmark.Node): string => {
   const startNode = markDown
   const codeBlockMap = openApiMd.getCodeBlocksAndHeadings(startNode)
@@ -130,6 +133,9 @@ export const getDefaultTag = (markDown: commonmark.Node): string => {
   return ''
 }
 
+/**
+ * @return return empty string indicates not found, otherwise return non-empty string.
+ */
 export const getVersionFromInputFile = (filePath: string): string => {
   const apiVersionRegex = /^\d{4}-\d{2}-\d{2}(|-preview)$/
   const segments = filePath.split('/').slice(0, -1)
