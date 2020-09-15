@@ -106,9 +106,9 @@ const safeLoad = (content: string) => {
 }
 
 /**
- * @return return empty string indicates not found, otherwise return non-empty string.
+ * @return return undefined indicates not found, otherwise return non-empty string.
  */
-export const getDefaultTag = (markDown: commonmark.Node): string => {
+export const getDefaultTag = (markDown: commonmark.Node): string | undefined => {
   const startNode = markDown
   const codeBlockMap = openApiMd.getCodeBlocksAndHeadings(startNode)
 
@@ -130,13 +130,13 @@ export const getDefaultTag = (markDown: commonmark.Node): string => {
       return latestDefinition.tag
     }
   }
-  return ''
+  return undefined
 }
 
 /**
- * @return return empty string indicates not found, otherwise return non-empty string.
+ * @return return undefined indicates not found, otherwise return non-empty string.
  */
-export const getVersionFromInputFile = (filePath: string): string => {
+export const getVersionFromInputFile = (filePath: string): string | undefined => {
   const apiVersionRegex = /^\d{4}-\d{2}-\d{2}(|-preview)$/
   const segments = filePath.split('/').slice(0, -1)
   if (segments && segments.length > 1) {
@@ -146,7 +146,7 @@ export const getVersionFromInputFile = (filePath: string): string => {
       }
     }
   }
-  return ''
+  return undefined
 }
 
 export const isContainsMultiVersion = (m: md.MarkDownEx): boolean => {
