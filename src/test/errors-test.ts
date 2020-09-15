@@ -61,6 +61,12 @@ describe('errors', () => {
         readMeUrl: 'src/test/api_version_inconsistent/specification/testRP/readme.md',
       },
       {
+        code: 'MULTIPLE_API_VERSION',
+        level: 'Error',
+        message: 'The default tag contains multiple API versions swaggers.',
+        readMeUrl: 'src/test/api_version_inconsistent/specification/testRP/readme.md',
+      },
+      {
         code: 'UNKNOWN_ERROR',
         level: 'Error',
         message: 'The API version of the swagger is inconsistent with its file path.',
@@ -130,6 +136,12 @@ describe('errors', () => {
         {
           tag: 'json',
           path: 'https://github.com/undefined/blob/undefined/specification/testRP/specs/2020-05-01/b.json',
+        },
+      ],
+      [
+        {
+          tag: 'readme',
+          path: 'https://github.com/undefined/blob/undefined/specification/testRP/readme.md',
         },
       ],
       [],
