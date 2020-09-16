@@ -306,6 +306,7 @@ describe('Azure DevOps', () => {
       message: 'The default tag contains multiple API versions swaggers.',
       level: 'Error',
       readMeUrl: 'specification/network/resource-manager/readme.md',
+      tag: '2020-09-01',
     }
     assert.deepStrictEqual(isPRRelatedError(fileChanges, readmeError), true)
   })

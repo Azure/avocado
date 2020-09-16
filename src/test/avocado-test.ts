@@ -260,6 +260,7 @@ describe('avocado', () => {
         code: 'MULTIPLE_API_VERSION',
         level: 'Warning',
         message: 'The default tag contains multiple API versions swaggers.',
+        tag: 'package-2019-01-01',
         readMeUrl: path.resolve('src/test/multi_api_version/specification/testRP/readme.md'),
       },
     ] as const

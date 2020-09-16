@@ -407,6 +407,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
         code: 'MULTIPLE_API_VERSION',
         message: 'The default tag contains multiple API versions swaggers.',
         readMeUrl: readMePath,
+        tag: getDefaultTag(m.markDown),
         level: 'Warning',
       }
     }

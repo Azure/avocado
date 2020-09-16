@@ -143,6 +143,10 @@ describe('errors', () => {
           tag: 'readme',
           path: 'https://github.com/undefined/blob/undefined/specification/testRP/readme.md',
         },
+        {
+          tag: 'defaultTag',
+          path: '',
+        },
       ],
       [],
     ]

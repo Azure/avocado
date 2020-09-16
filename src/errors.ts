@@ -37,6 +37,7 @@ export type MultipleApiVersion = {
   readonly code: 'MULTIPLE_API_VERSION'
   readonly message: ErrorMessage
   readonly readMeUrl: string
+  readonly tag: string | undefined
 } & IErrorBase
 
 export type FileError = {
@@ -70,7 +71,10 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
         { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
       ]
     case 'MULTIPLE_API_VERSION':
-      return [{ tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) }]
+      return [
+        { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
+        { tag: 'defaultTag', path: error.tag || '' },
+      ]
     case 'MISSING_README':
       return [{ tag: 'folder', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.folderUrl)) }]
     default:
