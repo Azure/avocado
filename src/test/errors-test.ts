@@ -65,6 +65,7 @@ describe('errors', () => {
         level: 'Error',
         message: 'The default tag contains multiple API versions swaggers.',
         readMeUrl: 'src/test/api_version_inconsistent/specification/testRP/readme.md',
+        tag: 'package-2020-01-01',
       },
       {
         code: 'UNKNOWN_ERROR',
@@ -144,8 +145,8 @@ describe('errors', () => {
           path: 'https://github.com/undefined/blob/undefined/specification/testRP/readme.md',
         },
         {
-          tag: 'defaultTag',
-          path: '',
+          tag: 'tag',
+          path: 'https://github.com/undefined/blob/undefined/specification/testRP/readme.md#tag-package-2020-01-01',
         },
       ],
       [],
