@@ -81,6 +81,9 @@ export const isPRRelatedError = (fileChanges: readonly FileChange[], error: err.
   if (error.code === 'MISSING_README') {
     return fileChanges.some(item => hasCommonRPFolder(item.path, error.folderUrl))
   }
+  if (error.code === 'MULTIPLE_API_VERSION') {
+    return fileChanges.some(item => hasCommonRPFolder(item.path, error.readMeUrl))
+  }
   return false
 }
 

@@ -293,4 +293,21 @@ describe('Azure DevOps', () => {
     assert.deepStrictEqual(isPRRelatedError(fileChanges, computeError), false)
     assert.deepStrictEqual(isPRRelatedError(fileChanges, jsonReferenceError), false)
   })
+
+  it('Is PR related changes : multiple api version', () => {
+    const fileChanges: readonly FileChange[] = [
+      {
+        kind: 'Modified',
+        path: 'specification/network/resource-manager/dns.json',
+      },
+    ]
+    const readmeError: err.Error = {
+      code: 'MULTIPLE_API_VERSION',
+      message: 'The default tag contains multiple API versions swaggers.',
+      level: 'Error',
+      readMeUrl: 'specification/network/resource-manager/readme.md',
+      tag: '2020-09-01',
+    }
+    assert.deepStrictEqual(isPRRelatedError(fileChanges, readmeError), true)
+  })
 })

@@ -18,6 +18,7 @@ import * as childProcess from './child-process'
 import * as devOps from './dev-ops'
 import * as err from './errors'
 import * as format from '@azure/swagger-validation-common'
+import * as YAML from 'js-yaml'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
@@ -58,6 +59,12 @@ const errorCorrelationId = (error: err.Error) => {
           url: error.jsonUrl,
         }
       }
+      case 'MULTIPLE_API_VERSION': {
+        return {
+          code: error.code,
+          url: error.readMeUrl,
+        }
+      }
     }
   }
 
@@ -89,6 +96,79 @@ const isAutoRestMd = (m: md.MarkDownEx) =>
     }
     return t.literal === 'see https://aka.ms/autorest'
   })
+
+const safeLoad = (content: string) => {
+  try {
+    return YAML.safeLoad(content)
+  } catch (err) {
+    return undefined
+  }
+}
+
+/**
+ * @return return undefined indicates not found, otherwise return non-empty string.
+ */
+export const getDefaultTag = (markDown: commonmark.Node): string | undefined => {
+  const startNode = markDown
+  const codeBlockMap = openApiMd.getCodeBlocksAndHeadings(startNode)
+
+  const latestHeader = 'Basic Information'
+  const headerBlock = codeBlockMap[latestHeader]
+  if (headerBlock && headerBlock.literal) {
+    const latestDefinition = safeLoad(headerBlock.literal)
+    if (latestDefinition && latestDefinition.tag) {
+      return latestDefinition.tag
+    }
+  }
+  for (const idx of Object.keys(codeBlockMap)) {
+    const block = codeBlockMap[idx]
+    if (!block || !block.info || !block.literal || !/^(yaml|json)$/.test(block.info.trim().toLowerCase())) {
+      continue
+    }
+    const latestDefinition = safeLoad(block.literal)
+    if (latestDefinition && latestDefinition.tag) {
+      return latestDefinition.tag
+    }
+  }
+  return undefined
+}
+
+/**
+ * @return return undefined indicates not found, otherwise return non-empty string.
+ */
+export const getVersionFromInputFile = (filePath: string): string | undefined => {
+  const apiVersionRegex = /^\d{4}-\d{2}-\d{2}(|-preview)$/
+  const segments = filePath.split('/').slice(0, -1)
+  if (segments && segments.length > 1) {
+    for (const s of segments) {
+      if (apiVersionRegex.test(s)) {
+        return s
+      }
+    }
+  }
+  return undefined
+}
+
+export const isContainsMultiVersion = (m: md.MarkDownEx): boolean => {
+  const defaultTag = getDefaultTag(m.markDown)
+  if (!defaultTag) {
+    return false
+  }
+  const inputFiles = openApiMd.getInputFilesForTag(m.markDown, defaultTag)
+  if (inputFiles) {
+    const versions = new Set<string>()
+    for (const file of inputFiles) {
+      const version = getVersionFromInputFile(file)
+      if (version) {
+        versions.add(version)
+        if (versions.size > 1) {
+          return true
+        }
+      }
+    }
+  }
+  return false
+}
 
 const jsonParse = (fileName: string, file: string) => {
   // tslint:disable-next-line:readonly-array
@@ -320,6 +400,15 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
         helpUrl:
           // tslint:disable-next-line:max-line-length
           'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
+      }
+    }
+    if (isContainsMultiVersion(m)) {
+      yield {
+        code: 'MULTIPLE_API_VERSION',
+        message: 'The default tag contains multiple API versions swaggers.',
+        readMeUrl: readMePath,
+        tag: getDefaultTag(m.markDown),
+        level: 'Warning',
       }
     }
   })
