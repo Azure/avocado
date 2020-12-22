@@ -9,6 +9,7 @@ import * as error from '../errors'
 describe('avocado', () => {
   it('not autorest markdown', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/not_autorest_markdown', env: {} }).toArray()
+    console.log(r)
     const expected = [
       {
         code: 'NOT_AUTOREST_MARKDOWN',

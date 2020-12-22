@@ -264,17 +264,31 @@ const validateSpecificationAPIVersion = (current: Specification, document: json.
     }
   })
 
+const findTheNearestReadme = async (cwd: string, swaggerPath: string): Promise<string | undefined> => {
+  // tslint:disable-next-line: no-let
+  let curDir = swaggerPath
+  console.log(cwd)
+  console.log(swaggerPath)
+  while (curDir !== cwd) {
+    if (await containsReadme(curDir)) {
+      return curDir
+    }
+    curDir = path.dirname(curDir)
+  }
+  return undefined
+}
+
 /**
  * Validate each RP folder must have its readme file.
  *
- * @param specification specification folder
+ * @param cwd specification folder
  */
-const validateRPFolderMustContainReadme = (specification: string): asyncIt.AsyncIterableEx<err.Error> =>
+const validateRPFolderMustContainReadme = (cwd: string): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
     const validDirs: ReadonlyArray<string> = ['data-plane', 'resource-manager']
     const ignoredDirs: ReadonlyArray<string> = ['common']
     const allJsonDir = tscommonFs
-      .recursiveReaddir(specification)
+      .recursiveReaddir(cwd)
       .filter(
         filePath =>
           path.extname(filePath) === '.json' &&
@@ -291,17 +305,8 @@ const validateRPFolderMustContainReadme = (specification: string): asyncIt.Async
         continue
       }
       allJsonSet.add(dir)
-      // tslint:disable-next-line: no-let
-      let curDir = dir
-      // tslint:disable-next-line: no-let
-      let found = false
-      while (curDir !== specification) {
-        if (await containsReadme(curDir)) {
-          found = true
-        }
-        curDir = path.dirname(curDir)
-      }
-      if (!found) {
+      const nearestReadme = await findTheNearestReadme(cwd, dir)
+      if (nearestReadme === undefined) {
         yield {
           level: 'Error',
           code: 'MISSING_README',
@@ -482,35 +487,29 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
 /**
  * Validate global specification folder and prepare arguments for `validateInputFiles`.
  */
-const validateSpecificationFolder = (cwd: string) =>
+const validateFolder = (cwd: string) =>
   asyncIt.iterable<err.Error>(async function*() {
-    const specification = path.resolve(path.join(cwd, 'specification'))
+    const allReadMeFiles = tscommonFs.recursiveReaddir(cwd).filter(f => path.basename(f).toLowerCase() === 'readme.md')
 
-    if (await tscommonFs.exists(specification)) {
-      const allReadMeFiles = tscommonFs
-        .recursiveReaddir(specification)
-        .filter(f => path.basename(f).toLowerCase() === 'readme.md')
+    yield* validateRPFolderMustContainReadme(cwd)
 
-      yield* validateRPFolderMustContainReadme(specification)
+    yield* allReadMeFiles.flatMap(validateReadMeFile)
 
-      yield* allReadMeFiles.flatMap(validateReadMeFile)
+    const referencedFiles = await allReadMeFiles
+      .flatMap(getInputFilesFromReadme)
+      .fold((fileSet: Set<Specification>, spec) => {
+        fileSet.add(spec)
+        return fileSet
+      }, new Set<Specification>())
 
-      const referencedFiles = await allReadMeFiles
-        .flatMap(getInputFilesFromReadme)
-        .fold((fileSet: Set<Specification>, spec) => {
-          fileSet.add(spec)
-          return fileSet
-        }, new Set<Specification>())
+    const allFiles = await allReadMeFiles
+      .flatMap(getAllInputFilesUnderReadme)
+      .fold((fileSet: Set<Specification>, spec) => {
+        fileSet.add(spec)
+        return fileSet
+      }, new Set<Specification>())
 
-      const allFiles = await allReadMeFiles
-        .flatMap(getAllInputFilesUnderReadme)
-        .fold((fileSet: Set<Specification>, spec) => {
-          fileSet.add(spec)
-          return fileSet
-        }, new Set<Specification>())
-
-      yield* validateInputFiles(referencedFiles, allFiles)
-    }
+    yield* validateInputFiles(referencedFiles, allFiles)
   })
 
 /**
@@ -518,7 +517,7 @@ const validateSpecificationFolder = (cwd: string) =>
  */
 const avocadoForDir = async (cwd: string) => {
   const map = new Map<string, err.Error>()
-  for await (const e of validateSpecificationFolder(cwd)) {
+  for await (const e of validateFolder(cwd)) {
     map.set(errorCorrelationId(e), e)
   }
   return map
@@ -532,25 +531,50 @@ const avocadoForDir = async (cwd: string) => {
 const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
     // collect all errors from the 'targetBranch'
-    await pr.checkout(pr.targetBranch)
-    const targetMap = await avocadoForDir(pr.workingDir)
+    const diffFiles = await pr.diff()
+    const changedSwaggerFilePath = diffFiles.map(item => item.path)
 
-    // collect all errors from the 'sourceBranch'
-    await pr.checkout(pr.sourceBranch)
-    const sourceMap = await avocadoForDir(pr.workingDir)
-
-    const fileChanges = await pr.diff()
-
-    // remove existing errors.
-    /* Note: For MISSING_README error if the error is related to the PR changes,
-     avocado will directly report it even though it's not a new involved error in the pull request.*/
-    for (const e of targetMap.keys()) {
-      const error = sourceMap.get(e)
-      if (error !== undefined && !devOps.isPRRelatedError(fileChanges, error)) {
-        sourceMap.delete(e)
+    const swaggerParentDirs = new Set<string>()
+    changedSwaggerFilePath
+      .map(item => path.dirname(path.resolve(pr.workingDir, item)))
+      .filter(item => item !== pr.workingDir)
+      .every(item => swaggerParentDirs.add(item))
+    const readmeDirs = new Set<string>()
+    for (const item of swaggerParentDirs) {
+      const readmeDir = await findTheNearestReadme(pr.workingDir, item)
+      if (readmeDir !== undefined) {
+        readmeDirs.add(readmeDir)
+      } else {
+        yield {
+          level: 'Error',
+          code: 'MISSING_README',
+          message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
+          folderUrl: item,
+        }
       }
     }
-    yield* sourceMap.values()
+
+    for (const dir of readmeDirs) {
+      await pr.checkout(pr.targetBranch)
+      const targetMap = await avocadoForDir(path.resolve(pr.workingDir, dir))
+
+      // collect all errors from the 'sourceBranch'
+      await pr.checkout(pr.sourceBranch)
+      const sourceMap = await avocadoForDir(path.resolve(pr.workingDir, dir))
+
+      const fileChanges = await pr.diff()
+
+      // remove existing errors.
+      /* Note: For MISSING_README error if the error is related to the PR changes,
+     avocado will directly report it even though it's not a new involved error in the pull request.*/
+      for (const e of targetMap.keys()) {
+        const error = sourceMap.get(e)
+        if (error !== undefined && !devOps.isPRRelatedError(fileChanges, error)) {
+          sourceMap.delete(e)
+        }
+      }
+      yield* sourceMap.values()
+    }
   })
 
 /**
@@ -563,7 +587,7 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
     if (pr !== undefined) {
       yield* avocadoForDevOps(pr)
     } else {
-      yield* (await avocadoForDir(config.cwd)).values()
+      yield* (await avocadoForDir(path.resolve(config.cwd))).values()
     }
   })
 
