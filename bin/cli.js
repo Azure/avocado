@@ -7,7 +7,7 @@ var argv = require('yargs')
   .alias('f', 'file')
   .describe('f', 'output detail result to log file')
   .alias('d', 'dir')
-  .describe('d', 'validation directory')
+  .describe('d', 'run avocado under directory')
   .help('h')
   .alias('h', 'help').argv
 
