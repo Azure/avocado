@@ -305,7 +305,6 @@ const validateRPFolderMustContainReadme = (dir: string): asyncIt.AsyncIterableEx
       allJsonSet.add(item)
       const nearestReadme = await findTheNearestReadme(process.cwd(), item)
       if (nearestReadme === undefined) {
-        console.log(item)
         yield {
           level: 'Error',
           code: 'MISSING_README',
