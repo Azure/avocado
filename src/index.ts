@@ -279,7 +279,7 @@ const findTheNearestReadme = async (cwd: string, swaggerPath: string): Promise<s
 /**
  * Validate each RP folder must have its readme file.
  *
- * @param dir specification folder
+ * @param dir directory path
  */
 const validateRPFolderMustContainReadme = (dir: string): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {

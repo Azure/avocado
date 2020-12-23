@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.0
+
+- Support folder level validation.
+
 ## 0.7.2
 
 - Add rule MULTIPLE_API_VERSION to validate if the default tag in readme.md contains multiple API version.
