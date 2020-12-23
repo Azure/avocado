@@ -7,9 +7,23 @@ import * as path from 'path'
 import * as error from '../errors'
 
 describe('avocado', () => {
+  it('avocado validation folder', async () => {
+    const r = await avocado
+      .avocado({ cwd: 'src/test/no_file_found', env: {}, args: { dir: 'specification' } })
+      .toArray()
+    const expected = [
+      {
+        code: 'NO_JSON_FILE_FOUND',
+        message: 'The JSON file is not found but it is referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/no_file_found/specification/readme.md'),
+        level: 'Error',
+        jsonUrl: path.resolve('src/test/no_file_found/specification/specs/some.json'),
+      },
+    ]
+    assert.deepStrictEqual(r, expected)
+  })
   it('not autorest markdown', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/not_autorest_markdown', env: {} }).toArray()
-    console.log(r)
     const expected = [
       {
         code: 'NOT_AUTOREST_MARKDOWN',

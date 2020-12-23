@@ -267,8 +267,6 @@ const validateSpecificationAPIVersion = (current: Specification, document: json.
 const findTheNearestReadme = async (cwd: string, swaggerPath: string): Promise<string | undefined> => {
   // tslint:disable-next-line: no-let
   let curDir = swaggerPath
-  console.log(cwd)
-  console.log(swaggerPath)
   while (curDir !== cwd) {
     if (await containsReadme(curDir)) {
       return curDir
@@ -281,14 +279,14 @@ const findTheNearestReadme = async (cwd: string, swaggerPath: string): Promise<s
 /**
  * Validate each RP folder must have its readme file.
  *
- * @param cwd specification folder
+ * @param dir specification folder
  */
-const validateRPFolderMustContainReadme = (cwd: string): asyncIt.AsyncIterableEx<err.Error> =>
+const validateRPFolderMustContainReadme = (dir: string): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
     const validDirs: ReadonlyArray<string> = ['data-plane', 'resource-manager']
     const ignoredDirs: ReadonlyArray<string> = ['common']
     const allJsonDir = tscommonFs
-      .recursiveReaddir(cwd)
+      .recursiveReaddir(dir)
       .filter(
         filePath =>
           path.extname(filePath) === '.json' &&
@@ -300,18 +298,19 @@ const validateRPFolderMustContainReadme = (cwd: string): asyncIt.AsyncIterableEx
       .map(filePath => path.dirname(filePath))
 
     const allJsonSet = new Set<string>()
-    for await (const dir of allJsonDir) {
-      if (allJsonSet.has(dir)) {
+    for await (const item of allJsonDir) {
+      if (allJsonSet.has(item)) {
         continue
       }
-      allJsonSet.add(dir)
-      const nearestReadme = await findTheNearestReadme(cwd, dir)
+      allJsonSet.add(item)
+      const nearestReadme = await findTheNearestReadme(process.cwd(), item)
       if (nearestReadme === undefined) {
+        console.log(item)
         yield {
           level: 'Error',
           code: 'MISSING_README',
           message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
-          folderUrl: dir,
+          folderUrl: item,
         }
       }
     }
@@ -487,11 +486,11 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
 /**
  * Validate global specification folder and prepare arguments for `validateInputFiles`.
  */
-const validateFolder = (cwd: string) =>
+const validateFolder = (dir: string) =>
   asyncIt.iterable<err.Error>(async function*() {
-    const allReadMeFiles = tscommonFs.recursiveReaddir(cwd).filter(f => path.basename(f).toLowerCase() === 'readme.md')
+    const allReadMeFiles = tscommonFs.recursiveReaddir(dir).filter(f => path.basename(f).toLowerCase() === 'readme.md')
 
-    yield* validateRPFolderMustContainReadme(cwd)
+    yield* validateRPFolderMustContainReadme(dir)
 
     yield* allReadMeFiles.flatMap(validateReadMeFile)
 
@@ -515,9 +514,9 @@ const validateFolder = (cwd: string) =>
 /**
  * Creates a map of unique errors for the given folder `cwd`.
  */
-const avocadoForDir = async (cwd: string) => {
+const avocadoForDir = async (dir: string) => {
   const map = new Map<string, err.Error>()
-  for await (const e of validateFolder(cwd)) {
+  for await (const e of validateFolder(dir)) {
     map.set(errorCorrelationId(e), e)
   }
   return map
@@ -541,6 +540,7 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
       .every(item => swaggerParentDirs.add(item))
     const readmeDirs = new Set<string>()
     for (const item of swaggerParentDirs) {
+      console.log(item)
       const readmeDir = await findTheNearestReadme(pr.workingDir, item)
       if (readmeDir !== undefined) {
         readmeDirs.add(readmeDir)
@@ -587,7 +587,12 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
     if (pr !== undefined) {
       yield* avocadoForDevOps(pr)
     } else {
-      yield* (await avocadoForDir(path.resolve(config.cwd))).values()
+      // tslint:disable-next-line: no-let
+      let dir = '.'
+      if (config.args && config.args.dir) {
+        dir = config.args.dir
+      }
+      yield* (await avocadoForDir(path.resolve(config.cwd, dir))).values()
     }
   })
 
