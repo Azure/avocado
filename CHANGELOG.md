@@ -3,6 +3,7 @@
 ## 0.8.0
 
 - Support folder level validation.
+- Add rule INVALID_FILE_LOCATION to validate if management plane swagger in 'resource-manager' folder
 
 ## 0.7.2
 

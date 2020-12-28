@@ -65,6 +65,12 @@ const errorCorrelationId = (error: err.Error) => {
           url: error.readMeUrl,
         }
       }
+      case 'INVALID_FILE_LOCATION': {
+        return {
+          code: error.code,
+          url: error.jsonUrl,
+        }
+      }
     }
   }
 
@@ -264,6 +270,22 @@ const validateSpecificationAPIVersion = (current: Specification, document: json.
     }
   })
 
+const validateFileLocation = (current: Specification, document: json.JsonObject): it.IterableEx<err.Error> =>
+  it.iterable<err.Error>(function*() {
+    const host = document.host as string | undefined
+    if (host !== undefined && host === 'management.azure.com' && !current.path.includes('resource-manager')) {
+      yield {
+        code: 'INVALID_FILE_LOCATION',
+        level: 'Warning',
+        message:
+          // tslint:disable-next-line: max-line-length
+          'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder',
+        jsonUrl: current.path,
+        readMeUrl: current.readMePath,
+      }
+    }
+  })
+
 const findTheNearestReadme = async (cwd: string, swaggerPath: string): Promise<string | undefined> => {
   // tslint:disable-next-line: no-let
   let curDir = swaggerPath
@@ -360,6 +382,7 @@ const DFSTraversalValidate = (
 
     if (current.kind === 'SWAGGER' && document !== null) {
       yield* validateSpecificationAPIVersion(current, document as json.JsonObject)
+      yield* validateFileLocation(current, document as json.JsonObject)
     }
 
     // Example file should ignore `$ref` because it's usually meaningless.

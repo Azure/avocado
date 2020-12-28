@@ -281,4 +281,20 @@ describe('avocado', () => {
     ] as const
     assert.deepStrictEqual(expected, r)
   })
+
+  it('invalid file location', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/invalid_file_location', env: {} }).toArray()
+    const expected = [
+      {
+        code: 'INVALID_FILE_LOCATION',
+        level: 'Warning',
+        message:
+          // tslint:disable-next-line: max-line-length
+          'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder',
+        jsonUrl: path.resolve('src/test/invalid_file_location/specification/testRP/specs/2020-05-01/b.json'),
+        readMeUrl: path.resolve('src/test/invalid_file_location/specification/testRP/readme.md'),
+      },
+    ] as const
+    assert.deepStrictEqual(expected, r)
+  })
 })

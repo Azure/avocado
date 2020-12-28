@@ -116,6 +116,14 @@ The default tag should contain only one API version swagger.
 
 To solve this warning , you should copy the swaggers of old version into the current version folder.
 
+### INVALID_FILE_LOCATION
+
+Level: WARNING
+
+The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder
+
+To solve this warning, you should make sure manager plane swagger located in resource-manager folder.
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
