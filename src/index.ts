@@ -587,7 +587,6 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
       const fileChanges = await pr.diff()
 
       // remove existing errors.
-      /* Note: For MISSING_README error if the error is related to the PR changes,
      avocado will directly report it even though it's not a new involved error in the pull request.*/
       for (const e of targetMap.keys()) {
         const error = sourceMap.get(e)
