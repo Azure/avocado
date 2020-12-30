@@ -158,6 +158,12 @@ describe('Azure DevOps', () => {
     assert.deepStrictEqual(errors, [])
   })
 
+  it('Azure DevOps and Avocado add file', async () => {
+    const cfg = await createDevOpsEnv('devops-pr-add-file', ['add file', 'modify json'])
+    const errors = await avocado(cfg).toArray()
+    assert.deepStrictEqual(errors[0].code, 'UNREFERENCED_JSON_FILE')
+  })
+
   it('PR diff', async () => {
     const cfg = await createDevOpsEnv('devops-pr-diff', ['remove readme', 'add file', 'modify json'])
     const pr = await devOps.createPullRequestProperties(cfg)

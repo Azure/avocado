@@ -29,11 +29,9 @@ Avocado major functions are listed below:
 
 ### Usage
 
-`avocado`
-
-When type avocado in command line, avocado will validate in the current directory.
-
-NOTE: When running in azure devops Avocado only report new errors involved in PR, but ignore the previous existing errors. When running in local machine, Avocado report all errors.
+- `avocado -h` show help message
+- `avocado` validate current directory
+- `avocado -d <my-folder-path>` validate `<my-folder-path>` directory
 
 ### Example
 
@@ -116,7 +114,15 @@ Level: WARNING
 
 The default tag should contain only one API version swagger.
 
-To solve this warning , you should copy the swaggers of old version into the current version folder. 
+To solve this warning , you should copy the swaggers of old version into the current version folder.
+
+### INVALID_FILE_LOCATION
+
+Level: WARNING
+
+The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder
+
+To solve this warning, you should make sure manager plane swagger located in resource-manager folder.
 
 ## Contributing
 

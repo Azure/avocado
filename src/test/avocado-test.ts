@@ -7,6 +7,21 @@ import * as path from 'path'
 import * as error from '../errors'
 
 describe('avocado', () => {
+  it('avocado validation folder', async () => {
+    const r = await avocado
+      .avocado({ cwd: 'src/test/no_file_found', env: {}, args: { dir: 'specification' } })
+      .toArray()
+    const expected = [
+      {
+        code: 'NO_JSON_FILE_FOUND',
+        message: 'The JSON file is not found but it is referenced from the readme file.',
+        readMeUrl: path.resolve('src/test/no_file_found/specification/readme.md'),
+        level: 'Error',
+        jsonUrl: path.resolve('src/test/no_file_found/specification/specs/some.json'),
+      },
+    ]
+    assert.deepStrictEqual(r, expected)
+  })
   it('not autorest markdown', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/not_autorest_markdown', env: {} }).toArray()
     const expected = [
@@ -262,6 +277,22 @@ describe('avocado', () => {
         message: 'The default tag contains multiple API versions swaggers.',
         tag: 'package-2019-01-01',
         readMeUrl: path.resolve('src/test/multi_api_version/specification/testRP/readme.md'),
+      },
+    ] as const
+    assert.deepStrictEqual(expected, r)
+  })
+
+  it('invalid file location', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/invalid_file_location', env: {} }).toArray()
+    const expected = [
+      {
+        code: 'INVALID_FILE_LOCATION',
+        level: 'Warning',
+        message:
+          // tslint:disable-next-line: max-line-length
+          'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder',
+        jsonUrl: path.resolve('src/test/invalid_file_location/specification/testRP/specs/2020-05-01/b.json'),
+        readMeUrl: path.resolve('src/test/invalid_file_location/specification/testRP/readme.md'),
       },
     ] as const
     assert.deepStrictEqual(expected, r)

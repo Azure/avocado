@@ -15,6 +15,8 @@ type ErrorMessage =
   | 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.'
   | 'The API version of the swagger is inconsistent with its file path.'
   | 'The default tag contains multiple API versions swaggers.'
+  // tslint:disable-next-line: max-line-length
+  | 'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder'
 
 export interface IErrorBase {
   readonly level: 'Warning' | 'Error' | 'Info'
@@ -41,7 +43,12 @@ export type MultipleApiVersion = {
 } & IErrorBase
 
 export type FileError = {
-  readonly code: 'NO_JSON_FILE_FOUND' | 'UNREFERENCED_JSON_FILE' | 'CIRCULAR_REFERENCE' | 'INCONSISTENT_API_VERSION'
+  readonly code:
+    | 'NO_JSON_FILE_FOUND'
+    | 'UNREFERENCED_JSON_FILE'
+    | 'CIRCULAR_REFERENCE'
+    | 'INCONSISTENT_API_VERSION'
+    | 'INVALID_FILE_LOCATION'
   readonly message: ErrorMessage
   readonly readMeUrl: string
   readonly jsonUrl: string

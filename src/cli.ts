@@ -28,11 +28,16 @@ export type Config = {
    * Environment variables.
    */
   readonly env: stringMap.StringMap<string>
+  /**
+   * Arguments
+   */
+  readonly args?: stringMap.StringMap<string>
 }
 
 export const defaultConfig = () => ({
   cwd: process.cwd(),
   env: process.env,
+  args: {},
 })
 
 export const isAzurePipelineEnv = (): boolean => process.env.SYSTEM_PULLREQUEST_TARGETBRANCH !== undefined
