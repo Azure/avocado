@@ -536,6 +536,7 @@ const validateFolder = (dir: string) =>
  * Creates a map of unique errors for the given folder `cwd`.
  */
 const avocadoForDir = async (dir: string) => {
+  console.log(`avocadoForDir: ${dir}`)
   const map = new Map<string, err.Error>()
   for await (const e of validateFolder(dir)) {
     map.set(errorCorrelationId(e), e)
