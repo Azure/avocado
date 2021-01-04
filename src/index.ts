@@ -516,7 +516,6 @@ const validateFolder = (dir: string) =>
 
     yield* allReadMeFiles.flatMap(validateReadMeFile)
 
-    console.log(await allReadMeFiles.toArray())
     const referencedFiles = await allReadMeFiles
       .flatMap(getInputFilesFromReadme)
       .fold((fileSet: Set<Specification>, spec) => {
