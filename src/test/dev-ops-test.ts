@@ -183,7 +183,59 @@ describe('Azure DevOps', () => {
   it('Azure DevOps and Avocado add file', async () => {
     const cfg = await createDevOpsEnv('devops-pr-add-file', ['add file', 'modify json'])
     const errors = await avocado(cfg).toArray()
-    assert.deepStrictEqual(errors[0].code, 'UNREFERENCED_JSON_FILE')
+    assert.deepStrictEqual(errors, [
+      {
+        code: 'JSON_PARSE',
+        message: 'The file is not a valid JSON file.',
+        error: {
+          kind: 'syntax',
+          code: 'invalid token',
+          position: {
+            column: 1,
+            line: 1,
+          },
+          token: 'random',
+          message: 'invalid token, token: random, line: 1, column: 1',
+          url: path.resolve(
+            tmpDir.getTmpRoot(),
+            'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file3.json',
+          ),
+        },
+        level: 'Error',
+      },
+      {
+        code: 'JSON_PARSE',
+        message: 'The file is not a valid JSON file.',
+        error: {
+          kind: 'structure',
+          code: 'unexpected token',
+          position: {
+            column: 8,
+            line: 1,
+          },
+          token: '"string"',
+          message: 'unexpected token, token: "string", line: 1, column: 8',
+          url: path.resolve(
+            tmpDir.getTmpRoot(),
+            'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file3.json',
+          ),
+        },
+        level: 'Error',
+      },
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The swagger JSON file is not referenced from the readme file.',
+        level: 'Error',
+        readMeUrl: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/readme.md',
+        ),
+        jsonUrl: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file4.json',
+        ),
+      },
+    ])
   })
 
   it('PR diff', async () => {
