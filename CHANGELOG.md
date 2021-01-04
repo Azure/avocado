@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1
+
+- fix unittest
+
 ## 0.8.0
 
 - Support folder level validation.
