@@ -516,6 +516,7 @@ const validateFolder = (dir: string) =>
 
     yield* allReadMeFiles.flatMap(validateReadMeFile)
 
+    console.log(await allReadMeFiles.toArray())
     const referencedFiles = await allReadMeFiles
       .flatMap(getInputFilesFromReadme)
       .fold((fileSet: Set<Specification>, spec) => {
@@ -529,7 +530,6 @@ const validateFolder = (dir: string) =>
         fileSet.add(spec)
         return fileSet
       }, new Set<Specification>())
-
     yield* validateInputFiles(referencedFiles, allFiles)
   })
 
@@ -562,7 +562,6 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
       .every(item => swaggerParentDirs.add(item))
     const readmeDirs = new Set<string>()
     for (const item of swaggerParentDirs) {
-      console.log(item)
       const readmeDir = await findTheNearestReadme(pr.workingDir, item)
       if (readmeDir !== undefined) {
         readmeDirs.add(readmeDir)
