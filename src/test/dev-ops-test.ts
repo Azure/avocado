@@ -187,6 +187,10 @@ describe('Azure DevOps', () => {
       {
         code: 'JSON_PARSE',
         message: 'The file is not a valid JSON file.',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file3.json',
+        ),
         error: {
           kind: 'syntax',
           code: 'invalid token',
@@ -206,6 +210,10 @@ describe('Azure DevOps', () => {
       {
         code: 'JSON_PARSE',
         message: 'The file is not a valid JSON file.',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file3.json',
+        ),
         error: {
           kind: 'structure',
           code: 'unexpected token',
@@ -225,6 +233,10 @@ describe('Azure DevOps', () => {
       {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The swagger JSON file is not referenced from the readme file.',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file4.json',
+        ),
         level: 'Error',
         readMeUrl: path.resolve(
           tmpDir.getTmpRoot(),
@@ -315,6 +327,10 @@ describe('Azure DevOps', () => {
         level: 'Error',
         code: 'MISSING_README',
         message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-no-readme/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager',
+        ),
         folderUrl: path.resolve(
           tmpDir.getTmpRoot(),
           'devops-no-readme/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager',
@@ -331,6 +347,10 @@ describe('Azure DevOps', () => {
         code: 'UNREFERENCED_JSON_FILE',
         message: 'The swagger JSON file is not referenced from the readme file.',
         level: 'Error',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'remove-input-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file1.json',
+        ),
         readMeUrl: path.resolve(
           tmpDir.getTmpRoot(),
           'remove-input-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/readme.md',
@@ -373,6 +393,7 @@ describe('Azure DevOps', () => {
       code: 'MISSING_README',
       message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
       level: 'Error',
+      path: 'x',
       folderUrl: 'specification/network/data-plane',
     }
 
@@ -380,6 +401,7 @@ describe('Azure DevOps', () => {
       code: 'MISSING_README',
       message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
       level: 'Error',
+      path: 'x',
       folderUrl: 'specification/compute/data-plane',
     }
 
@@ -388,6 +410,7 @@ describe('Azure DevOps', () => {
       message: 'The JSON file is not found but it is referenced from the readme file.',
       level: 'Error',
       readMeUrl: 'specification/compute/resource-manager/readme.md',
+      path: 'x',
       jsonUrl: 'specification/compute/resource-manager/2019-01-01/compute.json',
     }
     assert.ok(isPRRelatedError(fileChanges, networkError))
@@ -407,6 +430,7 @@ describe('Azure DevOps', () => {
       message: 'The default tag contains multiple API versions swaggers.',
       level: 'Error',
       readMeUrl: 'specification/network/resource-manager/readme.md',
+      path: 'x',
       tag: '2020-09-01',
     }
     assert.deepStrictEqual(isPRRelatedError(fileChanges, readmeError), true)

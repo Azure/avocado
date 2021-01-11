@@ -20,6 +20,7 @@ type ErrorMessage =
 
 export interface IErrorBase {
   readonly level: 'Warning' | 'Error' | 'Info'
+  readonly path: string
 }
 
 export type JsonParseError = {
