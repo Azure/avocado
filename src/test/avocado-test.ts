@@ -17,6 +17,7 @@ describe('avocado', () => {
         message: 'The JSON file is not found but it is referenced from the readme file.',
         readMeUrl: path.resolve('src/test/no_file_found/specification/readme.md'),
         level: 'Error',
+        path: path.resolve('src/test/no_file_found/specification/specs/some.json'),
         jsonUrl: path.resolve('src/test/no_file_found/specification/specs/some.json'),
       },
     ]
@@ -29,6 +30,7 @@ describe('avocado', () => {
         code: 'NOT_AUTOREST_MARKDOWN',
         message: 'The `readme.md` is not an AutoRest markdown file.',
         readMeUrl: path.resolve('src/test/not_autorest_markdown/specification/readme.md'),
+        path: path.resolve('src/test/not_autorest_markdown/specification/readme.md'),
         helpUrl:
           // tslint:disable-next-line:max-line-length
           'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
@@ -50,6 +52,7 @@ describe('avocado', () => {
         message: r0.message,
         readMeUrl: path.resolve('src/test/no_file_found/specification/readme.md'),
         jsonUrl: path.resolve('src/test/no_file_found/specification/specs/some.json'),
+        path: path.resolve('src/test/no_file_found/specification/specs/some.json'),
         level: 'Error',
       },
     ] as const
@@ -64,6 +67,7 @@ describe('avocado', () => {
         message: 'The example JSON file is not referenced from the swagger file.',
         readMeUrl: path.resolve('src/test/unreferenced_example/specification/testRP/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_example/specification/testRP/specs/examples/orphan_example.json'),
+        path: path.resolve('src/test/unreferenced_example/specification/testRP/specs/examples/orphan_example.json'),
         level: 'Error',
       },
     ]
@@ -78,6 +82,7 @@ describe('avocado', () => {
         message: 'The swagger JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec/specification/testRP/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_spec/specification/testRP/specs/some.json'),
+        path: path.resolve('src/test/unreferenced_spec/specification/testRP/specs/some.json'),
         level: 'Error',
       },
     ] as const
@@ -95,6 +100,10 @@ describe('avocado', () => {
           // tslint:disable-next-line:max-line-length
           'src/test/unreferenced_spec_with_examples/specification/testRP/specs/examples/referenced_example.json',
         ),
+        path: path.resolve(
+          // tslint:disable-next-line:max-line-length
+          'src/test/unreferenced_spec_with_examples/specification/testRP/specs/examples/referenced_example.json',
+        ),
         level: 'Error',
       },
       {
@@ -102,6 +111,7 @@ describe('avocado', () => {
         message: 'The swagger JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/testRP/readme.md'),
         jsonUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/testRP/specs/orphan_spec.json'),
+        path: path.resolve('src/test/unreferenced_spec_with_examples/specification/testRP/specs/orphan_spec.json'),
         level: 'Error',
       },
     ] as const
@@ -115,6 +125,7 @@ describe('avocado', () => {
       {
         code: 'JSON_PARSE',
         message: 'The file is not a valid JSON file.',
+        path: path.resolve('src/test/invalid_json_trailing_comma/specification/testRP/specs/some.json'),
         error: {
           code: 'unexpected token',
           kind: 'structure',
@@ -137,6 +148,7 @@ describe('avocado', () => {
       {
         code: 'JSON_PARSE',
         message: 'The file is not a valid JSON file.',
+        path: path.resolve('src/test/invalid_json_with_bom/specification/testRP/specs/some.json'),
         error: {
           code: 'invalid symbol',
           kind: 'syntax',
@@ -160,6 +172,7 @@ describe('avocado', () => {
         code: 'NO_JSON_FILE_FOUND',
         message: r[0].message,
         jsonUrl: path.resolve('src/test/invalid_ref/specification/testRP/specs/a.json'),
+        path: path.resolve('src/test/invalid_ref/specification/testRP/specs/a.json'),
         readMeUrl: path.resolve('src/test/invalid_ref/specification/testRP/readme.md'),
         level: 'Error',
       },
@@ -179,6 +192,7 @@ describe('avocado', () => {
     const expected = [
       {
         code: 'JSON_PARSE',
+        path: path.resolve('src/test/diamond_dependencies/specification/testRP/specs/common.json'),
         error: {
           code: 'unexpected end of file',
           kind: 'structure',
@@ -202,6 +216,7 @@ describe('avocado', () => {
         message: 'The JSON file has a circular reference.',
         readMeUrl: path.resolve('src/test/circular_reference/specification/testRP/readme.md'),
         jsonUrl: path.resolve('src/test/circular_reference/specification/testRP/specs/c.json'),
+        path: path.resolve('src/test/circular_reference/specification/testRP/specs/c.json'),
         level: 'Warning',
       },
     ] as const
@@ -216,6 +231,7 @@ describe('avocado', () => {
         message: 'The JSON file is not found but it is referenced from the readme file.',
         readMeUrl: path.resolve('src/test/referenced_common_spec/specification/service/readme.md'),
         jsonUrl: path.resolve('src/test/referenced_common_spec/specification/common/specs/no_such_file.json'),
+        path: path.resolve('src/test/referenced_common_spec/specification/common/specs/no_such_file.json'),
         level: 'Error',
       },
       {
@@ -223,6 +239,7 @@ describe('avocado', () => {
         message: 'The swagger JSON file is not referenced from the readme file.',
         readMeUrl: path.resolve('src/test/referenced_common_spec/specification/common/readme.md'),
         jsonUrl: path.resolve('src/test/referenced_common_spec/specification/common/specs/orphan.json'),
+        path: path.resolve('src/test/referenced_common_spec/specification/common/specs/orphan.json'),
         level: 'Error',
       },
     ] as const
@@ -249,6 +266,7 @@ describe('avocado', () => {
         code: 'MISSING_README',
         message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
         folderUrl: path.resolve('src/test/no_readme/specification/resource-provider-A/resource-manager'),
+        path: path.resolve('src/test/no_readme/specification/resource-provider-A/resource-manager'),
       },
     ] as const
     assert.deepStrictEqual(expected, r)
@@ -262,6 +280,7 @@ describe('avocado', () => {
         level: 'Error',
         message: 'The API version of the swagger is inconsistent with its file path.',
         jsonUrl: path.resolve('src/test/api_version_inconsistent/specification/testRP/specs/2020-05-01/b.json'),
+        path: path.resolve('src/test/api_version_inconsistent/specification/testRP/specs/2020-05-01/b.json'),
         readMeUrl: path.resolve('src/test/api_version_inconsistent/specification/testRP/readme.md'),
       },
     ] as const
@@ -277,6 +296,7 @@ describe('avocado', () => {
         message: 'The default tag contains multiple API versions swaggers.',
         tag: 'package-2019-01-01',
         readMeUrl: path.resolve('src/test/multi_api_version/specification/testRP/readme.md'),
+        path: path.resolve('src/test/multi_api_version/specification/testRP/readme.md'),
       },
     ] as const
     assert.deepStrictEqual(expected, r)
@@ -292,9 +312,21 @@ describe('avocado', () => {
           // tslint:disable-next-line: max-line-length
           'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder',
         jsonUrl: path.resolve('src/test/invalid_file_location/specification/testRP/specs/2020-05-01/b.json'),
+        path: path.resolve('src/test/invalid_file_location/specification/testRP/specs/2020-05-01/b.json'),
         readMeUrl: path.resolve('src/test/invalid_file_location/specification/testRP/readme.md'),
       },
     ] as const
     assert.deepStrictEqual(expected, r)
+  })
+
+  it('avocado with exclude option', async () => {
+    const r = await avocado
+      .avocado({
+        cwd: 'src/test/invlid_file_location',
+        env: {},
+        args: { excludePaths: ['specification/testRP', ['specification/testRP1']] },
+      })
+      .toArray()
+    assert.deepStrictEqual(r, [])
   })
 })

@@ -180,7 +180,13 @@ const jsonParse = (fileName: string, file: string) => {
   // tslint:disable-next-line:readonly-array
   const errors: err.Error[] = []
   const reportError = (e: jsonParser.ParseError) =>
-    errors.push({ code: 'JSON_PARSE', message: 'The file is not a valid JSON file.', error: e, level: 'Error' })
+    errors.push({
+      code: 'JSON_PARSE',
+      message: 'The file is not a valid JSON file.',
+      error: e,
+      level: 'Error',
+      path: fileName,
+    })
   const document = jsonParser.parse(fileName, file.toString(), reportError)
   return {
     errors,
@@ -264,6 +270,7 @@ const validateSpecificationAPIVersion = (current: Specification, document: json.
           level: 'Error',
           message: 'The API version of the swagger is inconsistent with its file path.',
           jsonUrl: current.path,
+          path: current.path,
           readMeUrl: current.readMePath,
         }
       }
@@ -277,6 +284,7 @@ const validateFileLocation = (current: Specification, document: json.JsonObject)
       yield {
         code: 'INVALID_FILE_LOCATION',
         level: 'Warning',
+        path: current.path,
         message:
           // tslint:disable-next-line: max-line-length
           'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder',
@@ -331,6 +339,7 @@ const validateRPFolderMustContainReadme = (dir: string): asyncIt.AsyncIterableEx
           level: 'Error',
           code: 'MISSING_README',
           message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
+          path: item,
           folderUrl: item,
         }
       }
@@ -374,6 +383,7 @@ const DFSTraversalValidate = (
         readMeUrl: current.readMePath,
         level: 'Error',
         jsonUrl: current.path,
+        path: current.path,
       }
       return
     }
@@ -395,6 +405,7 @@ const DFSTraversalValidate = (
           readMeUrl: current.readMePath,
           level: 'Warning',
           jsonUrl: current.path,
+          path: current.path,
         }
         moveTo(graySet, blackSet, refFileName)
       }
@@ -423,6 +434,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
         message: 'The `readme.md` is not an AutoRest markdown file.',
         readMeUrl: readMePath,
         level: 'Error',
+        path: readMePath,
         helpUrl:
           // tslint:disable-next-line:max-line-length
           'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
@@ -434,6 +446,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
         message: 'The default tag contains multiple API versions swaggers.',
         readMeUrl: readMePath,
         tag: getDefaultTag(m.markDown),
+        path: readMePath,
         level: 'Warning',
       }
     }
@@ -474,6 +487,7 @@ const validateInputFiles = (
         level: 'Error',
         readMeUrl: spec.readMePath,
         jsonUrl: spec.path,
+        path: spec.path,
       }))
   })
 
@@ -529,17 +543,24 @@ const validateFolder = (dir: string) =>
         fileSet.add(spec)
         return fileSet
       }, new Set<Specification>())
-
     yield* validateInputFiles(referencedFiles, allFiles)
   })
 
 /**
  * Creates a map of unique errors for the given folder `cwd`.
  */
-const avocadoForDir = async (dir: string) => {
+const avocadoForDir = async (dir: string, exclude: string[]) => {
   const map = new Map<string, err.Error>()
-  for await (const e of validateFolder(dir)) {
-    map.set(errorCorrelationId(e), e)
+  if (fs.existsSync(dir)) {
+    console.log(`avocadoForDir: ${dir}`)
+    for await (const e of validateFolder(dir)) {
+      map.set(errorCorrelationId(e), e)
+    }
+  }
+  for (const [k, v] of map) {
+    if (exclude.some(item => v.path.search(item) !== -1)) {
+      map.delete(k)
+    }
   }
   return map
 }
@@ -548,8 +569,9 @@ const avocadoForDir = async (dir: string) => {
  * Run Avocado in Azure DevOps for a Pull Request.
  *
  * @param pr Pull Request properties
+ * @param exclude path indicate which kind of error should be ignored.
  */
-const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterableEx<err.Error> =>
+const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
     // collect all errors from the 'targetBranch'
     const diffFiles = await pr.diff()
@@ -562,7 +584,6 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
       .every(item => swaggerParentDirs.add(item))
     const readmeDirs = new Set<string>()
     for (const item of swaggerParentDirs) {
-      console.log(item)
       const readmeDir = await findTheNearestReadme(pr.workingDir, item)
       if (readmeDir !== undefined) {
         readmeDirs.add(readmeDir)
@@ -571,6 +592,7 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
           level: 'Error',
           code: 'MISSING_README',
           message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
+          path: item,
           folderUrl: item,
         }
       }
@@ -578,11 +600,11 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
 
     for (const dir of readmeDirs) {
       await pr.checkout(pr.targetBranch)
-      const targetMap = await avocadoForDir(path.resolve(pr.workingDir, dir))
+      const targetMap = await avocadoForDir(path.resolve(pr.workingDir, dir), exclude)
 
       // collect all errors from the 'sourceBranch'
       await pr.checkout(pr.sourceBranch)
-      const sourceMap = await avocadoForDir(path.resolve(pr.workingDir, dir))
+      const sourceMap = await avocadoForDir(path.resolve(pr.workingDir, dir), exclude)
 
       const fileChanges = await pr.diff()
 
@@ -594,6 +616,7 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties): asyncIt.AsyncIterab
           sourceMap.delete(e)
         }
       }
+
       yield* sourceMap.values()
     }
   })
@@ -605,15 +628,20 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
   asyncIt.iterable<err.Error>(async function*() {
     const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
+    // tslint:disable-next-line: no-let
+    let exclude = []
+    if (config.args && config.args.excludePaths) {
+      exclude = config.args.excludePaths
+    }
     if (pr !== undefined) {
-      yield* avocadoForDevOps(pr)
+      yield* avocadoForDevOps(pr, exclude)
     } else {
       // tslint:disable-next-line: no-let
       let dir = '.'
       if (config.args && config.args.dir) {
         dir = config.args.dir
       }
-      yield* (await avocadoForDir(path.resolve(config.cwd, dir))).values()
+      yield* (await avocadoForDir(path.resolve(config.cwd, dir), exclude)).values()
     }
   })
 

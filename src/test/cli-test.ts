@@ -50,12 +50,12 @@ describe('cli', () => {
     await cli.run(
       () =>
         ai.fromSequence<MyError>(
-          ...Array<MyError>({ level: 'Error', message: 'some error' }),
+          ...Array<MyError>({ level: 'Error', message: 'some error', path: './specification/a.json' }),
         ),
       report,
     )
     assert.strictEqual(process.exitCode, 1)
-    assert.strictEqual(error, '{"level":"Error","message":"some error"}')
+    assert.strictEqual(error, '{"level":"Error","message":"some error","path":"./specification/a.json"}')
     assert.strictEqual(info, 'errors: 1')
   })
   it('with warnings', async () => {
@@ -71,12 +71,12 @@ describe('cli', () => {
     await cli.run(
       () =>
         ai.fromSequence<MyError>(
-          ...Array<MyError>({ level: 'Warning', message: 'some error' }),
+          ...Array<MyError>({ level: 'Warning', message: 'some error', path: './specification/a.json' }),
         ),
       report,
     )
     assert.strictEqual(process.exitCode, 0)
-    assert.strictEqual(error, '{"level":"Warning","message":"some error"}')
+    assert.strictEqual(error, '{"level":"Warning","message":"some error","path":"./specification/a.json"}')
     assert.strictEqual(info, 'errors: 0')
   })
   it('internal error: undefined error level', async () => {
@@ -129,7 +129,11 @@ describe('cli', () => {
     // tslint:disable-next-line: no-object-mutation
     process.env.TRAVIS_PULL_REQUEST_SHA = '70ac08dc9a'
     console.log(process.env)
-    await cli.run(avocado, UnifiedPipelineReport('pipe.log'), { cwd: 'src/test/circular_reference', env: {} })
+    try {
+      await cli.run(avocado, UnifiedPipelineReport('pipe.log'), { cwd: 'src/test/circular_reference', env: {} })
+    } catch (err) {
+      console.log(err)
+    }
     const expected = {
       code: 'CIRCULAR_REFERENCE',
       message: 'The JSON file has a circular reference.',

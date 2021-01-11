@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1
+
+- fix unittest
+- Support excludePaths option to ignore errors from common-type
+- Fix bug. Check folder exist before run avocado
+
 ## 0.8.0
 
 - Support folder level validation.

@@ -10,7 +10,7 @@ import * as tmpDir from './tmp-dir'
 import { hasCommonRPFolder } from '../dev-ops'
 import * as err from '../errors'
 
-type MockAction = 'remove readme' | 'modify json' | 'add file'
+type MockAction = 'remove readme' | 'modify json' | 'add file' | 'update readme'
 
 /**
  * Create Azure DevOps environment for testing.
@@ -42,18 +42,20 @@ const createDevOpsEnv = async (name: string, action: readonly MockAction[]): Pro
   await pfs.writeFile(
     path.join(resourceManagerFolder, 'readme.md'),
     `
-    # Test RP
+# Test RP
 
-    > see https://aka.ms/autorest
+> see https://aka.ms/autorest
+
+### Tag: package-2020-07-01
+
+\`\`\` yaml $(tag)=='package-2020-07-01'
+input-file:
+- $(this-folder)/file1.json
+- $(this-folder)/file2.json
+- $(this-folder)/file3.json
     
-    \`\`\`
-    input-file:
-    - $(this-folder)/file1.json
-    - $(this-folder)/file2.json
-    - $(this-folder)/file3.json
-    
-    \`\`\`
-  `,
+\`\`\`
+`,
   )
   await pfs.writeFile(
     path.join(resourceManagerFolder, 'file1.json'),
@@ -95,6 +97,26 @@ const createDevOpsEnv = async (name: string, action: readonly MockAction[]): Pro
   if (action.includes('remove readme')) {
     // commit removing 'specification/readme.md' to 'source'.
     await pfs.unlink(path.join(resourceManagerFolder, 'readme.md'))
+  }
+
+  if (action.includes('update readme')) {
+    await pfs.writeFile(
+      path.join(resourceManagerFolder, 'readme.md'),
+      `
+# Test RP
+
+> see https://aka.ms/autorest
+
+### Tag: package-2020-07-01
+
+\`\`\`yaml $(tag)='package-2020-07-01'
+
+input-file:
+- $(this-folder)/file2.json
+- $(this-folder)/file3.json
+\`\`\`
+`,
+    )
   }
 
   if (action.includes('modify json')) {
@@ -161,7 +183,71 @@ describe('Azure DevOps', () => {
   it('Azure DevOps and Avocado add file', async () => {
     const cfg = await createDevOpsEnv('devops-pr-add-file', ['add file', 'modify json'])
     const errors = await avocado(cfg).toArray()
-    assert.deepStrictEqual(errors[0].code, 'UNREFERENCED_JSON_FILE')
+    assert.deepStrictEqual(errors, [
+      {
+        code: 'JSON_PARSE',
+        message: 'The file is not a valid JSON file.',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file3.json',
+        ),
+        error: {
+          kind: 'syntax',
+          code: 'invalid token',
+          position: {
+            column: 1,
+            line: 1,
+          },
+          token: 'random',
+          message: 'invalid token, token: random, line: 1, column: 1',
+          url: path.resolve(
+            tmpDir.getTmpRoot(),
+            'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file3.json',
+          ),
+        },
+        level: 'Error',
+      },
+      {
+        code: 'JSON_PARSE',
+        message: 'The file is not a valid JSON file.',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file3.json',
+        ),
+        error: {
+          kind: 'structure',
+          code: 'unexpected token',
+          position: {
+            column: 8,
+            line: 1,
+          },
+          token: '"string"',
+          message: 'unexpected token, token: "string", line: 1, column: 8',
+          url: path.resolve(
+            tmpDir.getTmpRoot(),
+            'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file3.json',
+          ),
+        },
+        level: 'Error',
+      },
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The swagger JSON file is not referenced from the readme file.',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file4.json',
+        ),
+        level: 'Error',
+        readMeUrl: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/readme.md',
+        ),
+        jsonUrl: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-pr-add-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file4.json',
+        ),
+      },
+    ])
   })
 
   it('PR diff', async () => {
@@ -241,6 +327,10 @@ describe('Azure DevOps', () => {
         level: 'Error',
         code: 'MISSING_README',
         message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'devops-no-readme/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager',
+        ),
         folderUrl: path.resolve(
           tmpDir.getTmpRoot(),
           'devops-no-readme/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager',
@@ -248,6 +338,31 @@ describe('Azure DevOps', () => {
       },
     ])
   })
+
+  it('PR with remove input file from readme', async () => {
+    const cfg = await createDevOpsEnv('remove-input-file', ['update readme'])
+    const errors = await avocado(cfg).toArray()
+    assert.deepStrictEqual(errors, [
+      {
+        code: 'UNREFERENCED_JSON_FILE',
+        message: 'The swagger JSON file is not referenced from the readme file.',
+        level: 'Error',
+        path: path.resolve(
+          tmpDir.getTmpRoot(),
+          'remove-input-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file1.json',
+        ),
+        readMeUrl: path.resolve(
+          tmpDir.getTmpRoot(),
+          'remove-input-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/readme.md',
+        ),
+        jsonUrl: path.resolve(
+          tmpDir.getTmpRoot(),
+          'remove-input-file/c93b354fd9c14905bb574a8834c4d69b/specification/testRP/resource-manager/file1.json',
+        ),
+      },
+    ])
+  })
+
   it('File changes has common RP folder', () => {
     assert.ok(hasCommonRPFolder('a/b/c/specification/rp1/sssss', 'a/b/c/specification/rp1/sssss'))
     assert.ok(hasCommonRPFolder('a/b/c/specification/network/sssss/a.json', 'tmp/a/b/c/specification/network/sssss'))
@@ -278,6 +393,7 @@ describe('Azure DevOps', () => {
       code: 'MISSING_README',
       message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
       level: 'Error',
+      path: 'x',
       folderUrl: 'specification/network/data-plane',
     }
 
@@ -285,6 +401,7 @@ describe('Azure DevOps', () => {
       code: 'MISSING_README',
       message: 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.',
       level: 'Error',
+      path: 'x',
       folderUrl: 'specification/compute/data-plane',
     }
 
@@ -293,6 +410,7 @@ describe('Azure DevOps', () => {
       message: 'The JSON file is not found but it is referenced from the readme file.',
       level: 'Error',
       readMeUrl: 'specification/compute/resource-manager/readme.md',
+      path: 'x',
       jsonUrl: 'specification/compute/resource-manager/2019-01-01/compute.json',
     }
     assert.ok(isPRRelatedError(fileChanges, networkError))
@@ -312,6 +430,7 @@ describe('Azure DevOps', () => {
       message: 'The default tag contains multiple API versions swaggers.',
       level: 'Error',
       readMeUrl: 'specification/network/resource-manager/readme.md',
+      path: 'x',
       tag: '2020-09-01',
     }
     assert.deepStrictEqual(isPRRelatedError(fileChanges, readmeError), true)

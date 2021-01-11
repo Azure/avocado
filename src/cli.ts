@@ -31,7 +31,7 @@ export type Config = {
   /**
    * Arguments
    */
-  readonly args?: stringMap.StringMap<string>
+  readonly args?: stringMap.StringMap<any>
 }
 
 export const defaultConfig = () => ({
