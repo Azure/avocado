@@ -3,6 +3,7 @@
 ## 0.8.2
 
 - Fix bug. MISSING_README should be excluded by arguments.
+- Fix security issue.
 
 ## 0.8.1
 
