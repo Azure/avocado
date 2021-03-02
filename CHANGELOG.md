@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.2
+
+- Fix bug. MISSING_README should be excluded by arguments.
+
 ## 0.8.1
 
 - fix unittest
