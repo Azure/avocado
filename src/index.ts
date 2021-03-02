@@ -587,7 +587,7 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): 
       const readmeDir = await findTheNearestReadme(pr.workingDir, item)
       if (readmeDir !== undefined) {
         readmeDirs.add(readmeDir)
-      } else {
+      } else if (!exclude.some(excludeItem => item.search(excludeItem) !== -1)) {
         yield {
           level: 'Error',
           code: 'MISSING_README',
@@ -633,6 +633,7 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
     if (config.args && config.args.excludePaths) {
       exclude = config.args.excludePaths
     }
+    console.log(exclude)
     if (pr !== undefined) {
       yield* avocadoForDevOps(pr, exclude)
     } else {
