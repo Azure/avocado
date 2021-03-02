@@ -10,7 +10,7 @@ import * as tmpDir from './tmp-dir'
 import { hasCommonRPFolder } from '../dev-ops'
 import * as err from '../errors'
 
-type MockAction = 'remove readme' | 'modify json' | 'add file' | 'update readme'
+type MockAction = 'remove readme' | 'modify json' | 'add file' | 'update readme' | 'update .github'
 
 /**
  * Create Azure DevOps environment for testing.
@@ -35,9 +35,11 @@ const createDevOpsEnv = async (name: string, action: readonly MockAction[]): Pro
   const specification = path.join(remote, 'specification')
   const resourceProviderFolder = path.join(specification, 'testRP')
   const resourceManagerFolder = path.join(resourceProviderFolder, 'resource-manager')
+  const dotGithubFolder = path.join(remote, '.github')
   await pfs.mkdir(specification)
   await pfs.mkdir(resourceProviderFolder)
   await pfs.mkdir(resourceManagerFolder)
+  await pfs.mkdir(dotGithubFolder)
 
   await pfs.writeFile(
     path.join(resourceManagerFolder, 'readme.md'),
@@ -151,6 +153,10 @@ input-file:
     await pfs.writeFile(path.join(remote, 'textfile.txt'), '')
     await pfs.writeFile(path.join(remote, 'license'), 'MIT')
   }
+
+  if (action.includes('update .github')) {
+    await pfs.writeFile(path.join(dotGithubFolder, 'file4.json'), `{"foo":"bar"}`)
+  }
   await pfs.writeFile(path.join(remote, 'license'), 'MIT')
   await gitRemote({ add: ['.'] })
   await gitRemote({
@@ -165,6 +171,9 @@ input-file:
 
   return {
     cwd: local,
+    args: {
+      excludePaths: ['common-types', '.github'],
+    },
     env: {
       SYSTEM_PULLREQUEST_TARGETBRANCH: 'master',
     },
@@ -361,6 +370,12 @@ describe('Azure DevOps', () => {
         ),
       },
     ])
+  })
+
+  it('PR add .github file', async () => {
+    const cfg = await createDevOpsEnv('add-github-file', ['update .github'])
+    const errors = await avocado(cfg).toArray()
+    assert.ok(errors.length === 0)
   })
 
   it('File changes has common RP folder', () => {

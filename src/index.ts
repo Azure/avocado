@@ -587,7 +587,7 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): 
       const readmeDir = await findTheNearestReadme(pr.workingDir, item)
       if (readmeDir !== undefined) {
         readmeDirs.add(readmeDir)
-      } else {
+      } else if (!exclude.some(excludeItem => item.search(excludeItem) !== -1)) {
         yield {
           level: 'Error',
           code: 'MISSING_README',

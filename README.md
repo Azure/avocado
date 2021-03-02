@@ -32,6 +32,7 @@ Avocado major functions are listed below:
 - `avocado -h` show help message
 - `avocado` validate current directory
 - `avocado -d <my-folder-path>` validate `<my-folder-path>` directory
+- `avocado -d <my-folder-path> --excludePaths 'common-types'` validate folder and exclude errors from 'common-types'
 
 ### Example
 
