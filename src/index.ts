@@ -633,7 +633,6 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
     if (config.args && config.args.excludePaths) {
       exclude = config.args.excludePaths
     }
-    console.log(exclude)
     if (pr !== undefined) {
       yield* avocadoForDevOps(pr, exclude)
     } else {
