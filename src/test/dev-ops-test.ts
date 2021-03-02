@@ -10,7 +10,11 @@ import * as tmpDir from './tmp-dir'
 import { hasCommonRPFolder } from '../dev-ops'
 import * as err from '../errors'
 
+<<<<<<< HEAD
 type MockAction = 'remove readme' | 'modify json' | 'add file' | 'update readme' | 'update .github'
+=======
+type MockAction = 'remove readme' | 'modify json' | 'add file' | 'update readme'
+>>>>>>> origin/master
 
 /**
  * Create Azure DevOps environment for testing.
