@@ -375,7 +375,7 @@ describe('Azure DevOps', () => {
   it('PR add .github file', async () => {
     const cfg = await createDevOpsEnv('add-github-file', ['update .github'])
     const errors = await avocado(cfg).toArray()
-    console.log(errors)
+    assert.ok(errors.length === 0)
   })
 
   it('File changes has common RP folder', () => {
