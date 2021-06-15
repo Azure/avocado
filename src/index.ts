@@ -294,13 +294,16 @@ const validateFileLocation = (current: Specification, document: json.JsonObject)
     }
   })
 
-const findTheNearestReadme = async (cwd: string, swaggerPath: string): Promise<string | undefined> => {
+const findTheNearestReadme = async (rootDir: string, swaggerPath: string): Promise<string | undefined> => {
   // tslint:disable-next-line: no-let
   let curDir = swaggerPath
-  while (curDir !== cwd) {
+  // tslint:disable-next-line: no-let
+  let prevDir = ''
+  while (curDir !== rootDir && prevDir !== curDir) {
     if (await containsReadme(curDir)) {
       return curDir
     }
+    prevDir = curDir
     curDir = path.dirname(curDir)
   }
   return undefined

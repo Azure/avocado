@@ -10,7 +10,7 @@ import * as tmpDir from './tmp-dir'
 import { hasCommonRPFolder } from '../dev-ops'
 import * as err from '../errors'
 
-type MockAction = 'remove readme' | 'modify json' | 'add file' | 'update readme' | 'update .github'
+type MockAction = 'remove readme' | 'modify json' | 'add file' | 'update readme' | 'update .github' | 'remove file'
 
 /**
  * Create Azure DevOps environment for testing.
@@ -157,6 +157,10 @@ input-file:
   if (action.includes('update .github')) {
     await pfs.writeFile(path.join(dotGithubFolder, 'file4.json'), `{"foo":"bar"}`)
   }
+  if (action.includes('remove file')) {
+    await pfs.unlink(path.join(resourceManagerFolder, 'file1.json'))
+  }
+
   await pfs.writeFile(path.join(remote, 'license'), 'MIT')
   await gitRemote({ add: ['.'] })
   await gitRemote({
@@ -374,6 +378,12 @@ describe('Azure DevOps', () => {
 
   it('PR add .github file', async () => {
     const cfg = await createDevOpsEnv('add-github-file', ['update .github'])
+    const errors = await avocado(cfg).toArray()
+    assert.ok(errors.length === 0)
+  })
+
+  it('remove swagger file', async () => {
+    const cfg = await createDevOpsEnv('remove-json-file', ['remove file', 'update readme', 'remove readme'])
     const errors = await avocado(cfg).toArray()
     assert.ok(errors.length === 0)
   })
