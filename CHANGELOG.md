@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.3
+
+- Bug fix. avoid infinite loop. When find the nearest readme
+
 ## 0.8.2
 
 - Fix bug. MISSING_README should be excluded by arguments.
