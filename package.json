@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -43,7 +43,7 @@
     "collectCoverage": true,
     "coverageThreshold": {
       "global": {
-        "branches": 93,
+        "branches": 90,
         "functions": 95,
         "lines": 98,
         "statements": 98
