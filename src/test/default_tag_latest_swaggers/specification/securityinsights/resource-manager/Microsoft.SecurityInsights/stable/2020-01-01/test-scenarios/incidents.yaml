@@ -1,8 +1,0 @@
-scope: ResourceGroup
-testScenarios:
-  - description: Microsoft.SecurityInsights/incidents Creates or updates an incident.
-    steps:
-      - step: Creates or updates an incident.
-        exampleFile: ../examples/incidents/CreateIncident.json
-      - step: Delete an incident.
-        exampleFile: ../examples/incidents/DeleteIncident.json
