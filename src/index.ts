@@ -12,6 +12,7 @@ import * as it from '@ts-common/iterator'
 import * as json from '@ts-common/json'
 import * as stringMap from '@ts-common/string-map'
 import * as commonmark from 'commonmark'
+import { JSONPath } from 'jsonpath-plus'
 import * as cli from './cli'
 import * as git from './git'
 import * as childProcess from './child-process'
@@ -22,6 +23,8 @@ import * as YAML from 'js-yaml'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
+// tslint:disable-next-line: no-require-imports
+import glob = require('glob')
 
 export { devOps, cli, git, childProcess }
 
@@ -71,6 +74,20 @@ const errorCorrelationId = (error: err.Error) => {
           url: error.jsonUrl,
         }
       }
+      case 'MISSING_APIS_IN_DEFAULT_TAG': {
+        return {
+          code: error.code,
+          url: error.jsonUrl,
+          readMeUrl: error.readMeUrl,
+        }
+      }
+      case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG': {
+        return {
+          code: error.code,
+          url: error.jsonUrl,
+          readMeUrl: error.readMeUrl,
+        }
+      }
     }
   }
 
@@ -78,7 +95,7 @@ const errorCorrelationId = (error: err.Error) => {
 }
 
 const markDownIterate = (node: commonmark.Node | null) =>
-  it.iterable(function* () {
+  it.iterable(function*() {
     // tslint:disable-next-line:no-let
     let i = node
     while (i !== null) {
@@ -117,7 +134,6 @@ const safeLoad = (content: string) => {
 export const getDefaultTag = (markDown: commonmark.Node): string | undefined => {
   const startNode = markDown
   const codeBlockMap = openApiMd.getCodeBlocksAndHeadings(startNode)
-
   const latestHeader = 'Basic Information'
   const headerBlock = codeBlockMap[latestHeader]
   if (headerBlock && headerBlock.literal) {
@@ -161,7 +177,7 @@ export const getSwaggerFileUnderDefaultTag = (m: md.MarkDownEx): string[] => {
     return []
   }
   const inputFiles = openApiMd.getInputFilesForTag(m.markDown, defaultTag)
-  return inputFiles as any
+  return (inputFiles as any) || []
 }
 
 export const isContainsMultiVersion = (m: md.MarkDownEx): boolean => {
@@ -180,7 +196,6 @@ export const isContainsMultiVersion = (m: md.MarkDownEx): boolean => {
   }
   return false
 }
-
 
 const jsonParse = (fileName: string, file: string) => {
   // tslint:disable-next-line:readonly-array
@@ -267,7 +282,7 @@ const containsReadme = async (folder: string): Promise<boolean> => {
 }
 
 const validateSpecificationAPIVersion = (current: Specification, document: json.JsonObject): it.IterableEx<err.Error> =>
-  it.iterable<err.Error>(function* () {
+  it.iterable<err.Error>(function*() {
     const info = document.info as json.JsonObject | undefined
     if (info !== undefined) {
       if (!current.path.includes(info.version as string)) {
@@ -284,7 +299,7 @@ const validateSpecificationAPIVersion = (current: Specification, document: json.
   })
 
 const validateFileLocation = (current: Specification, document: json.JsonObject): it.IterableEx<err.Error> =>
-  it.iterable<err.Error>(function* () {
+  it.iterable<err.Error>(function*() {
     const host = document.host as string | undefined
     if (host !== undefined && host === 'management.azure.com' && !current.path.includes('resource-manager')) {
       yield {
@@ -315,13 +330,174 @@ const findTheNearestReadme = async (rootDir: string, swaggerPath: string): Promi
   return undefined
 }
 
+export type PathTable = Map<string, { apiVersion: string; swaggerFile: string }>
+
+export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it.IterableEx<err.Error> =>
+  it.iterable<err.Error>(function*() {
+    const readmePattern = path.join(dir, '**/readme.md')
+    const readmes = glob.sync(readmePattern, { nodir: true })
+
+    for (const readme of readmes) {
+      console.log(readme)
+      const readmeDir = path.dirname(readme)
+      const readmeContent = fs.readFileSync(readme).toString()
+      const m = md.parse(readmeContent)
+      const inputFiles = getSwaggerFileUnderDefaultTag(m)
+      let defaultTagPathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+      let stableCheck = false
+      let previewCheck = false
+      for (const inputFile of inputFiles) {
+        stableCheck = stableCheck || inputFile.includes('stable')
+        previewCheck = previewCheck || inputFile.includes('preview')
+        const inputFilePath = path.resolve(readmeDir, inputFile)
+        const pathTable = getPathTableFromSwaggerFile(inputFilePath)
+        defaultTagPathTable = mergePathTable(defaultTagPathTable, pathTable)
+      }
+      const previewPattern = path.join(readmeDir, '**/preview/**/*.json')
+      const previewFiles = glob
+        .sync(previewPattern, { nodir: true })
+        .filter(swaggerFile => !swaggerFile.includes('examples'))
+      const stablePattern = path.join(readmeDir, '**/stable/**/*.json')
+      const stableFiles = glob
+        .sync(stablePattern, { nodir: true })
+        .filter(swaggerFile => !swaggerFile.includes('examples'))
+
+      let stablePathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+      let previewPathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+
+      for (const inputFile of previewFiles) {
+        previewPathTable = mergePathTable(previewPathTable, getPathTableFromSwaggerFile(inputFile))
+      }
+
+      for (const inputFile of stableFiles) {
+        stablePathTable = mergePathTable(stablePathTable, getPathTableFromSwaggerFile(inputFile))
+      }
+
+      let latestAPIPathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+
+      if (stableCheck) {
+        latestAPIPathTable = mergePathTable(latestAPIPathTable, stablePathTable)
+      }
+      if (previewCheck) {
+        latestAPIPathTable = mergePathTable(latestAPIPathTable, previewPathTable)
+      }
+      const difference = diffPathTable(defaultTagPathTable, latestAPIPathTable)
+      for (const item of difference) {
+        yield {
+          level: 'Error',
+          code: item.code,
+          message: item.message,
+          tag: 'default',
+          readMeUrl: readme,
+          jsonUrl: item.swaggerFile,
+          path: item.path,
+        }
+      }
+    }
+  })
+
+export const mergePathTable = (pathTable: PathTable, newPathTable: PathTable): PathTable => {
+  for (const [key, value] of newPathTable) {
+    if (pathTable.has(key)) {
+      if (pathTable.get(key)!.apiVersion < value.apiVersion) {
+        pathTable.set(key, value)
+      }
+    } else {
+      pathTable.set(key, value)
+    }
+  }
+  return pathTable
+}
+
+export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: PathTable): any[] => {
+  const result: any[] = []
+  for (const [key, value] of latestPathTable) {
+    if (defaultPathTable.has(key)) {
+      if (defaultPathTable.get(key)!.apiVersion !== value.apiVersion) {
+        result.push({
+          path: key,
+          swaggerFile: value.swaggerFile,
+          code: 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG',
+          message:
+            // tslint:disable-next-line: max-line-length
+            'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.',
+        })
+      }
+    } else {
+      result.push({
+        path: key,
+        swaggerFile: value.swaggerFile,
+        code: 'MISSING_APIS_IN_DEFAULT_TAG',
+        message:
+          // tslint:disable-next-line: max-line-length
+          'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
+      })
+    }
+  }
+  return result
+}
+
+export const getPathTableFromSwaggerFile = (swaggerFile: string): PathTable => {
+  if (!fs.existsSync(swaggerFile)) {
+    return new Map<string, { apiVersion: string; swaggerFile: string }>()
+  }
+  let swagger
+  try {
+    swagger = JSON.parse(fs.readFileSync(swaggerFile).toString())
+  } catch (e) {
+    return new Map<string, { apiVersion: string; swaggerFile: string }>()
+  }
+  const apiVersion = getApiVersionFromSwagger(swagger)
+  // apiVersion is undefined when the swagger is just for reference
+  if (apiVersion === undefined) {
+    return new Map<string, { apiVersion: string; swaggerFile: string }>()
+  }
+  const allPaths = getAllPathFromSwagger(swagger).map(normalizeApiPath)
+
+  const pathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+  // tslint:disable-next-line: no-shadowed-variable
+  for (const it of allPaths) {
+    pathTable.set(it, { apiVersion, swaggerFile })
+  }
+  return pathTable
+}
+
+export const getAllPathFromSwagger = (swagger: any) => {
+  const apiPath = '$.paths.*~'
+  const paths = JSONPath({
+    path: apiPath,
+    json: swagger,
+    resultType: 'all',
+  })
+  // tslint:disable-next-line: no-shadowed-variable
+  return paths.map((it: { readonly value: any }) => it.value)
+}
+
+export const getApiVersionFromSwagger = (swagger: any) => {
+  const apiVersionPath = '$.info.version'
+  const version = JSONPath({
+    path: apiVersionPath,
+    json: swagger,
+    resultType: 'all',
+  })
+  if (version.length === 0) {
+    return undefined
+  }
+  return version[0].value
+}
+
+export const normalizeApiPath = (apiPath: string) => {
+  const regex = /\{\w+\}/g
+  return apiPath.replace(regex, '{}')
+}
+
 /**
  * Validate each RP folder must have its readme file.
  *
  * @param dir directory path
  */
 const validateRPFolderMustContainReadme = (dir: string): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     const validDirs: ReadonlyArray<string> = ['data-plane', 'resource-manager']
     const ignoredDirs: ReadonlyArray<string> = ['common']
     const allJsonDir = tscommonFs
@@ -375,7 +551,7 @@ const DFSTraversalValidate = (
   graySet: Set<string>,
   blackSet: Set<string>,
 ): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     if (!blackSet.has(current.path)) {
       graySet.add(current.path)
     }
@@ -434,7 +610,7 @@ const DFSTraversalValidate = (
  * validate given `readme.md` format
  */
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     const file = await tscommonFs.readFile(readMePath)
     const m = md.parse(file.toString())
     if (!isAutoRestMd(m)) {
@@ -475,7 +651,7 @@ const validateInputFiles = (
   allInputFileSet: Set<Specification>,
 ): asyncIt.AsyncIterableEx<err.Error> =>
   // tslint:disable-next-line: no-async-without-await
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     // report errors if the `dir` folder has JSON files where exist circular reference
     const graySet = new Set<string>()
     const blackSet = new Set<string>()
@@ -501,7 +677,7 @@ const validateInputFiles = (
   })
 
 const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
-  asyncIt.iterable<Specification>(async function* () {
+  asyncIt.iterable<Specification>(async function*() {
     const file = await tscommonFs.readFile(readMePath)
     const m = md.parse(file.toString())
     const dir = path.dirname(readMePath)
@@ -516,7 +692,7 @@ const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Sp
 
 const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
   // tslint:disable-next-line: no-async-without-await
-  asyncIt.iterable<Specification>(async function* () {
+  asyncIt.iterable<Specification>(async function*() {
     const dir = path.dirname(readMePath)
     yield* tscommonFs
       .recursiveReaddir(dir)
@@ -532,7 +708,7 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
  * Validate global specification folder and prepare arguments for `validateInputFiles`.
  */
 const validateFolder = (dir: string) =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     const allReadMeFiles = tscommonFs.recursiveReaddir(dir).filter(f => path.basename(f).toLowerCase() === 'readme.md')
 
     yield* validateRPFolderMustContainReadme(dir)
@@ -553,6 +729,7 @@ const validateFolder = (dir: string) =>
         return fileSet
       }, new Set<Specification>())
     yield* validateInputFiles(referencedFiles, allFiles)
+    yield* validateRPMustContainAllLatestApiVersionSwagger(dir)
   })
 
 /**
@@ -581,7 +758,7 @@ const avocadoForDir = async (dir: string, exclude: string[]) => {
  * @param exclude path indicate which kind of error should be ignored.
  */
 const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     // collect all errors from the 'targetBranch'
     const diffFiles = await pr.diff()
     const changedSwaggerFilePath = diffFiles.map(item => item.path)
@@ -634,7 +811,7 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): 
  * The function validates files in the given `cwd` folder and returns errors.
  */
 export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
     // tslint:disable-next-line: no-let

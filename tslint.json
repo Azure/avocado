@@ -19,6 +19,7 @@
         "member-ordering": false,
         "no-magic-numbers": false,
         "newline-before-return": false,
+        "no-use-before-declare": false,
         "unnecessary-else": false,
         "completed-docs": false,
         "no-void-expression": false,
@@ -26,7 +27,6 @@
         "strict-boolean-expressions": [
             false
         ],
-
         "no-var-keyword": true,
         "no-parameter-reassignment": true,
         "typedef": true,
@@ -38,12 +38,12 @@
             true,
             120
         ],
-
-        "readonly-keyword": true,
-        "no-let": true,
+        "readonly-keyword": false,
+        "no-let": false,
         "no-object-mutation": true,
         "no-delete": true,
         "no-method-signature": true,
+        "no-non-null-assertion": false,
         "no-this": false,
         "no-class": false,
         "no-mixed-interface": true,

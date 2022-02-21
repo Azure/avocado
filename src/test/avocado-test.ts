@@ -329,4 +329,18 @@ describe('avocado', () => {
       .toArray()
     assert.deepStrictEqual(r, [])
   })
+
+  it('avocado check default tag should contains latest api version', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/default_tag_latest_swaggers', env: {} }).toArray()
+    assert.strictEqual(r.length, 8)
+    assert.deepStrictEqual(
+      r.some(it => it.code === 'MISSING_APIS_IN_DEFAULT_TAG'),
+      true,
+    )
+    assert.deepStrictEqual(
+      r.some(it => it.code === 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'),
+      true,
+    )
+    console.log(r)
+  })
 })

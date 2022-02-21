@@ -1,0 +1,8 @@
+scope: ResourceGroup
+testScenarios:
+  - description: Microsoft.SecurityInsights/bookmarks Creates or updates a bookmark.
+    steps:
+      - step: Creates or updates a bookmark.
+        exampleFile: ../examples/bookmarks/CreateBookmark.json
+      - step: Delete a bookmark.
+        exampleFile: ../examples/bookmarks/DeleteBookmark.json
