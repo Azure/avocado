@@ -102,7 +102,6 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
       return [{ tag: 'folder', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.folderUrl)) }]
 
     case 'MISSING_APIS_IN_DEFAULT_TAG':
-      console.log(error.message)
       return [
         { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
         { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
