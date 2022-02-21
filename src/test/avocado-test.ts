@@ -341,6 +341,5 @@ describe('avocado', () => {
       r.some(it => it.code === 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'),
       true,
     )
-    console.log(r)
   })
 })
