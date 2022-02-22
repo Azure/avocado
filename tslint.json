@@ -36,7 +36,7 @@
         ],
         "max-line-length": [
             true,
-            120
+            250
         ],
         "readonly-keyword": false,
         "no-let": false,
