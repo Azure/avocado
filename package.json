@@ -27,7 +27,7 @@
     "tsc": "tsc",
     "prettier": "prettier ./src/**/*.ts",
     "tslint": "tslint -t verbose --project ./",
-    "test": "tsc && tslint -t verbose --project ./ && jest --silent",
+    "test": "tsc && tslint -t verbose --project ./ && jest --silent --testTimeout 100000",
     "standard": "standard src/**/*.ts",
     "prepack": "npm install && tsc"
   },
