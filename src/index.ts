@@ -95,7 +95,7 @@ const errorCorrelationId = (error: err.Error) => {
 }
 
 const markDownIterate = (node: commonmark.Node | null) =>
-  it.iterable(function* () {
+  it.iterable(function*() {
     // tslint:disable-next-line:no-let
     let i = node
     while (i !== null) {
@@ -105,7 +105,7 @@ const markDownIterate = (node: commonmark.Node | null) =>
   })
 
 const isAutoRestMd = (m: md.MarkDownEx) =>
-  markDownIterate(m.markDown.firstChild).some((v) => {
+  markDownIterate(m.markDown.firstChild).some(v => {
     if (v.type !== 'block_quote') {
       return false
     }
@@ -263,9 +263,9 @@ const parseRef = (ref: string): Ref => {
 const getReferencedFileNames = (fileName: string, doc: json.Json) => {
   const dir = path.dirname(fileName)
   return getRefs(doc)
-    .map((v) => parseRef(v).url)
-    .filter((u) => u !== '')
-    .map((u) => path.resolve(path.join(dir, u)))
+    .map(v => parseRef(v).url)
+    .filter(u => u !== '')
+    .map(u => path.resolve(path.join(dir, u)))
 }
 
 const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
@@ -274,7 +274,7 @@ const moveTo = (a: Set<string>, b: Set<string>, key: string): string => {
   return key
 }
 
-const isExample = (filePath: string): boolean => filePath.split(path.sep).some((name) => name === 'examples')
+const isExample = (filePath: string): boolean => filePath.split(path.sep).some(name => name === 'examples')
 
 const containsReadme = async (folder: string): Promise<boolean> => {
   const readmePath = path.resolve(folder, 'readme.md')
@@ -282,7 +282,7 @@ const containsReadme = async (folder: string): Promise<boolean> => {
 }
 
 const validateSpecificationAPIVersion = (current: Specification, document: json.JsonObject): it.IterableEx<err.Error> =>
-  it.iterable<err.Error>(function* () {
+  it.iterable<err.Error>(function*() {
     const info = document.info as json.JsonObject | undefined
     if (info !== undefined) {
       if (!current.path.includes(info.version as string)) {
@@ -299,7 +299,7 @@ const validateSpecificationAPIVersion = (current: Specification, document: json.
   })
 
 const validateFileLocation = (current: Specification, document: json.JsonObject): it.IterableEx<err.Error> =>
-  it.iterable<err.Error>(function* () {
+  it.iterable<err.Error>(function*() {
     const host = document.host as string | undefined
     if (host !== undefined && host === 'management.azure.com' && !current.path.includes('resource-manager')) {
       yield {
@@ -333,7 +333,7 @@ const findTheNearestReadme = async (rootDir: string, swaggerPath: string): Promi
 export type PathTable = Map<string, { apiVersion: string; swaggerFile: string }>
 
 export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it.IterableEx<err.Error> =>
-  it.iterable<err.Error>(function* () {
+  it.iterable<err.Error>(function*() {
     const readmePattern = path.join(dir, '**/readme.md')
     const readmes = glob.sync(readmePattern, { nodir: true })
 
@@ -355,11 +355,11 @@ export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it
       const previewPattern = path.join(readmeDir, '**/preview/**/*.json')
       const previewFiles = glob
         .sync(previewPattern, { nodir: true })
-        .filter((swaggerFile) => !swaggerFile.includes('examples'))
+        .filter(swaggerFile => !swaggerFile.includes('examples'))
       const stablePattern = path.join(readmeDir, '**/stable/**/*.json')
       const stableFiles = glob
         .sync(stablePattern, { nodir: true })
-        .filter((swaggerFile) => !swaggerFile.includes('examples'))
+        .filter(swaggerFile => !swaggerFile.includes('examples'))
 
       let stablePathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
       let previewPathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
@@ -504,21 +504,20 @@ export const normalizeApiPath = (apiPath: string) => {
  * @param dir directory path
  */
 const validateRPFolderMustContainReadme = (dir: string): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     const validDirs: ReadonlyArray<string> = ['data-plane', 'resource-manager']
     const ignoredDirs: ReadonlyArray<string> = ['common']
     const allJsonDir = tscommonFs
       .recursiveReaddir(dir)
       .filter(
-        (filePath) =>
+        filePath =>
           path.extname(filePath) === '.json' &&
           validDirs.some(
-            (item) =>
-              filePath.includes(item) &&
-              !ignoredDirs.some((ignoredItem) => filePath.toLowerCase().includes(ignoredItem)),
+            item =>
+              filePath.includes(item) && !ignoredDirs.some(ignoredItem => filePath.toLowerCase().includes(ignoredItem)),
           ),
       )
-      .map((filePath) => path.dirname(filePath))
+      .map(filePath => path.dirname(filePath))
 
     const allJsonSet = new Set<string>()
     for await (const item of allJsonDir) {
@@ -559,7 +558,7 @@ const DFSTraversalValidate = (
   graySet: Set<string>,
   blackSet: Set<string>,
 ): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     if (!blackSet.has(current.path)) {
       graySet.add(current.path)
     }
@@ -618,7 +617,7 @@ const DFSTraversalValidate = (
  * validate given `readme.md` format
  */
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     const file = await tscommonFs.readFile(readMePath)
     const m = md.parse(file.toString())
     if (!isAutoRestMd(m)) {
@@ -659,7 +658,7 @@ const validateInputFiles = (
   allInputFileSet: Set<Specification>,
 ): asyncIt.AsyncIterableEx<err.Error> =>
   // tslint:disable-next-line: no-async-without-await
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     // report errors if the `dir` folder has JSON files where exist circular reference
     const graySet = new Set<string>()
     const blackSet = new Set<string>()
@@ -670,8 +669,8 @@ const validateInputFiles = (
     // report errors if the `dir` folder has JSON files which are not referenced
     yield* asyncIt
       .fromSync(allInputFileSet.values())
-      .filter((spec) => !blackSet.has(spec.path))
-      .map<err.Error>((spec) => ({
+      .filter(spec => !blackSet.has(spec.path))
+      .map<err.Error>(spec => ({
         code: 'UNREFERENCED_JSON_FILE',
         message:
           spec.kind === 'SWAGGER'
@@ -685,27 +684,27 @@ const validateInputFiles = (
   })
 
 const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
-  asyncIt.iterable<Specification>(async function* () {
+  asyncIt.iterable<Specification>(async function*() {
     const file = await tscommonFs.readFile(readMePath)
     const m = md.parse(file.toString())
     const dir = path.dirname(readMePath)
 
     yield* openApiMd
       .getInputFiles(m.markDown)
-      .map((f) => f.replace('$(this-folder)', '.'))
+      .map(f => f.replace('$(this-folder)', '.'))
       .uniq()
-      .map((f) => path.resolve(path.join(dir, ...f.split('\\'))))
-      .map<Specification>((f) => ({ path: f, readMePath, kind: isExample(f) ? 'EXAMPLE' : 'SWAGGER' }))
+      .map(f => path.resolve(path.join(dir, ...f.split('\\'))))
+      .map<Specification>(f => ({ path: f, readMePath, kind: isExample(f) ? 'EXAMPLE' : 'SWAGGER' }))
   })
 
 const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
   // tslint:disable-next-line: no-async-without-await
-  asyncIt.iterable<Specification>(async function* () {
+  asyncIt.iterable<Specification>(async function*() {
     const dir = path.dirname(readMePath)
     yield* tscommonFs
       .recursiveReaddir(dir)
-      .filter((filePath) => path.extname(filePath) === '.json')
-      .map<Specification>((filePath) => ({
+      .filter(filePath => path.extname(filePath) === '.json')
+      .map<Specification>(filePath => ({
         path: filePath,
         readMePath,
         kind: isExample(filePath) ? 'EXAMPLE' : 'SWAGGER',
@@ -716,10 +715,8 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
  * Validate global specification folder and prepare arguments for `validateInputFiles`.
  */
 const validateFolder = (dir: string) =>
-  asyncIt.iterable<err.Error>(async function* () {
-    const allReadMeFiles = tscommonFs
-      .recursiveReaddir(dir)
-      .filter((f) => path.basename(f).toLowerCase() === 'readme.md')
+  asyncIt.iterable<err.Error>(async function*() {
+    const allReadMeFiles = tscommonFs.recursiveReaddir(dir).filter(f => path.basename(f).toLowerCase() === 'readme.md')
 
     yield* validateRPFolderMustContainReadme(dir)
 
@@ -754,7 +751,7 @@ const avocadoForDir = async (dir: string, exclude: string[]) => {
     }
   }
   for (const [k, v] of map) {
-    if (exclude.some((item) => v.path.search(item) !== -1)) {
+    if (exclude.some(item => v.path.search(item) !== -1)) {
       map.delete(k)
     }
   }
@@ -768,22 +765,22 @@ const avocadoForDir = async (dir: string, exclude: string[]) => {
  * @param exclude path indicate which kind of error should be ignored.
  */
 const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     // collect all errors from the 'targetBranch'
     const diffFiles = await pr.diff()
-    const changedSwaggerFilePath = diffFiles.map((item) => item.path)
+    const changedSwaggerFilePath = diffFiles.map(item => item.path)
 
     const swaggerParentDirs = new Set<string>()
     changedSwaggerFilePath
-      .map((item) => path.dirname(path.resolve(pr.workingDir, item)))
-      .filter((item) => item !== pr.workingDir)
-      .every((item) => swaggerParentDirs.add(item))
+      .map(item => path.dirname(path.resolve(pr.workingDir, item)))
+      .filter(item => item !== pr.workingDir)
+      .every(item => swaggerParentDirs.add(item))
     const readmeDirs = new Set<string>()
     for (const item of swaggerParentDirs) {
       const readmeDir = await findTheNearestReadme(pr.workingDir, item)
       if (readmeDir !== undefined) {
         readmeDirs.add(readmeDir)
-      } else if (!exclude.some((excludeItem) => item.search(excludeItem) !== -1)) {
+      } else if (!exclude.some(excludeItem => item.search(excludeItem) !== -1)) {
         yield {
           level: 'Error',
           code: 'MISSING_README',
@@ -821,7 +818,7 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): 
  * The function validates files in the given `cwd` folder and returns errors.
  */
 export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function* () {
+  asyncIt.iterable<err.Error>(async function*() {
     const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
     // tslint:disable-next-line: no-let

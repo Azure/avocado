@@ -36,11 +36,11 @@ describe('check default tag should contains all apiVersion', () => {
     const res = avocado.validateRPMustContainAllLatestApiVersionSwagger(rpFolder).toArray()
     assert.deepStrictEqual(res.length, 21)
     assert.deepStrictEqual(
-      res.some((it) => it.code === 'MISSING_APIS_IN_DEFAULT_TAG'),
+      res.some(it => it.code === 'MISSING_APIS_IN_DEFAULT_TAG'),
       true,
     )
     assert.deepStrictEqual(
-      res.some((it) => it.code === 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'),
+      res.some(it => it.code === 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'),
       true,
     )
   })
