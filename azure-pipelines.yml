@@ -1,88 +1,88 @@
 trigger:
-- master
+  - master
 
 jobs:
-- job: Test
-  strategy:
-    matrix:
-      Linux.Node10:
-        node.version: 10.x
-        vm.image: 'Ubuntu 16.04'
-      Linux.Node12:
-        node.version: 12.x
-        vm.image: 'Ubuntu 16.04'
-      Win.Node10:
-        node.version: 10.x
-        vm.image: 'vs2017-win2016'
-      Win.Node12:
-        node.version: 12.x
-        vm.image: 'vs2017-win2016'
-  pool:
-    vmImage: $(vm.image)
-  steps:
-  - task: NodeTool@0
-    displayName: 'Install Node'
-    inputs:
-      versionSpec: $(node.version)
-  - script: npm install
-  - task: Npm@1
-    displayName: 'npm test'
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: test
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFiles: '**/test-results.xml'
-      testRunTitle: 'Test results for JavaScript'
-  - task: PublishCodeCoverageResults@1
-    condition: succeededOrFailed()
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
-      reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
-- job: Build
-  pool:
-    vmImage: 'Ubuntu 16.04'
-  steps:
-  - task: Npm@1
-    displayName: 'npm pack'
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: pack
-  - task: CopyFiles@2
-    displayName: 'Copy Files to: drop'
-    inputs:
-      Contents: '*.tgz'
-      TargetFolder: drop
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.SourcesDirectory)/drop
+  - job: Test
+    strategy:
+      matrix:
+        Linux.Node10:
+          node.version: 10.x
+          vm.image: 'Ubuntu 18.04'
+        Linux.Node12:
+          node.version: 12.x
+          vm.image: 'Ubuntu 18.04'
+        Win.Node10:
+          node.version: 10.x
+          vm.image: 'vs2017-win2016'
+        Win.Node12:
+          node.version: 12.x
+          vm.image: 'vs2017-win2016'
+    pool:
+      vmImage: $(vm.image)
+    steps:
+      - task: NodeTool@0
+        displayName: 'Install Node'
+        inputs:
+          versionSpec: $(node.version)
+      - script: npm install
+      - task: Npm@1
+        displayName: 'npm test'
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: test
+      - task: PublishTestResults@2
+        condition: succeededOrFailed()
+        inputs:
+          testResultsFiles: '**/test-results.xml'
+          testRunTitle: 'Test results for JavaScript'
+      - task: PublishCodeCoverageResults@1
+        condition: succeededOrFailed()
+        inputs:
+          codeCoverageTool: Cobertura
+          summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
+          reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
+  - job: Build
+    pool:
+      vmImage: 'Ubuntu 18.04'
+    steps:
+      - task: Npm@1
+        displayName: 'npm pack'
+        inputs:
+          command: custom
+          verbose: false
+          customCommand: pack
+      - task: CopyFiles@2
+        displayName: 'Copy Files to: drop'
+        inputs:
+          Contents: '*.tgz'
+          TargetFolder: drop
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathtoPublish: $(Build.SourcesDirectory)/drop
 
-- job: Windows
-  pool:
-    vmImage: "windows-2019"
+  - job: Windows
+    pool:
+      vmImage: 'windows-2019'
 
-  steps:
-    - task: ea576cd4-c61f-48f8-97e7-a3cb07b90a6f@2 # CredScan@2
-      inputs:
-        toolMajorVersion: 'V2'
+    steps:
+      - task: ea576cd4-c61f-48f8-97e7-a3cb07b90a6f@2 # CredScan@2
+        inputs:
+          toolMajorVersion: 'V2'
 
-    - task: f5679091-e6da-4974-a8dc-0eec03a8ea63@1 # PostAnalysis@1
-      inputs:
-        AllTools: false
-        APIScan: false
-        BinSkim: false
-        CodesignValidation: false
-        CredScan: true
-        FortifySCA: false
-        FxCop: false
-        ModernCop: false
-        PoliCheck: false
-        RoslynAnalyzers: false
-        SDLNativeRules: false
-        Semmle: false
-        TSLint: false
-        ToolLogsNotFoundAction: 'Standard'
+      - task: f5679091-e6da-4974-a8dc-0eec03a8ea63@1 # PostAnalysis@1
+        inputs:
+          AllTools: false
+          APIScan: false
+          BinSkim: false
+          CodesignValidation: false
+          CredScan: true
+          FortifySCA: false
+          FxCop: false
+          ModernCop: false
+          PoliCheck: false
+          RoslynAnalyzers: false
+          SDLNativeRules: false
+          Semmle: false
+          TSLint: false
+          ToolLogsNotFoundAction: 'Standard'

@@ -125,6 +125,22 @@ The management plane swagger JSON file does not match its folder path. Make sure
 
 To solve this warning, you should make sure manager plane swagger located in resource-manager folder.
 
+### MISSING_APIS_IN_DEFAULT_TAG
+
+Level: ERROR
+
+The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.
+
+To fix this error. You should add the missing API swaggers to the default tag. If the missing API swaggers are deprecated, in this case this error could be ignored.
+
+### NOT_LATEST_API_VERSION_IN_DEFAULT_TAG
+
+Level: ERROR
+
+The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.
+
+To fix this error. You should add the latest API version swaggers to the default tag or change default tag to reference latest api version tag.
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a

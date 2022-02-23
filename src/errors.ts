@@ -17,6 +17,10 @@ type ErrorMessage =
   | 'The default tag contains multiple API versions swaggers.'
   // tslint:disable-next-line: max-line-length
   | 'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder'
+  // tslint:disable-next-line: max-line-length
+  | 'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.'
+  // tslint:disable-next-line: max-line-length
+  | 'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.'
 
 export interface IErrorBase {
   readonly level: 'Warning' | 'Error' | 'Info'
@@ -41,6 +45,14 @@ export type MultipleApiVersion = {
   readonly message: ErrorMessage
   readonly readMeUrl: string
   readonly tag: string | undefined
+} & IErrorBase
+
+export type MissingLatestApiInDefaultTag = {
+  readonly code: 'MISSING_APIS_IN_DEFAULT_TAG' | 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'
+  readonly message: ErrorMessage
+  readonly readMeUrl: string
+  readonly tag: string
+  readonly jsonUrl: string
 } & IErrorBase
 
 export type FileError = {
@@ -88,9 +100,26 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
       ]
     case 'MISSING_README':
       return [{ tag: 'folder', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.folderUrl)) }]
+
+    case 'MISSING_APIS_IN_DEFAULT_TAG':
+      return [
+        { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
+        { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
+      ]
+    case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG':
+      return [
+        { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
+        { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
+      ]
     default:
       return []
   }
 }
 
-export type Error = JsonParseError | FileError | NotAutoRestMarkDown | MissingReadmeError | MultipleApiVersion
+export type Error =
+  | JsonParseError
+  | FileError
+  | NotAutoRestMarkDown
+  | MissingReadmeError
+  | MultipleApiVersion
+  | MissingLatestApiInDefaultTag

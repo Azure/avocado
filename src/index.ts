@@ -12,6 +12,7 @@ import * as it from '@ts-common/iterator'
 import * as json from '@ts-common/json'
 import * as stringMap from '@ts-common/string-map'
 import * as commonmark from 'commonmark'
+import { JSONPath } from 'jsonpath-plus'
 import * as cli from './cli'
 import * as git from './git'
 import * as childProcess from './child-process'
@@ -22,6 +23,8 @@ import * as YAML from 'js-yaml'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
+// tslint:disable-next-line: no-require-imports
+import glob = require('glob')
 
 export { devOps, cli, git, childProcess }
 
@@ -71,6 +74,20 @@ const errorCorrelationId = (error: err.Error) => {
           url: error.jsonUrl,
         }
       }
+      case 'MISSING_APIS_IN_DEFAULT_TAG': {
+        return {
+          code: error.code,
+          url: error.jsonUrl,
+          readMeUrl: error.readMeUrl,
+        }
+      }
+      case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG': {
+        return {
+          code: error.code,
+          url: error.jsonUrl,
+          readMeUrl: error.readMeUrl,
+        }
+      }
     }
   }
 
@@ -105,7 +122,7 @@ const isAutoRestMd = (m: md.MarkDownEx) =>
 
 const safeLoad = (content: string) => {
   try {
-    return YAML.safeLoad(content)
+    return YAML.safeLoad(content) as any
   } catch (err) {
     return undefined
   }
@@ -117,7 +134,6 @@ const safeLoad = (content: string) => {
 export const getDefaultTag = (markDown: commonmark.Node): string | undefined => {
   const startNode = markDown
   const codeBlockMap = openApiMd.getCodeBlocksAndHeadings(startNode)
-
   const latestHeader = 'Basic Information'
   const headerBlock = codeBlockMap[latestHeader]
   if (headerBlock && headerBlock.literal) {
@@ -155,12 +171,17 @@ export const getVersionFromInputFile = (filePath: string): string | undefined =>
   return undefined
 }
 
-export const isContainsMultiVersion = (m: md.MarkDownEx): boolean => {
+export const getSwaggerFileUnderDefaultTag = (m: md.MarkDownEx): string[] => {
   const defaultTag = getDefaultTag(m.markDown)
   if (!defaultTag) {
-    return false
+    return []
   }
   const inputFiles = openApiMd.getInputFilesForTag(m.markDown, defaultTag)
+  return (inputFiles as any) || []
+}
+
+export const isContainsMultiVersion = (m: md.MarkDownEx): boolean => {
+  const inputFiles = getSwaggerFileUnderDefaultTag(m)
   if (inputFiles) {
     const versions = new Set<string>()
     for (const file of inputFiles) {
@@ -307,6 +328,174 @@ const findTheNearestReadme = async (rootDir: string, swaggerPath: string): Promi
     curDir = path.dirname(curDir)
   }
   return undefined
+}
+
+export type PathTable = Map<string, { apiVersion: string; swaggerFile: string }>
+
+export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it.IterableEx<err.Error> =>
+  it.iterable<err.Error>(function*() {
+    const readmePattern = path.join(dir, '**/readme.md')
+    const readmes = glob.sync(readmePattern, { nodir: true })
+
+    for (const readme of readmes) {
+      const readmeDir = path.dirname(readme)
+      const readmeContent = fs.readFileSync(readme).toString()
+      const m = md.parse(readmeContent)
+      const inputFiles = getSwaggerFileUnderDefaultTag(m)
+      let defaultTagPathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+      let stableCheck = false
+      let previewCheck = false
+      for (const inputFile of inputFiles) {
+        stableCheck = stableCheck || inputFile.includes('stable')
+        previewCheck = previewCheck || inputFile.includes('preview')
+        const inputFilePath = path.resolve(readmeDir, inputFile)
+        const pathTable = getPathTableFromSwaggerFile(inputFilePath)
+        defaultTagPathTable = mergePathTable(defaultTagPathTable, pathTable)
+      }
+      const previewPattern = path.join(readmeDir, '**/preview/**/*.json')
+      const previewFiles = glob
+        .sync(previewPattern, { nodir: true })
+        .filter(swaggerFile => !swaggerFile.includes('examples'))
+      const stablePattern = path.join(readmeDir, '**/stable/**/*.json')
+      const stableFiles = glob
+        .sync(stablePattern, { nodir: true })
+        .filter(swaggerFile => !swaggerFile.includes('examples'))
+
+      let stablePathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+      let previewPathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+
+      for (const inputFile of previewFiles) {
+        previewPathTable = mergePathTable(previewPathTable, getPathTableFromSwaggerFile(inputFile))
+      }
+
+      for (const inputFile of stableFiles) {
+        stablePathTable = mergePathTable(stablePathTable, getPathTableFromSwaggerFile(inputFile))
+      }
+
+      let latestAPIPathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+
+      if (stableCheck) {
+        latestAPIPathTable = mergePathTable(latestAPIPathTable, stablePathTable)
+      }
+      if (previewCheck) {
+        latestAPIPathTable = mergePathTable(latestAPIPathTable, previewPathTable)
+      }
+      const difference = diffPathTable(defaultTagPathTable, latestAPIPathTable)
+      for (const item of difference) {
+        yield {
+          level: 'Error',
+          code: item.code,
+          message: item.message,
+          tag: 'default',
+          readMeUrl: readme,
+          jsonUrl: item.swaggerFile,
+          path: item.path,
+        }
+      }
+    }
+  })
+
+export const mergePathTable = (pathTable: PathTable, newPathTable: PathTable): PathTable => {
+  for (const [key, value] of newPathTable) {
+    if (pathTable.has(key)) {
+      if (pathTable.get(key)!.apiVersion < value.apiVersion) {
+        pathTable.set(key, value)
+      }
+    } else {
+      pathTable.set(key, value)
+    }
+  }
+  return pathTable
+}
+
+export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: PathTable): any[] => {
+  const result: any[] = []
+  for (const [key, value] of latestPathTable) {
+    if (defaultPathTable.has(key)) {
+      if (defaultPathTable.get(key)!.apiVersion !== value.apiVersion) {
+        result.push({
+          path: key,
+          swaggerFile: value.swaggerFile,
+          code: 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG',
+          message:
+            // tslint:disable-next-line: max-line-length
+            'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.',
+        })
+      }
+    } else {
+      result.push({
+        path: key,
+        swaggerFile: value.swaggerFile,
+        code: 'MISSING_APIS_IN_DEFAULT_TAG',
+        message:
+          // tslint:disable-next-line: max-line-length
+          'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
+      })
+    }
+  }
+  return result
+}
+
+export const getPathTableFromSwaggerFile = (swaggerFile: string): PathTable => {
+  if (!fs.existsSync(swaggerFile)) {
+    return new Map<string, { apiVersion: string; swaggerFile: string }>()
+  }
+  let swagger
+  try {
+    swagger = JSON.parse(fs.readFileSync(swaggerFile).toString())
+  } catch (e) {
+    return new Map<string, { apiVersion: string; swaggerFile: string }>()
+  }
+  const apiVersion = getApiVersionFromSwagger(swagger)
+  // apiVersion is undefined when the swagger is just for reference
+  if (apiVersion === undefined) {
+    return new Map<string, { apiVersion: string; swaggerFile: string }>()
+  }
+  const allPaths = getAllPathFromSwagger(swagger).map(normalizeApiPath)
+
+  const pathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
+  // tslint:disable-next-line: no-shadowed-variable
+  for (const it of allPaths) {
+    pathTable.set(it, { apiVersion, swaggerFile })
+  }
+  return pathTable
+}
+
+export const getAllPathFromSwagger = (swagger: any) => {
+  const apiJsonPath = '$.paths.*~'
+  const paths = JSONPath({
+    path: apiJsonPath,
+    json: swagger,
+    resultType: 'all',
+  })
+  const xmsApiJsonPath = '$.x-ms-paths.*~'
+  const xMsPaths = JSONPath({
+    path: xmsApiJsonPath,
+    json: swagger,
+    resultType: 'all',
+  })
+
+  return paths
+    .map((item: { readonly value: any }) => item.value)
+    .concat(xMsPaths.map((item: { readonly value: any }) => item.value))
+}
+
+export const getApiVersionFromSwagger = (swagger: any) => {
+  const apiVersionPath = '$.info.version'
+  const version = JSONPath({
+    path: apiVersionPath,
+    json: swagger,
+    resultType: 'all',
+  })
+  if (version.length === 0) {
+    return undefined
+  }
+  return version[0].value
+}
+
+export const normalizeApiPath = (apiPath: string) => {
+  const regex = /\{\w+\}/g
+  return apiPath.replace(regex, '{}')
 }
 
 /**
@@ -547,6 +736,7 @@ const validateFolder = (dir: string) =>
         return fileSet
       }, new Set<Specification>())
     yield* validateInputFiles(referencedFiles, allFiles)
+    yield* validateRPMustContainAllLatestApiVersionSwagger(dir)
   })
 
 /**
