@@ -423,14 +423,17 @@ export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: Path
         })
       }
     } else {
-      result.push({
-        path: key,
-        swaggerFile: value.swaggerFile,
-        code: 'MISSING_APIS_IN_DEFAULT_TAG',
-        message:
-          // tslint:disable-next-line: max-line-length
-          'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
-      })
+      // disable MISSING_APIS_IN_DEFAULT_TAG for data-plane apis.
+      if (!value.swaggerFile.includes('data-plane')) {
+        result.push({
+          path: key,
+          swaggerFile: value.swaggerFile,
+          code: 'MISSING_APIS_IN_DEFAULT_TAG',
+          message:
+            // tslint:disable-next-line: max-line-length
+            'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
+        })
+      }
     }
   }
   return result
