@@ -129,7 +129,7 @@ To solve this warning, you should make sure manager plane swagger located in res
 
 Level: ERROR
 
-The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.
+The default tag does not contain all APIs in this RP. The API {APIPath} is defined in previous version but missing in the default tag(latest version). Please make sure the missing API swaggers are in the default tag. If the {APIPath} is deprecated, please ignore this error.`,
 
 To fix this error. You should add the missing API swaggers to the default tag. If the missing API swaggers are deprecated, in this case this error could be ignored.
 
