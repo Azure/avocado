@@ -95,7 +95,7 @@ const errorCorrelationId = (error: err.Error) => {
 }
 
 const markDownIterate = (node: commonmark.Node | null) =>
-  it.iterable(function*() {
+  it.iterable(function* () {
     // tslint:disable-next-line:no-let
     let i = node
     while (i !== null) {
@@ -282,7 +282,7 @@ const containsReadme = async (folder: string): Promise<boolean> => {
 }
 
 const validateSpecificationAPIVersion = (current: Specification, document: json.JsonObject): it.IterableEx<err.Error> =>
-  it.iterable<err.Error>(function*() {
+  it.iterable<err.Error>(function* () {
     const info = document.info as json.JsonObject | undefined
     if (info !== undefined) {
       if (!current.path.includes(info.version as string)) {
@@ -299,7 +299,7 @@ const validateSpecificationAPIVersion = (current: Specification, document: json.
   })
 
 const validateFileLocation = (current: Specification, document: json.JsonObject): it.IterableEx<err.Error> =>
-  it.iterable<err.Error>(function*() {
+  it.iterable<err.Error>(function* () {
     const host = document.host as string | undefined
     if (host !== undefined && host === 'management.azure.com' && !current.path.includes('resource-manager')) {
       yield {
@@ -333,7 +333,7 @@ const findTheNearestReadme = async (rootDir: string, swaggerPath: string): Promi
 export type PathTable = Map<string, { apiVersion: string; swaggerFile: string }>
 
 export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it.IterableEx<err.Error> =>
-  it.iterable<err.Error>(function*() {
+  it.iterable<err.Error>(function* () {
     const readmePattern = path.join(dir, '**/readme.md')
     const readmes = glob.sync(readmePattern, { nodir: true })
 
@@ -431,7 +431,7 @@ export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: Path
           code: 'MISSING_APIS_IN_DEFAULT_TAG',
           message:
             // tslint:disable-next-line: max-line-length
-            'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
+            `The default tag does not contain all APIs in this RP. The API ${key} is defined in previous version but missing in the default tag(latest version). Please make sure the missing API swaggers are in the default tag. If the ${key} is deprecated, please ignore this error.`,
         })
       }
     }
@@ -507,7 +507,7 @@ export const normalizeApiPath = (apiPath: string) => {
  * @param dir directory path
  */
 const validateRPFolderMustContainReadme = (dir: string): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function*() {
+  asyncIt.iterable<err.Error>(async function* () {
     const validDirs: ReadonlyArray<string> = ['data-plane', 'resource-manager']
     const ignoredDirs: ReadonlyArray<string> = ['common']
     const allJsonDir = tscommonFs
@@ -561,7 +561,7 @@ const DFSTraversalValidate = (
   graySet: Set<string>,
   blackSet: Set<string>,
 ): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function*() {
+  asyncIt.iterable<err.Error>(async function* () {
     if (!blackSet.has(current.path)) {
       graySet.add(current.path)
     }
@@ -620,7 +620,7 @@ const DFSTraversalValidate = (
  * validate given `readme.md` format
  */
 const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function*() {
+  asyncIt.iterable<err.Error>(async function* () {
     const file = await tscommonFs.readFile(readMePath)
     const m = md.parse(file.toString())
     if (!isAutoRestMd(m)) {
@@ -661,7 +661,7 @@ const validateInputFiles = (
   allInputFileSet: Set<Specification>,
 ): asyncIt.AsyncIterableEx<err.Error> =>
   // tslint:disable-next-line: no-async-without-await
-  asyncIt.iterable<err.Error>(async function*() {
+  asyncIt.iterable<err.Error>(async function* () {
     // report errors if the `dir` folder has JSON files where exist circular reference
     const graySet = new Set<string>()
     const blackSet = new Set<string>()
@@ -687,7 +687,7 @@ const validateInputFiles = (
   })
 
 const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
-  asyncIt.iterable<Specification>(async function*() {
+  asyncIt.iterable<Specification>(async function* () {
     const file = await tscommonFs.readFile(readMePath)
     const m = md.parse(file.toString())
     const dir = path.dirname(readMePath)
@@ -702,7 +702,7 @@ const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Sp
 
 const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
   // tslint:disable-next-line: no-async-without-await
-  asyncIt.iterable<Specification>(async function*() {
+  asyncIt.iterable<Specification>(async function* () {
     const dir = path.dirname(readMePath)
     yield* tscommonFs
       .recursiveReaddir(dir)
@@ -718,7 +718,7 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
  * Validate global specification folder and prepare arguments for `validateInputFiles`.
  */
 const validateFolder = (dir: string) =>
-  asyncIt.iterable<err.Error>(async function*() {
+  asyncIt.iterable<err.Error>(async function* () {
     const allReadMeFiles = tscommonFs.recursiveReaddir(dir).filter(f => path.basename(f).toLowerCase() === 'readme.md')
 
     yield* validateRPFolderMustContainReadme(dir)
@@ -768,7 +768,7 @@ const avocadoForDir = async (dir: string, exclude: string[]) => {
  * @param exclude path indicate which kind of error should be ignored.
  */
 const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function*() {
+  asyncIt.iterable<err.Error>(async function* () {
     // collect all errors from the 'targetBranch'
     const diffFiles = await pr.diff()
     const changedSwaggerFilePath = diffFiles.map(item => item.path)
@@ -821,7 +821,7 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): 
  * The function validates files in the given `cwd` folder and returns errors.
  */
 export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> =>
-  asyncIt.iterable<err.Error>(async function*() {
+  asyncIt.iterable<err.Error>(async function* () {
     const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
     // tslint:disable-next-line: no-let
