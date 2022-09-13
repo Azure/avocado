@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.7
+
+- Ignore INCONSISTENT_API_VERSION in dev folder.
+
 ## 0.8.6
 
 - Disable MISSING_APIS_IN_DEFAULT_TAG for data-plane apis.
