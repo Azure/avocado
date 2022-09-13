@@ -285,7 +285,7 @@ const validateSpecificationAPIVersion = (current: Specification, document: json.
   it.iterable<err.Error>(function*() {
     const info = document.info as json.JsonObject | undefined
     if (info !== undefined) {
-      if (!current.path.includes(info.version as string)) {
+      if (!current.path.includes(info.version as string) && !current.path.includes('/dev/')) {
         yield {
           code: 'INCONSISTENT_API_VERSION',
           level: 'Error',

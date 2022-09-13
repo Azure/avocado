@@ -7,16 +7,16 @@ jobs:
       matrix:
         Linux.Node10:
           node.version: 10.x
-          vm.image: 'Ubuntu 18.04'
+          vm.image: 'ubuntu-20.04'
         Linux.Node12:
           node.version: 12.x
-          vm.image: 'Ubuntu 18.04'
+          vm.image: 'ubuntu-20.04'
         Win.Node10:
           node.version: 10.x
-          vm.image: 'vs2017-win2016'
+          vm.image: 'windows-2019'
         Win.Node12:
           node.version: 12.x
-          vm.image: 'vs2017-win2016'
+          vm.image: 'windows-2019'
     pool:
       vmImage: $(vm.image)
     steps:
