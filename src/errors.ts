@@ -21,6 +21,7 @@ type ErrorMessage =
   | 'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.'
   // tslint:disable-next-line: max-line-length
   | 'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.'
+  | 'The readme file has more than one default tag.'
 
 export interface IErrorBase {
   readonly level: 'Warning' | 'Error' | 'Info'
@@ -45,6 +46,13 @@ export type MultipleApiVersion = {
   readonly message: ErrorMessage
   readonly readMeUrl: string
   readonly tag: string | undefined
+} & IErrorBase
+
+export type MultipleDefaultTags = {
+  readonly code: 'MULTIPLE_DEFAULT_TAGS'
+  readonly message: ErrorMessage
+  readonly readMeUrl: string
+  readonly tags: string[]
 } & IErrorBase
 
 export type MissingLatestApiInDefaultTag = {
@@ -111,6 +119,8 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
         { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
         { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
       ]
+    case 'MULTIPLE_DEFAULT_TAGS':
+      return [{ tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) }]
     default:
       return []
   }
@@ -123,3 +133,4 @@ export type Error =
   | MissingReadmeError
   | MultipleApiVersion
   | MissingLatestApiInDefaultTag
+  | MultipleDefaultTags

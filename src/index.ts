@@ -88,6 +88,13 @@ const errorCorrelationId = (error: err.Error) => {
           readMeUrl: error.readMeUrl,
         }
       }
+      case 'MULTIPLE_DEFAULT_TAGS': {
+        return {
+          code: error.code,
+          url: error.readMeUrl,
+          tags: error.tags,
+        }
+      }
     }
   }
 
@@ -126,6 +133,67 @@ const safeLoad = (content: string) => {
   } catch (err) {
     return undefined
   }
+}
+
+const nodeHeading = (startNode: commonmark.Node): commonmark.Node | null => {
+  let resultNode: commonmark.Node | null = startNode
+
+  while (resultNode != null && resultNode.type !== 'heading') {
+    resultNode = resultNode.prev || resultNode.parent
+  }
+
+  return resultNode
+}
+
+const getHeadingLiteral = (heading: commonmark.Node): string => {
+  const headingNode = walkToNode(heading.walker(), n => n.type === 'text')
+
+  return headingNode && headingNode.literal ? headingNode.literal : ''
+}
+
+/**
+ * walks a markdown tree until the callback provided returns true for a node
+ */
+const walkToNode = (
+  walker: commonmark.NodeWalker,
+  cb: (node: commonmark.Node) => boolean,
+): commonmark.Node | undefined => {
+  let event = walker.next()
+
+  while (event) {
+    const curNode = event.node
+    if (cb(curNode)) {
+      return curNode
+    }
+    event = walker.next()
+  }
+  return undefined
+}
+
+/**
+ * @return return tag string array.
+ */
+export const getAllDefaultTags = (markDown: commonmark.Node): string[] => {
+  const startNode = markDown
+  const walker = startNode.walker()
+  const tags = []
+  while (true) {
+    const node = walkToNode(walker, n => n.type === 'code_block')
+    if (!node) {
+      break
+    }
+    const heading = nodeHeading(node)
+    if (!heading) {
+      continue
+    }
+    if (getHeadingLiteral(heading) === 'Basic Information' && node.literal) {
+      const latestDefinition = safeLoad(node.literal)
+      if (latestDefinition && latestDefinition.tag) {
+        tags.push(latestDefinition.tag)
+      }
+    }
+  }
+  return tags
 }
 
 /**
@@ -341,6 +409,19 @@ export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it
       const readmeDir = path.dirname(readme)
       const readmeContent = fs.readFileSync(readme).toString()
       const m = md.parse(readmeContent)
+      const defaultTags = getAllDefaultTags(m.markDown)
+      if (defaultTags.length > 1) {
+        yield {
+          code: 'MULTIPLE_DEFAULT_TAGS',
+          level: 'Warning',
+          message: 'The readme file has more than one default tag.',
+          path: readme,
+          readMeUrl: readme,
+          tags: defaultTags,
+        }
+        continue
+      }
+
       const inputFiles = getSwaggerFileUnderDefaultTag(m)
       let defaultTagPathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
       let stableCheck = false
