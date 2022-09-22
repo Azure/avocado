@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.8
+
+- Ignore example files in cadl folder.
+
 ## 0.8.7
 
 - Ignore INCONSISTENT_API_VERSION in dev folder.
