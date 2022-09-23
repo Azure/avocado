@@ -704,16 +704,15 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
   // tslint:disable-next-line: no-async-without-await
   asyncIt.iterable<Specification>(async function*() {
     const dir = path.dirname(readMePath)
-    yield *
-      tscommonFs
-        .recursiveReaddir(dir)
-        .filter(filePath => path.extname(filePath) === '.json')
-        .filter(filePath => !filePath.includes('/cadl/examples/'))
-        .map<Specification>(filePath => ({
-          path: filePath,
-          readMePath,
-          kind: isExample(filePath) ? 'EXAMPLE' : 'SWAGGER',
-        }))
+    yield* tscommonFs
+      .recursiveReaddir(dir)
+      .filter(filePath => path.extname(filePath) === '.json')
+      .filter(filePath => !filePath.includes('/cadl/examples/'))
+      .map<Specification>(filePath => ({
+        path: filePath,
+        readMePath,
+        kind: isExample(filePath) ? 'EXAMPLE' : 'SWAGGER',
+      }))
   })
 
 /**
