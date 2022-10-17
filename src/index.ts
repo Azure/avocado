@@ -353,7 +353,7 @@ const validateSpecificationAPIVersion = (current: Specification, document: json.
   it.iterable<err.Error>(function*() {
     const info = document.info as json.JsonObject | undefined
     if (info !== undefined) {
-      if (!current.path.includes(info.version as string)) {
+      if (!current.path.includes(info.version as string) && !current.path.includes('/dev/')) {
         yield {
           code: 'INCONSISTENT_API_VERSION',
           level: 'Error',
@@ -504,14 +504,17 @@ export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: Path
         })
       }
     } else {
-      result.push({
-        path: key,
-        swaggerFile: value.swaggerFile,
-        code: 'MISSING_APIS_IN_DEFAULT_TAG',
-        message:
-          // tslint:disable-next-line: max-line-length
-          'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
-      })
+      // disable MISSING_APIS_IN_DEFAULT_TAG for data-plane apis.
+      if (!value.swaggerFile.includes('data-plane')) {
+        result.push({
+          path: key,
+          swaggerFile: value.swaggerFile,
+          code: 'MISSING_APIS_IN_DEFAULT_TAG',
+          message:
+            // tslint:disable-next-line: max-line-length
+            'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
+        })
+      }
     }
   }
   return result

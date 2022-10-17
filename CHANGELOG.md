@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.7
+
+- Ignore INCONSISTENT_API_VERSION in dev folder.
+
+## 0.8.6
+
+- Disable MISSING_APIS_IN_DEFAULT_TAG for data-plane apis.
+
 ## 0.8.5
 
 - To make sure default tag contains the latest apiVersion swagger. Add two rules NOT_LATEST_API_VERSION_IN_DEFAULT_TAG and MISSING_APIS_IN_DEFAULT_TAG.
