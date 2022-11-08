@@ -105,6 +105,7 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
       return [
         { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
         { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
+        { tag: 'path', path: error.path },
       ]
     case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG':
       return [

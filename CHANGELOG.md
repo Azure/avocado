@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.8
+- Add path in MISSING_APIS_IN_DEFAULT_TAG output.
+
 ## 0.8.7
 
 - Ignore INCONSISTENT_API_VERSION in dev folder.

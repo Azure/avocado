@@ -79,6 +79,7 @@ const errorCorrelationId = (error: err.Error) => {
           code: error.code,
           url: error.jsonUrl,
           readMeUrl: error.readMeUrl,
+          path: error.path,
         }
       }
       case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG': {
