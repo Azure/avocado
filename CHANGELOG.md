@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.8
+- Add rule MULTIPLE_DEFAULT_TAGS to validate if there are multiple default tags.
+
 ## 0.8.7
 
 - Ignore INCONSISTENT_API_VERSION in dev folder.
