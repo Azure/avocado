@@ -138,7 +138,7 @@ const safeLoad = (content: string) => {
 const nodeHeading = (startNode: commonmark.Node): commonmark.Node | null => {
   let resultNode: commonmark.Node | null = startNode
 
-  while (resultNode != null && resultNode.type !== 'heading') {
+  while (resultNode !== null && resultNode.type !== 'heading') {
     resultNode = resultNode.prev || resultNode.parent
   }
 
