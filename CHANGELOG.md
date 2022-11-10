@@ -2,6 +2,7 @@
 
 ## 0.8.8
 - Add path in MISSING_APIS_IN_DEFAULT_TAG output.
+- Add `includePaths` command line parameter.
 
 ## 0.8.7
 
