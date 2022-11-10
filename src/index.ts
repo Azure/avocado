@@ -79,6 +79,7 @@ const errorCorrelationId = (error: err.Error) => {
           code: error.code,
           url: error.jsonUrl,
           readMeUrl: error.readMeUrl,
+          path: error.path,
         }
       }
       case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG': {
@@ -826,7 +827,7 @@ const validateFolder = (dir: string) =>
 /**
  * Creates a map of unique errors for the given folder `cwd`.
  */
-const avocadoForDir = async (dir: string, exclude: string[]) => {
+const avocadoForDir = async (dir: string, exclude: string[], include: string[]) => {
   const map = new Map<string, err.Error>()
   if (fs.existsSync(dir)) {
     console.log(`avocadoForDir: ${dir}`)
@@ -835,7 +836,10 @@ const avocadoForDir = async (dir: string, exclude: string[]) => {
     }
   }
   for (const [k, v] of map) {
-    if (exclude.some(item => v.path.search(item) !== -1)) {
+    if (
+      (include.length > 0 && include.every(item => v.path.search(item) === -1)) ||
+      exclude.some(item => v.path.search(item) !== -1)
+    ) {
       map.delete(k)
     }
   }
@@ -848,7 +852,11 @@ const avocadoForDir = async (dir: string, exclude: string[]) => {
  * @param pr Pull Request properties
  * @param exclude path indicate which kind of error should be ignored.
  */
-const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): asyncIt.AsyncIterableEx<err.Error> =>
+const avocadoForDevOps = (
+  pr: devOps.PullRequestProperties,
+  exclude: string[],
+  include: string[],
+): asyncIt.AsyncIterableEx<err.Error> =>
   asyncIt.iterable<err.Error>(async function*() {
     // collect all errors from the 'targetBranch'
     const diffFiles = await pr.diff()
@@ -877,11 +885,11 @@ const avocadoForDevOps = (pr: devOps.PullRequestProperties, exclude: string[]): 
 
     for (const dir of readmeDirs) {
       await pr.checkout(pr.targetBranch)
-      const targetMap = await avocadoForDir(path.resolve(pr.workingDir, dir), exclude)
+      const targetMap = await avocadoForDir(path.resolve(pr.workingDir, dir), exclude, include)
 
       // collect all errors from the 'sourceBranch'
       await pr.checkout(pr.sourceBranch)
-      const sourceMap = await avocadoForDir(path.resolve(pr.workingDir, dir), exclude)
+      const sourceMap = await avocadoForDir(path.resolve(pr.workingDir, dir), exclude, include)
 
       const fileChanges = await pr.diff()
 
@@ -910,15 +918,19 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
     if (config.args && config.args.excludePaths) {
       exclude = config.args.excludePaths
     }
+    let include = []
+    if (config.args && config.args.includePaths) {
+      include = config.args.includePaths
+    }
     if (pr !== undefined) {
-      yield* avocadoForDevOps(pr, exclude)
+      yield* avocadoForDevOps(pr, exclude, include)
     } else {
       // tslint:disable-next-line: no-let
       let dir = '.'
       if (config.args && config.args.dir) {
         dir = config.args.dir
       }
-      yield* (await avocadoForDir(path.resolve(config.cwd, dir), exclude)).values()
+      yield* (await avocadoForDir(path.resolve(config.cwd, dir), exclude, include)).values()
     }
   })
 

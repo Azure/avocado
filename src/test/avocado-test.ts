@@ -330,6 +330,17 @@ describe('avocado', () => {
     assert.deepStrictEqual(r, [])
   })
 
+  it('avocado with include option', async () => {
+    const r = await avocado
+      .avocado({
+        cwd: 'src/test/invalid_file_location',
+        env: {},
+        args: { includePaths: ['data-plane', 'resource-manager'] },
+      })
+      .toArray()
+    assert.deepStrictEqual(r, [])
+  })
+
   it('avocado check default tag should contains latest api version', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/default_tag_latest_swaggers', env: {} }).toArray()
     assert.deepStrictEqual(r.length > 0, true)
