@@ -353,4 +353,21 @@ describe('avocado', () => {
       true,
     )
   })
+
+  it('avocado check multi default tag', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/multi_default_tag', env: {} }).toArray()
+    assert.deepStrictEqual(r.length > 0, true)
+    assert.deepStrictEqual(
+      r.some(it => it.code === 'MISSING_APIS_IN_DEFAULT_TAG'),
+      false,
+    )
+    assert.deepStrictEqual(
+      r.some(it => it.code === 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'),
+      false,
+    )
+    assert.deepStrictEqual(
+      r.some(it => it.code === 'MULTIPLE_DEFAULT_TAGS'),
+      true,
+    )
+  })
 })
