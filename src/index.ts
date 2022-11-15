@@ -79,7 +79,7 @@ const errorCorrelationId = (error: err.Error) => {
           code: error.code,
           url: error.jsonUrl,
           readMeUrl: error.readMeUrl,
-          path: error.path,
+          path: error.apiPath,
         }
       }
       case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG': {
@@ -471,7 +471,8 @@ export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it
           tag: 'default',
           readMeUrl: readme,
           jsonUrl: item.swaggerFile,
-          path: item.path,
+          path: item.swaggerFile,
+          apiPath: item.path,
         }
       }
     }

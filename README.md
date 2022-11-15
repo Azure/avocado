@@ -141,6 +141,14 @@ The default tag does not contains the latest API version. Please make sure the l
 
 To fix this error. You should add the latest API version swaggers to the default tag or change default tag to reference latest api version tag.
 
+### MULTIPLE_DEFAULT_TAGS
+
+Level: WARNING
+
+There are more than one default tag.
+
+To solve this warning, you should remove other tags and leave only one default tag.
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a
