@@ -18,8 +18,9 @@ import * as git from './git'
 import * as childProcess from './child-process'
 import * as devOps from './dev-ops'
 import * as err from './errors'
+import { walkToNode } from './readme'
 import * as format from '@azure/swagger-validation-common'
-import * as YAML from 'js-yaml'
+import { safeLoad } from './utils'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
@@ -128,14 +129,6 @@ const isAutoRestMd = (m: md.MarkDownEx) =>
     return t.literal === 'see https://aka.ms/autorest'
   })
 
-const safeLoad = (content: string) => {
-  try {
-    return YAML.safeLoad(content) as any
-  } catch (err) {
-    return undefined
-  }
-}
-
 const nodeHeading = (startNode: commonmark.Node): commonmark.Node | null => {
   let resultNode: commonmark.Node | null = startNode
 
@@ -150,25 +143,6 @@ const getHeadingLiteral = (heading: commonmark.Node): string => {
   const headingNode = walkToNode(heading.walker(), n => n.type === 'text')
 
   return headingNode && headingNode.literal ? headingNode.literal : ''
-}
-
-/**
- * walks a markdown tree until the callback provided returns true for a node
- */
-const walkToNode = (
-  walker: commonmark.NodeWalker,
-  cb: (node: commonmark.Node) => boolean,
-): commonmark.Node | undefined => {
-  let event = walker.next()
-
-  while (event) {
-    const curNode = event.node
-    if (cb(curNode)) {
-      return curNode
-    }
-    event = walker.next()
-  }
-  return undefined
 }
 
 /**
