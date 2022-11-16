@@ -143,11 +143,11 @@ To fix this error. You should add the latest API version swaggers to the default
 
 ### MULTIPLE_DEFAULT_TAGS
 
-Level: WARNING
+Level: ERROR
 
 There are more than one default tag.
 
-To solve this warning, you should remove other tags and leave only one default tag.
+To fix this error, you should remove other tags and leave only one default tag. You may need to separate into several RP folders or sub folders.
 
 ## Contributing
 
