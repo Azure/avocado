@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.9
+- Fix `path` variable in MISSING_APIS_IN_DEFAULT_TAG inconsistent with others.
+
 ## 0.8.8
 - Add rule MULTIPLE_DEFAULT_TAGS to validate if there are multiple default tags.
 - Add path in MISSING_APIS_IN_DEFAULT_TAG output.
