@@ -414,7 +414,7 @@ export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it
       if (defaultTags.length > 1) {
         yield {
           code: 'MULTIPLE_DEFAULT_TAGS',
-          level: 'Error',
+          level: readme.includes('data-plane') ? 'Warning' : 'Error',
           message: 'The readme file has more than one default tag.',
           path: readme,
           readMeUrl: readme,
