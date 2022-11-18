@@ -18,7 +18,7 @@ type ErrorMessage =
   // tslint:disable-next-line: max-line-length
   | 'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder'
   // tslint:disable-next-line: max-line-length
-  | 'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.'
+  | 'The API path `{0}` is not in the default tag. Please make sure the missing API swaggers are in the default tag.'
   // tslint:disable-next-line: max-line-length
   | 'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.'
   | 'The readme file has more than one default tag.'

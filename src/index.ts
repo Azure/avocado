@@ -514,7 +514,7 @@ export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: Path
           code: 'MISSING_APIS_IN_DEFAULT_TAG',
           message:
             // tslint:disable-next-line: max-line-length
-            'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
+            `The API path \`${key}\` is not in the default tag. Please make sure the missing API swaggers are in the default tag.`,
         })
       }
     }

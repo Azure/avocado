@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.9.0
+- Clarify MISSING_APIS_IN_DEFAULT_TAG error message.
+
 ## 0.8.9
 - Fix `path` variable in MISSING_APIS_IN_DEFAULT_TAG inconsistent with others.
 
