@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.9.0
+## 0.8.10
 - Clarify MISSING_APIS_IN_DEFAULT_TAG error message.
 
 ## 0.8.9
