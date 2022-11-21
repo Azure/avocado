@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.8.10",
+  "version": "0.8.9-beta",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
