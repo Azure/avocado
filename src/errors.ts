@@ -18,7 +18,7 @@ type ErrorMessage =
   // tslint:disable-next-line: max-line-length
   | 'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder'
   // tslint:disable-next-line: max-line-length
-  | 'The API path `{0}` is not in the default tag. Please make sure the missing API swaggers are in the default tag.'
+  | 'The default tag should contain all APIs. The API path `{0}` is not in the default tag. Please make sure the missing API swaggers are in the default tag.'
   // tslint:disable-next-line: max-line-length
   | 'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.'
   | 'The readme file has more than one default tag.'
@@ -114,7 +114,6 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
       return [
         { tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) },
         { tag: 'json', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.jsonUrl)) },
-        { tag: 'path', path: error.apiPath },
       ]
     case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG':
       return [

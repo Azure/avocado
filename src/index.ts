@@ -79,7 +79,7 @@ const errorCorrelationId = (error: err.Error) => {
           code: error.code,
           url: error.jsonUrl,
           readMeUrl: error.readMeUrl,
-          path: error.apiPath,
+          apiPath: error.apiPath,
         }
       }
       case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG': {
@@ -514,7 +514,7 @@ export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: Path
           code: 'MISSING_APIS_IN_DEFAULT_TAG',
           message:
             // tslint:disable-next-line: max-line-length
-            `The API path \`${key}\` is not in the default tag. Please make sure the missing API swaggers are in the default tag.`,
+            `The default tag should contain all APIs. The API path \`${key}\` is not in the default tag. Please make sure the missing API swaggers are in the default tag.`,
         })
       }
     }
