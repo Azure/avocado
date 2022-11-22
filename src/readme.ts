@@ -3,7 +3,7 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 import * as commonmark from 'commonmark'
-import { MarkDownEx, parse } from '@ts-common/commonmark-to-markdown'
+import { parse } from '@ts-common/commonmark-to-markdown'
 import { getTagsToSettingsMapping, getCodeBlocksAndHeadings } from '@azure/openapi-markdown'
 import * as fs from 'fs'
 import { safeLoad } from './utils'
@@ -88,12 +88,6 @@ export const getTagsToSwaggerFilesMapping = (readmeFilePath: string): Map<string
     }
   }
   return ret
-}
-
-type ServiceReadmeTagInfo = {
-  default: string
-  stable: string
-  preview: string
 }
 
 export const getLatestTag = (tags: string[], versionType: 'stable' | 'preview'): string => {
