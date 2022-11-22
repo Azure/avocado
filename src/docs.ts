@@ -29,6 +29,7 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
 
   if (service.readme_files) {
     for (const readmeFile of service.readme_files) {
+      const readmeFileName = path.basename(readmeFile)
       const readmePath = path.join(rootPath, readmeFile)
       const readmeContent = fs.readFileSync(readmePath, 'utf-8')
       const readme = parse(readmeContent)
@@ -38,7 +39,7 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
       ret.push(
         ...inputFiles.map(source => ({
           source: readmeFile,
-          swagger_file: { source: path.join(path.dirname(readmeFile), source) },
+          swagger_file: { source: readmeFile.replace(readmeFileName, source) },
         })),
       )
     }
@@ -57,12 +58,13 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
 }
 
 export const expandSourceSwaggerFiles = (rootPath: string, readmePath: string, source: string): SwaggerFile[] => {
-  const ret: SwaggerFile[] = []
   const readmeFullPath = path.join(rootPath, readmePath)
   const mapping = getTagsToSwaggerFilesMapping(readmeFullPath)
+  const readmeFileName = path.basename(readmePath)
 
   const predefinedVariables = ['[version]', '[stable_version]', '[preview_version]']
   const readme = parse(fs.readFileSync(readmeFullPath, 'utf-8'))
+  console.log('readme', readme)
 
   const allTags = Array.from(mapping.keys())
 
@@ -76,27 +78,28 @@ export const expandSourceSwaggerFiles = (rootPath: string, readmePath: string, s
       // default tag
       if (version === '[version]') {
         const tag = getDefaultTag(readme.markDown)!
-        const inputFiles = (mapping.get(tag) || []).map(f => path.join(path.dirname(readmePath), f))
+        const inputFiles = (mapping.get(tag) || []).map(f => readmePath.replace(readmeFileName, f))
         return getMatchedSwaggerFiles(inputFiles, source, version)
       }
 
       // stable tag
       if (version === '[stable_version]') {
         const tag = getLatestTag(allTags, 'stable')
-        const inputFiles = (mapping.get(tag) || []).map(f => path.join(path.dirname(readmePath), f))
+        const inputFiles = (mapping.get(tag) || []).map(f => readmePath.replace(readmeFileName, f))
+        console.log('inputFiles', inputFiles)
         return getMatchedSwaggerFiles(inputFiles, source, version)
       }
 
       // preview tag
       if (version === '[preview_version]') {
         const tag = getLatestTag(allTags, 'preview')
-        const inputFiles = (mapping.get(tag) || []).map(f => path.join(path.dirname(readmePath), f))
+        const inputFiles = (mapping.get(tag) || []).map(f => readmePath.replace(readmeFileName, f))
         return getMatchedSwaggerFiles(inputFiles, source, version)
       }
     }
   }
 
-  return ret
+  return []
 }
 
 const getMatchedSwaggerFiles = (inputFiles: string[], source: string, version: string): SwaggerFile[] => {

@@ -108,13 +108,13 @@ describe('docs test getSwaggerFiles', () => {
       {
         source: 'src/test/readmes/signalr.md',
         swagger_file: {
-          source: path.join('src/test/readmes/Microsoft.SignalRService/preview/2022-08-01-preview/signalr.json'),
+          source: 'src/test/readmes/Microsoft.SignalRService/preview/2022-08-01-preview/signalr.json',
         },
       },
       {
         source: 'src/test/readmes/Microsoft.SignalRService/[stable_version]/*.json',
         swagger_file: {
-          source: path.join('src/test/readmes/Microsoft.SignalRService/stable/2022-02-01/signalr.json'),
+          source: 'src/test/readmes/Microsoft.SignalRService/stable/2022-02-01/signalr.json',
         },
       },
     ]
