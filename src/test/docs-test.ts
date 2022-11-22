@@ -1,4 +1,3 @@
-import { IService } from './../../dist/docs.d'
 // Copyright (c) 2022 Microsoft Corporation
 //
 // This software is released under the MIT License.
@@ -98,7 +97,7 @@ describe('docs test getSwaggerFiles', () => {
   it('Test getSwaggerFiles for signalR service [stable_version]. ', () => {
     const readmePath = 'src/test/readmes/signalr.md'
 
-    const signalRService: IService = {
+    const signalRService: docs.IService = {
       readme_files: [readmePath],
       swagger_files: [{ source: 'src/test/readmes/Microsoft.SignalRService/[stable_version]/*.json' }],
     }
@@ -123,7 +122,7 @@ describe('docs test getSwaggerFiles', () => {
 
   it('Test getSwaggerFiles for cognitive language service. ', () => {
     const readmePath = 'src/test/readmes/cognitiveservice-language.md'
-    const cognitiveService: IService = {
+    const cognitiveService: docs.IService = {
       readme_files: [readmePath],
       swagger_files: [
         { source: 'src/test/readmes/[preview_version]/*.json' },
