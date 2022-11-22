@@ -5,6 +5,7 @@
 
 import * as docs from '../docs'
 import * as assert from 'assert'
+import * as path from 'path'
 
 describe('docs test ExpandSourceSwaggerFile', () => {
   it('Test ExpandSourceSwaggerFile for signalR service. one swagger file', () => {
@@ -107,13 +108,13 @@ describe('docs test getSwaggerFiles', () => {
       {
         source: 'src/test/readmes/signalr.md',
         swagger_file: {
-          source: 'src/test/readmes/Microsoft.SignalRService/preview/2022-08-01-preview/signalr.json',
+          source: path.join('src/test/readmes/Microsoft.SignalRService/preview/2022-08-01-preview/signalr.json'),
         },
       },
       {
         source: 'src/test/readmes/Microsoft.SignalRService/[stable_version]/*.json',
         swagger_file: {
-          source: 'src/test/readmes/Microsoft.SignalRService/stable/2022-02-01/signalr.json',
+          source: path.join('src/test/readmes/Microsoft.SignalRService/stable/2022-02-01/signalr.json'),
         },
       },
     ]
