@@ -196,11 +196,6 @@ describe('errors', () => {
             // tslint:disable-next-line: max-line-length
             'https://github.com/undefined/blob/undefined/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
         },
-        {
-          path:
-            '/subscriptions/{}/resourceGroups/{}/providers/{}/workspaces/{}/providers/Microsoft.SecurityInsights/watchlists/{}/watchlistItems/{}',
-          tag: 'path',
-        },
       ],
       [
         {
