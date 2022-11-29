@@ -873,7 +873,10 @@ const avocadoForDevOps = (
       const readmeDir = await findTheNearestReadme(pr.workingDir, item)
       if (readmeDir !== undefined) {
         readmeDirs.add(readmeDir)
-      } else if (!exclude.some(excludeItem => item.search(excludeItem) !== -1)) {
+      } else if (
+        !exclude.some(excludeItem => item.search(excludeItem) !== -1) &&
+        (include.length === 0 || include.some(includeItem => item.search(includeItem) !== -1))
+      ) {
         yield {
           level: 'Error',
           code: 'MISSING_README',
