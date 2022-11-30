@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.11
+- Fix `includePaths` parameter doesn't work on MISSING_README rule in DevOps.
+
 ## 0.8.10
 - Clarify MISSING_APIS_IN_DEFAULT_TAG error message.
 
