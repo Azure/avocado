@@ -12,20 +12,19 @@ import { getTagsToSwaggerFilesMapping, getLatestTag, getDefaultTag } from './rea
 
 export interface IService {
   readme_files?: string[]
-  swagger_files?: ISwaggerFile[]
+  exclude_files?: string[]
 }
 
-export interface ISwaggerFile {
-  source: string
+export type SwaggerFileList = {
+  stable: string[]
+  latest: string[]
 }
 
-export type SwaggerFile = {
-  source: string
-  swagger_file: ISwaggerFile
-}
-
-export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFile[] => {
-  const ret: SwaggerFile[] = []
+export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFileList => {
+  const ret: SwaggerFileList = {
+    stable: [],
+    latest: [],
+  }
 
   if (service.readme_files) {
     for (const readmeFile of service.readme_files) {
@@ -36,74 +35,26 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
 
       const inputFiles = getSwaggerFileUnderDefaultTag(readme)
 
-      ret.push(
-        ...inputFiles.map(source => ({
-          source: readmeFile,
-          swagger_file: { source: readmeFile.replace(readmeFileName, source) },
-        })),
-      )
-    }
-  }
+      const latestSwaggerFiles = inputFiles.map(it => readmeFile.replace(readmeFileName, it))
+      ret.latest.push(...latestSwaggerFiles)
 
-  for (const sourceSwagger of service.swagger_files || []) {
-    for (const readmeFile of service.readme_files || []) {
-      // find the matched readme file
-      const dir = path.dirname(readmeFile)
-      if (sourceSwagger.source.startsWith(dir)) {
-        ret.push(...expandSourceSwaggerFiles(rootPath, readmeFile, sourceSwagger.source))
-      }
+      const stableSwaggerFiles = getStableSwaggerFiles(rootPath, readmeFile)
+      ret.stable.push(...stableSwaggerFiles)
     }
   }
   return ret
 }
 
-export const expandSourceSwaggerFiles = (rootPath: string, readmePath: string, source: string): SwaggerFile[] => {
-  const readmeFullPath = path.join(rootPath, readmePath)
+export const getStableSwaggerFiles = (rootPath: string, readmeFilePath: string): string[] => {
+  const readmeFullPath = path.join(rootPath, readmeFilePath)
   const mapping = getTagsToSwaggerFilesMapping(readmeFullPath)
-  const readmeFileName = path.basename(readmePath)
-
-  const predefinedVariables = ['[version]', '[stable_version]', '[preview_version]']
-  const readme = parse(fs.readFileSync(readmeFullPath, 'utf-8'))
-  console.log('readme', readme)
+  const readmeFileName = path.basename(readmeFilePath)
 
   const allTags = Array.from(mapping.keys())
 
-  // non-variable
-  if (predefinedVariables.every(v => !source.includes(v))) {
-    return [{ source, swagger_file: { source } }]
-  }
+  const tag = getLatestTag(allTags, 'stable')
 
-  for (const version of predefinedVariables) {
-    if (source.includes(version)) {
-      // default tag
-      if (version === '[version]') {
-        const tag = getDefaultTag(readme.markDown)!
-        const inputFiles = (mapping.get(tag) || []).map(f => readmePath.replace(readmeFileName, f))
-        return getMatchedSwaggerFiles(inputFiles, source, version)
-      }
-
-      // stable tag
-      if (version === '[stable_version]') {
-        const tag = getLatestTag(allTags, 'stable')
-        const inputFiles = (mapping.get(tag) || []).map(f => readmePath.replace(readmeFileName, f))
-        console.log('inputFiles', inputFiles)
-        return getMatchedSwaggerFiles(inputFiles, source, version)
-      }
-
-      // preview tag
-      if (version === '[preview_version]') {
-        const tag = getLatestTag(allTags, 'preview')
-        const inputFiles = (mapping.get(tag) || []).map(f => readmePath.replace(readmeFileName, f))
-        return getMatchedSwaggerFiles(inputFiles, source, version)
-      }
-    }
-  }
-
-  return []
+  const inputFiles = (mapping.get(tag) || []).map(f => readmeFilePath.replace(readmeFileName, f))
+  return inputFiles
 }
 
-const getMatchedSwaggerFiles = (inputFiles: string[], source: string, version: string): SwaggerFile[] => {
-  const regex = new RegExp(`${source.replace(version, '(.*)')}`)
-  const filteredFiles = inputFiles.filter(f => regex.test(f))
-  return filteredFiles.map(f => ({ source, swagger_file: { source: f } }))
-}
