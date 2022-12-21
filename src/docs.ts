@@ -32,7 +32,6 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
       const readmePath = path.join(rootPath, readmeFile)
       const readmeContent = fs.readFileSync(readmePath, 'utf-8')
       const readme = parse(readmeContent)
-
       const inputFiles = getSwaggerFileUnderDefaultTag(readme)
 
       const latestSwaggerFiles = inputFiles.map(it => readmeFile.replace(readmeFileName, it))
@@ -57,4 +56,3 @@ export const getStableSwaggerFiles = (rootPath: string, readmeFilePath: string):
   const inputFiles = (mapping.get(tag) || []).map(f => readmeFilePath.replace(readmeFileName, f))
   return inputFiles
 }
-
