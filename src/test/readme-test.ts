@@ -4,6 +4,8 @@
 // https://opensource.org/licenses/MIT
 import * as readme from '../readme'
 import * as assert from 'assert'
+import * as fs from 'fs'
+import { parse } from '@ts-common/commonmark-to-markdown'
 
 describe('readme test', () => {
   it('getTagsToSwaggerFilesMapping', () => {
@@ -38,6 +40,14 @@ describe('readme test', () => {
       'release_2021_05_01_preview',
     ]
     assert.deepStrictEqual(Array.from(ret.keys()), expectedKeys)
+  })
+
+  it('Test get default tag', () => {
+    const readmePath = 'src/test/readmes/signalr.md'
+    const readmeContent = fs.readFileSync(readmePath, 'utf-8')
+    const readmeFile = parse(readmeContent)
+    const defaultTag = readme.getDefaultTag(readmeFile.markDown)
+    assert.deepStrictEqual(defaultTag, 'package-2022-08-01-preview')
   })
 
   it('Test sort api version with yyyy-mm-dd format', () => {
