@@ -87,6 +87,9 @@ describe('errors', () => {
           '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
         path:
           // tslint:disable-next-line: max-line-length
+          '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
+        apiPath:
+          // tslint:disable-next-line: max-line-length
           '/subscriptions/{}/resourceGroups/{}/providers/{}/workspaces/{}/providers/Microsoft.SecurityInsights/watchlists/{}/watchlistItems/{}',
       },
       {
@@ -192,11 +195,6 @@ describe('errors', () => {
           path:
             // tslint:disable-next-line: max-line-length
             'https://github.com/undefined/blob/undefined/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
-        },
-        {
-          path:
-            '/subscriptions/{}/resourceGroups/{}/providers/{}/workspaces/{}/providers/Microsoft.SecurityInsights/watchlists/{}/watchlistItems/{}',
-          tag: 'path',
         },
       ],
       [

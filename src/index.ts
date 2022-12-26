@@ -80,7 +80,7 @@ const errorCorrelationId = (error: err.Error) => {
           code: error.code,
           url: error.jsonUrl,
           readMeUrl: error.readMeUrl,
-          path: error.path,
+          apiPath: error.apiPath,
         }
       }
       case 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG': {
@@ -388,7 +388,7 @@ export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it
       if (defaultTags.length > 1) {
         yield {
           code: 'MULTIPLE_DEFAULT_TAGS',
-          level: 'Warning',
+          level: readme.includes('data-plane') ? 'Warning' : 'Error',
           message: 'The readme file has more than one default tag.',
           path: readme,
           readMeUrl: readme,
@@ -445,7 +445,8 @@ export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it
           tag: 'default',
           readMeUrl: readme,
           jsonUrl: item.swaggerFile,
-          path: item.path,
+          path: item.swaggerFile,
+          apiPath: item.path,
         }
       }
     }
@@ -487,7 +488,7 @@ export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: Path
           code: 'MISSING_APIS_IN_DEFAULT_TAG',
           message:
             // tslint:disable-next-line: max-line-length
-            'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
+            `The default tag should contain all APIs. The API path \`${key}\` is not in the default tag. Please make sure the missing API swaggers are in the default tag.`,
         })
       }
     }
@@ -846,7 +847,10 @@ const avocadoForDevOps = (
       const readmeDir = await findTheNearestReadme(pr.workingDir, item)
       if (readmeDir !== undefined) {
         readmeDirs.add(readmeDir)
-      } else if (!exclude.some(excludeItem => item.search(excludeItem) !== -1)) {
+      } else if (
+        !exclude.some(excludeItem => item.search(excludeItem) !== -1) &&
+        (include.length === 0 || include.some(includeItem => item.search(includeItem) !== -1))
+      ) {
         yield {
           level: 'Error',
           code: 'MISSING_README',

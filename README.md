@@ -129,7 +129,7 @@ To solve this warning, you should make sure manager plane swagger located in res
 
 Level: ERROR
 
-The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.
+The default tag should contain all APIs. The API path \`${0}\` is not in the default tag. Please make sure the missing API swaggers are in the default tag.
 
 To fix this error. You should add the missing API swaggers to the default tag. If the missing API swaggers are deprecated, in this case this error could be ignored.
 
@@ -140,6 +140,14 @@ Level: ERROR
 The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.
 
 To fix this error. You should add the latest API version swaggers to the default tag or change default tag to reference latest api version tag.
+
+### MULTIPLE_DEFAULT_TAGS
+
+Level: ERROR
+
+The readme file has more than one default tag.
+
+The expectation is there is only one default tag, which leads to one SDK package. To release separate SDK packages upon different service resources of the same RP, may consider adopting [Folder Structure for Service Group](https://github.com/Azure/azure-rest-api-specs/blob/main/README.md#folder-structure-for-service-group), which supports a readme configuration file under each sub folder.
 
 ## Contributing
 
