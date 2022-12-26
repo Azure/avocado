@@ -18,16 +18,28 @@ import * as git from './git'
 import * as childProcess from './child-process'
 import * as devOps from './dev-ops'
 import * as err from './errors'
-import { walkToNode } from './readme'
+import { walkToNode, sortByApiVersion, getDefaultTag, getTagsToSwaggerFilesMapping, getLatestTag } from './readme'
 import * as format from '@azure/swagger-validation-common'
 import { safeLoad } from './utils'
+import { getSwaggerFiles, SwaggerFileList, IService } from './docs'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
 // tslint:disable-next-line: no-require-imports
 import glob = require('glob')
 
-export { devOps, cli, git, childProcess }
+export {
+  devOps,
+  cli,
+  git,
+  childProcess,
+  getSwaggerFiles,
+  SwaggerFileList,
+  IService,
+  getTagsToSwaggerFilesMapping,
+  getLatestTag,
+  sortByApiVersion,
+}
 
 const errorCorrelationId = (error: err.Error) => {
   const toObject = () => {
@@ -171,32 +183,6 @@ export const getAllDefaultTags = (markDown: commonmark.Node): string[] => {
   return tags
 }
 
-/**
- * @return return undefined indicates not found, otherwise return non-empty string.
- */
-export const getDefaultTag = (markDown: commonmark.Node): string | undefined => {
-  const startNode = markDown
-  const codeBlockMap = openApiMd.getCodeBlocksAndHeadings(startNode)
-  const latestHeader = 'Basic Information'
-  const headerBlock = codeBlockMap[latestHeader]
-  if (headerBlock && headerBlock.literal) {
-    const latestDefinition = safeLoad(headerBlock.literal)
-    if (latestDefinition && latestDefinition.tag) {
-      return latestDefinition.tag
-    }
-  }
-  for (const idx of Object.keys(codeBlockMap)) {
-    const block = codeBlockMap[idx]
-    if (!block || !block.info || !block.literal || !/^(yaml|json)$/.test(block.info.trim().toLowerCase())) {
-      continue
-    }
-    const latestDefinition = safeLoad(block.literal)
-    if (latestDefinition && latestDefinition.tag) {
-      return latestDefinition.tag
-    }
-  }
-  return undefined
-}
 
 /**
  * @return return undefined indicates not found, otherwise return non-empty string.
