@@ -126,4 +126,27 @@ describe('readme test', () => {
     ret = readme.getLatestTag(input, 'stable')
     assert.deepStrictEqual(ret, 'release_2022_05_01')
   })
+
+  it('Test get latest tag if the day is missing', () => {
+    const input = [
+      'package-2022-08-01-preview',
+      'package-2022-02-01',
+      'package-2021-09-01-preview',
+      'package-2021-10-01',
+      'package-2021-06-01-preview',
+      'package-2021-04-01-preview',
+      'package-2020-07-01-preview',
+      'package-2020-05-01',
+      'package-2018-10-01',
+      'package-2018-03-01-preview',
+      'package-2022-12',
+      'package-2022-11-preview',
+    ]
+
+    let ret = readme.getLatestTag(input, 'preview')
+    assert.deepStrictEqual(ret, 'package-2022-11-preview')
+
+    ret = readme.getLatestTag(input, 'stable')
+    assert.deepStrictEqual(ret, 'package-2022-12')
+  })
 })
