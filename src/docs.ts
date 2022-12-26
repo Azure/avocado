@@ -26,20 +26,22 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
     latest: [],
   }
 
-  if (service.readme_files) {
-    for (const readmeFile of service.readme_files) {
-      const readmeFileName = path.basename(readmeFile)
-      const readmePath = path.join(rootPath, readmeFile)
-      const readmeContent = fs.readFileSync(readmePath, 'utf-8')
-      const readme = parse(readmeContent)
-      const inputFiles = getSwaggerFileUnderDefaultTag(readme)
+  if (service.readme_files === undefined) {
+    return ret
+  }
 
-      const latestSwaggerFiles = inputFiles.map(it => readmeFile.replace(readmeFileName, it))
-      ret.latest.push(...latestSwaggerFiles)
+  for (const readmeFile of service.readme_files) {
+    const readmeFileName = path.basename(readmeFile)
+    const readmePath = path.join(rootPath, readmeFile)
+    const readmeContent = fs.readFileSync(readmePath, 'utf-8')
+    const readme = parse(readmeContent)
+    const inputFiles = getSwaggerFileUnderDefaultTag(readme)
 
-      const stableSwaggerFiles = getStableSwaggerFiles(rootPath, readmeFile)
-      ret.stable.push(...stableSwaggerFiles)
-    }
+    const latestSwaggerFiles = inputFiles.map(it => readmeFile.replace(readmeFileName, it))
+    ret.latest.push(...latestSwaggerFiles)
+
+    const stableSwaggerFiles = getStableSwaggerFiles(rootPath, readmeFile)
+    ret.stable.push(...stableSwaggerFiles)
   }
   return ret
 }
