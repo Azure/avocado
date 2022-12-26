@@ -183,7 +183,6 @@ export const getAllDefaultTags = (markDown: commonmark.Node): string[] => {
   return tags
 }
 
-
 /**
  * @return return undefined indicates not found, otherwise return non-empty string.
  */
