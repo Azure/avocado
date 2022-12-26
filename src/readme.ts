@@ -31,10 +31,11 @@ export const sortByApiVersion = (versions: string[]): string[] => {
   // sort by api version. Format: YYYY-MM-DD
   const supportedRegex = [/(\d{4})-(\d{2})(-(\d{2}))?/, /(\d{4})_(\d{2})(_(\d{2}))?/]
 
+  // If the day is not specified, we assume it is the first day of the month.
   const getDateFromMatch = (match: RegExpMatchArray): Date => {
     const year = +match[1]
     const month = +match[2]
-    const day = +match[4] || 0
+    const day = +match[4] || 1
     return new Date(year, month, day)
   }
   for (const regex of supportedRegex) {
