@@ -49,4 +49,18 @@ describe('docs test getSwaggerFiles', () => {
       'src/test/readmes/stable/2022-05-01/analyzeconversations.json',
     ])
   })
+
+  it('Test getSwaggerFiles for azure kusto.', () => {
+    const readmePath = 'src/test/readmes/azure-kusto.md'
+    const cognitiveService: docs.IService = {
+      readme_files: [readmePath],
+      exclude_files: [],
+    }
+
+    const rootPath = '.'
+    const res = docs.getSwaggerFiles(rootPath, cognitiveService)
+    assert.deepStrictEqual(res.latest, ['src/test/readmes/Microsoft.Kusto/stable/2022-07-07/kusto.json'])
+
+    assert.deepStrictEqual(res.stable, ['src/test/readmes/Microsoft.Kusto/stable/2022-07-07/kusto.json'])
+  })
 })

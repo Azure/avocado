@@ -29,16 +29,23 @@ export const walkToNode = (
 
 export const sortByApiVersion = (versions: string[]): string[] => {
   // sort by api version. Format: YYYY-MM-DD
-  const supportedRegex = [/(\d{4})-(\d{2})-(\d{2})/, /(\d{4})_(\d{2})_(\d{2})/]
+  const supportedRegex = [/(\d{4})-(\d{2})(-(\d{2}))?/, /(\d{4})_(\d{2})(_(\d{2}))?/]
 
+  const getDateFromMatch = (match: RegExpMatchArray): Date => {
+    const year = +match[1]
+    const month = +match[2]
+    const day = +match[4] || 0
+    return new Date(year, month, day)
+  }
   for (const regex of supportedRegex) {
     const filterVersion = versions.filter(v => regex.test(v))
     if (filterVersion.length > 0) {
       return filterVersion.sort((a, b) => {
         const aMatch = a.match(regex)!
         const bMatch = b.match(regex)!
-        const aDate = new Date(+aMatch[1], +aMatch[2], +aMatch[3])
-        const bDate = new Date(+bMatch[1], +bMatch[2], +bMatch[3])
+
+        const aDate = getDateFromMatch(aMatch)
+        const bDate = getDateFromMatch(bMatch)
         return aDate.getTime() - bDate.getTime()
       })
     }
