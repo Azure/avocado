@@ -53,7 +53,7 @@ describe('docs test getSwaggerFiles', () => {
     cognitiveService.exclude_files = ['src/test/readmes/stable/2022-05-01/analyzetext.json']
     // test excluded files
     const resWithExcluded = docs.getSwaggerFiles(rootPath, cognitiveService)
-    assert.deepStrictEqual(resWithExcluded.latest, [
+    assert.deepStrictEqual(resWithExcluded.stable, [
       'src/test/readmes/stable/2022-05-01/analyzetext-authoring.json',
       'src/test/readmes/stable/2022-05-01/analyzeconversations-authoring.json',
       'src/test/readmes/stable/2022-05-01/analyzeconversations.json',
