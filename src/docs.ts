@@ -37,11 +37,17 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
     const readme = parse(readmeContent)
     const inputFiles = getSwaggerFileUnderDefaultTag(readme)
 
+    const excludeFiles = service.exclude_files || []
+
     // There are some platform issues. For windows, it has different path format. To keep it safe and avoid path issue, I use replace instead of path.relative.
-    const latestSwaggerFiles = inputFiles.map(it => readmeFile.replace(readmeFileName, it))
+    const latestSwaggerFiles = inputFiles
+      .map(it => readmeFile.replace(readmeFileName, it))
+      .filter(it => !excludeFiles.some(ex => it.match(ex)))
     ret.latest.push(...latestSwaggerFiles)
 
-    const stableSwaggerFiles = getStableSwaggerFiles(rootPath, readmeFile)
+    const stableSwaggerFiles = getStableSwaggerFiles(rootPath, readmeFile).filter(
+      it => !excludeFiles.some(ex => it.match(ex)),
+    )
     ret.stable.push(...stableSwaggerFiles)
   }
   return ret
