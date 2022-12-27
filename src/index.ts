@@ -18,15 +18,28 @@ import * as git from './git'
 import * as childProcess from './child-process'
 import * as devOps from './dev-ops'
 import * as err from './errors'
+import { walkToNode, sortByApiVersion, getDefaultTag, getTagsToSwaggerFilesMapping, getLatestTag } from './readme'
 import * as format from '@azure/swagger-validation-common'
-import * as YAML from 'js-yaml'
+import { safeLoad } from './utils'
+import { getSwaggerFiles, SwaggerFileList, IService } from './docs'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
 // tslint:disable-next-line: no-require-imports
 import glob = require('glob')
 
-export { devOps, cli, git, childProcess }
+export {
+  devOps,
+  cli,
+  git,
+  childProcess,
+  getSwaggerFiles,
+  SwaggerFileList,
+  IService,
+  getTagsToSwaggerFilesMapping,
+  getLatestTag,
+  sortByApiVersion,
+}
 
 const errorCorrelationId = (error: err.Error) => {
   const toObject = () => {
@@ -128,14 +141,6 @@ const isAutoRestMd = (m: md.MarkDownEx) =>
     return t.literal === 'see https://aka.ms/autorest'
   })
 
-const safeLoad = (content: string) => {
-  try {
-    return YAML.safeLoad(content) as any
-  } catch (err) {
-    return undefined
-  }
-}
-
 const nodeHeading = (startNode: commonmark.Node): commonmark.Node | null => {
   let resultNode: commonmark.Node | null = startNode
 
@@ -150,25 +155,6 @@ const getHeadingLiteral = (heading: commonmark.Node): string => {
   const headingNode = walkToNode(heading.walker(), n => n.type === 'text')
 
   return headingNode && headingNode.literal ? headingNode.literal : ''
-}
-
-/**
- * walks a markdown tree until the callback provided returns true for a node
- */
-const walkToNode = (
-  walker: commonmark.NodeWalker,
-  cb: (node: commonmark.Node) => boolean,
-): commonmark.Node | undefined => {
-  let event = walker.next()
-
-  while (event) {
-    const curNode = event.node
-    if (cb(curNode)) {
-      return curNode
-    }
-    event = walker.next()
-  }
-  return undefined
 }
 
 /**
@@ -195,33 +181,6 @@ export const getAllDefaultTags = (markDown: commonmark.Node): string[] => {
     }
   }
   return tags
-}
-
-/**
- * @return return undefined indicates not found, otherwise return non-empty string.
- */
-export const getDefaultTag = (markDown: commonmark.Node): string | undefined => {
-  const startNode = markDown
-  const codeBlockMap = openApiMd.getCodeBlocksAndHeadings(startNode)
-  const latestHeader = 'Basic Information'
-  const headerBlock = codeBlockMap[latestHeader]
-  if (headerBlock && headerBlock.literal) {
-    const latestDefinition = safeLoad(headerBlock.literal)
-    if (latestDefinition && latestDefinition.tag) {
-      return latestDefinition.tag
-    }
-  }
-  for (const idx of Object.keys(codeBlockMap)) {
-    const block = codeBlockMap[idx]
-    if (!block || !block.info || !block.literal || !/^(yaml|json)$/.test(block.info.trim().toLowerCase())) {
-      continue
-    }
-    const latestDefinition = safeLoad(block.literal)
-    if (latestDefinition && latestDefinition.tag) {
-      return latestDefinition.tag
-    }
-  }
-  return undefined
 }
 
 /**
