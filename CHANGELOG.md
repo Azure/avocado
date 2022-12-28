@@ -3,6 +3,7 @@
 ## 0.8.12
 
 - Add getSwaggerFiles for docs pipeline to get the latest swagger files and the stable swagger files.
+- Make API path case insensitive in MISSING_APIS_IN_DEFAULT_TAG
 
 ## 0.8.11
 
