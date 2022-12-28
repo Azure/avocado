@@ -537,7 +537,9 @@ export const getPathTableFromSwaggerFile = (swaggerFile: string): PathTable => {
   if (apiVersion === undefined) {
     return new Map<string, { apiVersion: string; swaggerFile: string }>()
   }
-  const allPaths = getAllPathFromSwagger(swagger).map(normalizeApiPath)
+  const allPaths = getAllPathFromSwagger(swagger)
+    .map(normalizeApiPath)
+    .map((item: string) => item.toLowerCase())
 
   const pathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
   // tslint:disable-next-line: no-shadowed-variable
