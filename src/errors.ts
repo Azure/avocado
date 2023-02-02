@@ -22,6 +22,7 @@ type ErrorMessage =
   // tslint:disable-next-line: max-line-length
   | 'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.'
   | 'The readme file has more than one default tag.'
+  | 'Cadl file is not allowed in resource-manager or data-plane folder.'
 
 export interface IErrorBase {
   readonly level: 'Warning' | 'Error' | 'Info'
@@ -71,6 +72,7 @@ export type FileError = {
     | 'CIRCULAR_REFERENCE'
     | 'INCONSISTENT_API_VERSION'
     | 'INVALID_FILE_LOCATION'
+    | 'INVALID_CADL_LOCATION'
   readonly message: ErrorMessage
   readonly readMeUrl: string
   readonly jsonUrl: string
@@ -122,6 +124,8 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
       ]
     case 'MULTIPLE_DEFAULT_TAGS':
       return [{ tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) }]
+    case 'INVALID_CADL_LOCATION':
+      return [{ tag: 'path', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.path)) }]
     default:
       return []
   }

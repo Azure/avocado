@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.8.13
+- Add rule INVALID_CADL_LOCATION to validate if cadl file in 'resource-manager' or 'data-plane' folder.
+
 ## 0.8.12
 
 - Add getSwaggerFiles for docs pipeline to get the latest swagger files and the stable swagger files.

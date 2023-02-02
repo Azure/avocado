@@ -109,6 +109,12 @@ const errorCorrelationId = (error: err.Error) => {
           tags: error.tags,
         }
       }
+      case 'INVALID_CADL_LOCATION': {
+        return {
+          code: error.code,
+          path: error.path,
+        }
+      }
     }
   }
 
@@ -758,11 +764,25 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
       }))
   })
 
+const validateIllegalFiles = (dir: string): asyncIt.AsyncIterableEx<err.Error> =>
+  tscommonFs
+    .recursiveReaddir(dir)
+    .filter(f => (f.includes('resource-manager') || f.includes('data-plane')) && path.extname(f) === '.cadl')
+    .map<err.Error>(f => ({
+      code: 'INVALID_CADL_LOCATION',
+      message: 'Cadl file is not allowed in resource-manager or data-plane folder.',
+      level: 'Error',
+      path: f,
+      readMeUrl: '',
+      jsonUrl: '',
+    }))
+
 /**
  * Validate global specification folder and prepare arguments for `validateInputFiles`.
  */
 const validateFolder = (dir: string) =>
   asyncIt.iterable<err.Error>(async function*() {
+    yield* validateIllegalFiles(dir)
     const allReadMeFiles = tscommonFs.recursiveReaddir(dir).filter(f => path.basename(f).toLowerCase() === 'readme.md')
 
     yield* validateRPFolderMustContainReadme(dir)
