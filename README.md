@@ -149,13 +149,13 @@ The readme file has more than one default tag.
 
 The expectation is there is only one default tag, which leads to one SDK package. To release separate SDK packages upon different service resources of the same RP, may consider adopting [Folder Structure for Service Group](https://github.com/Azure/azure-rest-api-specs/blob/main/README.md#folder-structure-for-service-group), which supports a readme configuration file under each sub folder.
 
-### INVALID_CADL_LOCATION
+### INVALID_TYPESPEC_LOCATION
 
 Level: ERROR
 
-Cadl file is not allowed in resource-manager or data-plane folder.
+TypeSpec file is not allowed in resource-manager or data-plane folder.
 
-To fix this error. You should move cadl file to cadl folder.
+To fix this error. You should move TypeSpec file to TypeSpec folder.
 
 ## Contributing
 

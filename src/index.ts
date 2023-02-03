@@ -109,7 +109,7 @@ const errorCorrelationId = (error: err.Error) => {
           tags: error.tags,
         }
       }
-      case 'INVALID_CADL_LOCATION': {
+      case 'INVALID_TYPESPEC_LOCATION': {
         return {
           code: error.code,
           path: error.path,
@@ -769,8 +769,8 @@ const validateIllegalFiles = (dir: string): asyncIt.AsyncIterableEx<err.Error> =
     .recursiveReaddir(dir)
     .filter(f => (f.includes('resource-manager') || f.includes('data-plane')) && path.extname(f) === '.cadl')
     .map<err.Error>(f => ({
-      code: 'INVALID_CADL_LOCATION',
-      message: 'Cadl file is not allowed in resource-manager or data-plane folder.',
+      code: 'INVALID_TYPESPEC_LOCATION',
+      message: 'TypeSpec file is not allowed in resource-manager or data-plane folder.',
       level: 'Error',
       path: f,
       readMeUrl: '',

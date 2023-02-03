@@ -375,7 +375,7 @@ describe('avocado', () => {
     const r = await avocado.avocado({ cwd: 'src/test/contain_cadl_folder', env: {} }).toArray()
     assert.deepStrictEqual(r.length > 0, true)
     assert.deepStrictEqual(
-      r.some(it => it.code === 'INVALID_CADL_LOCATION'),
+      r.some(it => it.code === 'INVALID_TYPESPEC_LOCATION'),
       true,
     )
     assert.deepStrictEqual(
