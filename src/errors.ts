@@ -84,6 +84,11 @@ export type MissingReadmeError = {
   readonly folderUrl: string
 } & IErrorBase
 
+export type TypeSpecFileError = {
+  readonly code: 'INVALID_TYPESPEC_LOCATION'
+  readonly message: ErrorMessage
+} & IErrorBase
+
 export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
   switch (error.code) {
     case 'JSON_PARSE':
@@ -139,3 +144,4 @@ export type Error =
   | MultipleApiVersion
   | MissingLatestApiInDefaultTag
   | MultipleDefaultTags
+  | TypeSpecFileError

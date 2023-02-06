@@ -773,8 +773,6 @@ const validateIllegalFiles = (dir: string): asyncIt.AsyncIterableEx<err.Error> =
       message: 'TypeSpec file is not allowed in resource-manager or data-plane folder.',
       level: 'Error',
       path: f,
-      readMeUrl: '',
-      jsonUrl: '',
     }))
 
 /**
