@@ -22,6 +22,7 @@ type ErrorMessage =
   // tslint:disable-next-line: max-line-length
   | 'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.'
   | 'The readme file has more than one default tag.'
+  | 'TypeSpec file is not allowed in resource-manager or data-plane folder.'
 
 export interface IErrorBase {
   readonly level: 'Warning' | 'Error' | 'Info'
@@ -71,6 +72,7 @@ export type FileError = {
     | 'CIRCULAR_REFERENCE'
     | 'INCONSISTENT_API_VERSION'
     | 'INVALID_FILE_LOCATION'
+    | 'INVALID_TYPESPEC_LOCATION'
   readonly message: ErrorMessage
   readonly readMeUrl: string
   readonly jsonUrl: string
@@ -80,6 +82,11 @@ export type MissingReadmeError = {
   readonly code: 'MISSING_README'
   readonly message: ErrorMessage
   readonly folderUrl: string
+} & IErrorBase
+
+export type TypeSpecFileError = {
+  readonly code: 'INVALID_TYPESPEC_LOCATION'
+  readonly message: ErrorMessage
 } & IErrorBase
 
 export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
@@ -122,6 +129,8 @@ export const getPathInfoFromError = (error: Error): format.JsonPath[] => {
       ]
     case 'MULTIPLE_DEFAULT_TAGS':
       return [{ tag: 'readme', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.readMeUrl)) }]
+    case 'INVALID_TYPESPEC_LOCATION':
+      return [{ tag: 'path', path: format.blobHref(format.getRelativeSwaggerPathToRepo(error.path)) }]
     default:
       return []
   }
@@ -135,3 +144,4 @@ export type Error =
   | MultipleApiVersion
   | MissingLatestApiInDefaultTag
   | MultipleDefaultTags
+  | TypeSpecFileError
