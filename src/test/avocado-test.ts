@@ -370,4 +370,17 @@ describe('avocado', () => {
       true,
     )
   })
+
+  it('avocado check illegal file, like cadl', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/contain_cadl_folder', env: {} }).toArray()
+    assert.deepStrictEqual(r.length > 0, true)
+    assert.deepStrictEqual(
+      r.some(it => it.code === 'INVALID_TYPESPEC_LOCATION'),
+      true,
+    )
+    assert.deepStrictEqual(
+      r.some(it => it.path.includes('/cadl/')),
+      false,
+    )
+  })
 })
