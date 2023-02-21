@@ -80,7 +80,7 @@ describe('docs test getSwaggerFiles', () => {
       readme_files: [readmePath],
       exclude_files: [],
     }
-    const rootPath = '/home/ruowan/work/'
+    const rootPath = '/home/user/work/'
     const res = docs.getSwaggerFiles(rootPath, cognitiveService)
     console.log(res)
   })
