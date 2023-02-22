@@ -33,6 +33,9 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
   for (const readmeFile of service.readme_files) {
     const readmeFileName = path.basename(readmeFile)
     const readmePath = path.join(rootPath, readmeFile)
+    if (!fs.existsSync(readmePath)) {
+      throw new Error(`Readme file ${readmePath} does not exist.`)
+    }
     const readmeContent = fs.readFileSync(readmePath, 'utf-8')
     const readme = parse(readmeContent)
     const inputFiles = getSwaggerFileUnderDefaultTag(readme)
@@ -56,6 +59,7 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
 export const getStableSwaggerFiles = (rootPath: string, readmeFilePath: string): string[] => {
   const readmeFullPath = path.join(rootPath, readmeFilePath)
   const mapping = getTagsToSwaggerFilesMapping(readmeFullPath)
+
   const readmeFileName = path.basename(readmeFilePath)
 
   const allTags = Array.from(mapping.keys())

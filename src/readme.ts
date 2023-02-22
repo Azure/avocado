@@ -99,12 +99,15 @@ export const getTagsToSwaggerFilesMapping = (readmeFilePath: string): Map<string
 }
 
 export const getLatestTag = (tags: string[], versionType: 'stable' | 'preview'): string => {
-  let filteredTags = tags
+  // filter out tag with 'only' postfix
+  const normalTags = tags.filter(t => !t.includes('only'))
+  let filteredTags = normalTags
+
   // tslint:disable-next-line: prefer-conditional-expression
   if (versionType === 'preview') {
-    filteredTags = tags.filter(t => t.includes('preview'))
+    filteredTags = normalTags.filter(t => t.includes('preview'))
   } else {
-    filteredTags = tags.filter(t => !t.includes('preview'))
+    filteredTags = normalTags.filter(t => !t.includes('preview'))
   }
   const sorted = sortByApiVersion(filteredTags)
   return sorted[sorted.length - 1]
