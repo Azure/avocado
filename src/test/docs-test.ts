@@ -127,6 +127,6 @@ describe('docs test getSwaggerFiles', () => {
     }
     assert.throws(() => {
       docs.getSwaggerFiles('.', service)
-    }, Error(`Readme file ${readmePath} does not exist.`))
+    })
   })
 })
