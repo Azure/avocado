@@ -118,4 +118,15 @@ describe('docs test getSwaggerFiles', () => {
       'src/test/readmes/Microsoft.Authorization/stable/2020-10-01/RoleManagementPolicyAssignment.json',
     ])
   })
+
+  it('Should throw error if readme file is not found', () => {
+    const readmePath = 'src/test/readmes/non_found.md'
+    const service: docs.IService = {
+      readme_files: [readmePath],
+      exclude_files: [],
+    }
+    assert.throws(() => {
+      docs.getSwaggerFiles('.', service)
+    }, Error(`Readme file ${readmePath} does not exist.`))
+  })
 })
