@@ -2,7 +2,7 @@
 
 ## 0.8.14
 
-- Filter out `only` postfix tag for getSwaggerFiles function
+- Filter out `only` suffix tag for getSwaggerFiles function
 - Throw error when readme file not found
 
 ## 0.8.13
