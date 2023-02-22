@@ -7,7 +7,7 @@
 
 ## 0.8.13
 
-- Add rule INVALID_CADL_LOCATION to validate if cadl file in 'resource-manager' or 'data-plane' folder.
+- Add rule INVALID_TYPESPEC_LOCATION to validate if TypeSpec file in 'resource-manager' or 'data-plane' folder.
 
 ## 0.8.12
 
