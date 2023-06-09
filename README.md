@@ -129,17 +129,25 @@ To solve this warning, you should make sure manager plane swagger located in res
 
 Level: ERROR
 
-The default tag should contain all APIs. The API path \`${0}\` is not in the default tag. Please make sure the missing API swaggers are in the default tag.
+The default API version tag (as seen in the `Basic information` section in the AutoRest configuration file (the README file)) should contain all API paths.
+The API path \`${0}\` is not present in any OpenAPI `.json` files enumerated in the list of paths included in the default tag, as seen in the relevant `Tag:` section in the AutoRest configuration file (the README file).
 
-To fix this error. You should add the missing API swaggers to the default tag. If the missing API swaggers are deprecated, in this case this error could be ignored.
+To fix this error include an OpenAPI `.json` file path in the list of the default API version tag paths that includes the missing API path.
+
+**WHEN THIS ERROR CAN BE SUPPRESSED**: If the missing API path is deprecated then you can suppress this error by following [this guidance](https://dev.azure.com/azure-sdk/internal/_wiki/wikis/internal.wiki/85/Swagger-Suppression-Process).
+ 
+For an example detailed analysis of an occurrence of such error, see [this GitHub comment](https://github.com/Azure/azure-rest-api-specs/pull/23941#issuecomment-1585095669).
 
 ### NOT_LATEST_API_VERSION_IN_DEFAULT_TAG
 
 Level: ERROR
 
-The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.
+The default API version tag (as seen in the `Basic information` section in the AutoRest configuration file (the README file)) does not contain the latest API version for given OpenAPI `.json` file. 
 
-To fix this error. You should add the latest API version swaggers to the default tag or change default tag to reference latest api version tag.
+To fix this error, please make sure the `.json` file at the latest API version path is included in the list of paths for the default tag, in the relevant `Tag:` section in the AutoRest configuration file (the README file).
+Alternatively, change the default API version tag by editing the `Basic information` section.
+
+For an example detailed analysis of an occurrence of such error, see [this GitHub comment](https://github.com/Azure/azure-rest-api-specs/pull/23941#issuecomment-1585085436).
 
 ### MULTIPLE_DEFAULT_TAGS
 
