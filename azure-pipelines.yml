@@ -47,7 +47,7 @@ jobs:
           reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
   - job: Build
     pool:
-      vmImage: 'Ubuntu 18.04'
+      vmImage: 'Ubuntu 22.04'
     steps:
       - task: Npm@1
         displayName: 'npm pack'
