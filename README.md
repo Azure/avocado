@@ -129,7 +129,7 @@ To solve this warning, you should make sure manager plane swagger located in res
 
 Level: ERROR
 
-The default API version tag (as seen in the `Basic information` section in the AutoRest configuration file (the README file)) should contain all API paths.
+The [default API version tag](https://azure.github.io/autorest/generate/#adding-tags-when-generating) (as seen in the `Basic information` section in the [AutoRest configuration file](http://azure.github.io/autorest/user/configuration.html) (the README file)) should contain all API paths.
 The API path \`${0}\` is not present in any OpenAPI `.json` files enumerated in the list of paths included in the default tag, as seen in the relevant `Tag:` section in the AutoRest configuration file (the README file).
 
 To fix this error include an OpenAPI `.json` file path in the list of the default API version tag paths that includes the missing API path.
@@ -142,7 +142,7 @@ For an example detailed analysis of an occurrence of such error, see [this GitHu
 
 Level: ERROR
 
-The default API version tag (as seen in the `Basic information` section in the AutoRest configuration file (the README file)) does not contain the latest API version for given OpenAPI `.json` file. 
+The [default API version tag](https://azure.github.io/autorest/generate/#adding-tags-when-generating) (as seen in the `Basic information` section in the [AutoRest configuration file](http://azure.github.io/autorest/user/configuration.html) (the README file)) does not contain the latest API version for given OpenAPI `.json` file. 
 
 To fix this error, please make sure the `.json` file at the latest API version path is included in the list of paths for the default tag, in the relevant `Tag:` section in the AutoRest configuration file (the README file).
 Alternatively, change the default API version tag by editing the `Basic information` section.
