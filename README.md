@@ -130,11 +130,11 @@ To solve this warning, you should make sure manager plane swagger located in res
 Level: ERROR
 
 The [default][AutoRest tags] API version tag (as seen in the `Basic information` section in the [AutoRest configuration file][AutoRest config] (the README file)) should contain all API paths.
-The API path \`${0}\` is not present in any OpenAPI `.json` files enumerated in the list of paths included in the default tag, as seen in the relevant `Tag:` section in the AutoRest configuration file (the README file).
+The API path \`${0}\` is not present in any OpenAPI `.json` files enumerated in the list of paths included in the default tag, as seen in the [relevant `Tag:` section][AutoRest tags] in the AutoRest configuration file (the README file).
 
 To fix this error include an OpenAPI `.json` file path in the list of the default API version tag paths (in the [relevant `Tag:` section][AutoRest tags]) that includes the missing API path.
 
-**WHEN THIS ERROR CAN BE SUPPRESSED**: If the missing API path is deprecated then you can suppress this error by following [this guidance](https://dev.azure.com/azure-sdk/internal/_wiki/wikis/internal.wiki/85/Swagger-Suppression-Process).
+**WHEN THIS ERROR CAN BE SUPPRESSED**: If the missing API path is deprecated then you can suppress this error.  Follow [this suppresion guidace](https://dev.azure.com/azure-sdk/internal/_wiki/wikis/internal.wiki/85/Swagger-Suppression-Process).
  
 For an example detailed analysis of an occurrence of such error, see [this GitHub comment](https://github.com/Azure/azure-rest-api-specs/pull/23941#issuecomment-1585095669).
 
@@ -142,10 +142,10 @@ For an example detailed analysis of an occurrence of such error, see [this GitHu
 
 Level: ERROR
 
-The [default][AutoRest tags] API version tag (as seen in the `Basic information` section in the [AutoRest configuration file][AutoRest config] (the README file)) does not contain the latest API version for given OpenAPI `.json` file. 
+The [default][AutoRest tags] API version tag (as seen in the `Basic information` section in the [AutoRest configuration file][AutoRest config] (the README file)) does not contain the latest API version of given OpenAPI `.json` file. 
 
 To fix this error, please make sure the `.json` file at the latest API version path is included in the list of paths for the default tag, in the [relevant `Tag:` section][AutoRest tags] in the AutoRest configuration file (the README file).
-Alternatively, change the default API version tag by editing the `Basic information` section.
+Alternatively, change the default API version tag to a valid one by editing the `Basic information` section.
 
 For an example detailed analysis of an occurrence of such error, see [this GitHub comment](https://github.com/Azure/azure-rest-api-specs/pull/23941#issuecomment-1585085436).
 
