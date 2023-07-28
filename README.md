@@ -134,13 +134,13 @@ The API path \`${0}\` is not present in any OpenAPI `.json` files enumerated in 
 
 To fix this error include an OpenAPI `.json` file path in the list of the default API version tag paths (in the [relevant `Tag:` section][AutoRest tags]) that includes the missing API path.
 
-**IMPORTANT**: The error may point to a previous API version. **This does not mean this is a false positive**! It means that the the previous API version has an API path that is missing from the default API version.
+**IMPORTANT**: The error may point to a previous API version. **This does not mean this is a false positive**! It means that the previous API version has an API path that is missing from the default API version.
 
-**Common scenario**: Often the API path is missing from the default API version due to casing mismatch; e.g. the path in new API version has `resourceGroups` in it while the previous one has `resourcegroups`. See examples below.
+**Common scenario**: Often the API path is missing from the default API version due to casing mismatch; e.g. the path in the new API version has `resourceGroups` in it while the previous one has `resourcegroups`. See examples below.
 
 **When this error can be suppressed**: If the missing API path is deprecated then you can suppress this error. Follow [this suppresion guide](https://dev.azure.com/azure-sdk/internal/_wiki/wikis/internal.wiki/85/Swagger-Suppression-Process).
  
-For an example detailed analysyes of an occurrence of such error, see these GitHub comments:  
+For example detailed analyses of occurrences of such errors, see these GitHub comments:  
 - [PR 23941 comment](https://github.com/Azure/azure-rest-api-specs/pull/23941#issuecomment-1585095669)  
 - [PR 24939 comment](https://github.com/Azure/azure-rest-api-specs/pull/24939#issuecomment-1656434544)
 
