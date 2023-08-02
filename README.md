@@ -136,9 +136,15 @@ To fix this error include an OpenAPI `.json` file path in the list of the defaul
 
 **IMPORTANT**: The error may point to a previous API version. **This does not mean this is a false positive**! It means that the previous API version has an API path that is missing from the default API version.
 
-**Common scenario**: Often the API path is missing from the default API version due to casing mismatch; e.g. the path in the new API version has `resourceGroups` in it while the previous one has `resourcegroups`. See examples below.
+**Common valid scenario**: Often the API path is missing from the default API version due to casing mismatch; e.g. the path in the new API version has `resourceGroups` in it while the previous one has `resourcegroups`. See examples below.
 
-**When this error can be suppressed**: If the missing API path is deprecated then you can suppress this error. Follow [this suppresion guide](https://dev.azure.com/azure-sdk/internal/_wiki/wikis/internal.wiki/85/Swagger-Suppression-Process).
+**Known invalid scenarios**: Avocado may incorrectly report failures in following two scenarios:
+- Your API is deprecated/obsolete [#6627](https://github.com/Azure/azure-sdk-tools/issues/6627) (example case in [PR 24771](https://github.com/Azure/azure-rest-api-specs/pull/24771#issuecomment-1660776189))
+- Your API is using the service group folder [#6201](https://github.com/Azure/azure-sdk-tools/issues/6201)
+
+If you are dealing with one of these scenarios, please follow the [suppression guide]. Mention the scenario you identified.
+
+**When this error can be suppressed**: If the missing API path is deprecated then you can suppress this error. Follow this [suppresion guide].
  
 For example detailed analyses of occurrences of such errors, see these GitHub comments:  
 - [PR 23941 comment](https://github.com/Azure/azure-rest-api-specs/pull/23941#issuecomment-1585095669)  
@@ -187,3 +193,5 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 [AutoRest config]: http://azure.github.io/autorest/user/configuration.html
 [AutoRest tags]: https://azure.github.io/autorest/generate/#adding-tags-when-generating
+
+[suppression guide]: https://dev.azure.com/azure-sdk/internal/_wiki/wikis/internal.wiki/85/Swagger-Suppression-Process
