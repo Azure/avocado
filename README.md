@@ -140,8 +140,7 @@ To fix this error include an OpenAPI `.json` file path in the list of the defaul
 
 - Often the API path is missing from the default API version due to casing mismatch; e.g. the path in the new API version has `resourceGroups` in it while the previous one has `resourcegroups`. See examples below.
 - If Avocado reports missing a path that you have **intentionally deprecated** or **intentionally removed** but the API version is publicly released (GA, generaly available, not in preview) first you need to get
-Breaking Change Board approval. Follow the breaking change process from step 1 in [this diagram](https://aka.ms/pr-diagram). If you already got such approval in a previous PR, add a comment on the PR linking to that
-approval and explaining this is justification for getting Avocado suppressed.
+Breaking Change Board approval. Follow the breaking change process from step 1 in [this diagram](https://aka.ms/pr-diagram). If you already got such approval in a previous PR, follow the [suppression guide]. Mention the scenario you identified.
 
 **Known scenarios where Avocado reports false positive**: Avocado may incorrectly report failures in following two scenarios:
 - Your API is deprecated/obsolete [#6627](https://github.com/Azure/azure-sdk-tools/issues/6627) (example case in [PR 24771](https://github.com/Azure/azure-rest-api-specs/pull/24771#issuecomment-1660776189))
