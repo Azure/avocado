@@ -7,6 +7,10 @@ extends:
     stages:
     - stage: Build_And_Test
       displayName: 'Build and Test'
+
+      variables:
+        - template: /eng/image.yml
+
       jobs:
       - job: Build
         pool:
@@ -20,6 +24,7 @@ extends:
               command: custom
               verbose: false
               customCommand: pack
+
           - task: CopyFiles@2
             displayName: 'Copy Files to: drop'
             inputs:
