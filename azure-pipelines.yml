@@ -1,91 +1,122 @@
 trigger:
   - main
-  
-variables:
-  Codeql.Enabled: true
-  
-jobs:
-  - job: Test
-    strategy:
-      matrix:
-        Linux.Node10:
-          node.version: 10.x
-          vm.image: 'ubuntu-20.04'
-        Linux.Node12:
-          node.version: 12.x
-          vm.image: 'ubuntu-20.04'
-        Win.Node10:
-          node.version: 10.x
-          vm.image: 'windows-2019'
-        Win.Node12:
-          node.version: 12.x
-          vm.image: 'windows-2019'
-    pool:
-      vmImage: $(vm.image)
-    steps:
-      - task: NodeTool@0
-        displayName: 'Install Node'
-        inputs:
-          versionSpec: $(node.version)
-      - script: npm install
-      - task: Npm@1
-        displayName: 'npm test'
-        inputs:
-          command: custom
-          verbose: false
-          customCommand: test
-      - task: PublishTestResults@2
-        condition: succeededOrFailed()
-        inputs:
-          testResultsFiles: '**/test-results.xml'
-          testRunTitle: 'Test results for JavaScript'
-      - task: PublishCodeCoverageResults@1
-        condition: succeededOrFailed()
-        inputs:
-          codeCoverageTool: Cobertura
-          summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
-          reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
-  - job: Build
-    pool:
-      vmImage: 'ubuntu-22.04'
-    steps:
-      - task: Npm@1
-        displayName: 'npm pack'
-        inputs:
-          command: custom
-          verbose: false
-          customCommand: pack
-      - task: CopyFiles@2
-        displayName: 'Copy Files to: drop'
-        inputs:
-          Contents: '*.tgz'
-          TargetFolder: drop
-      - task: PublishBuildArtifacts@1
-        inputs:
-          pathtoPublish: $(Build.SourcesDirectory)/drop
 
-  - job: Windows
-    pool:
-      vmImage: 'windows-2019'
+extends:
+  template: /eng/1es-redirect.yml
+  parameters:
+    stages:
+    - stage: Build_And_Test
+      displayName: 'Build and Test'
+      jobs:
+      - job: Build
+        pool:
+          image: $(LINUXVMIMAGE)
+          name: $(LINUXPOOL)
+          os: linux
+        steps:
+          - task: Npm@1
+            displayName: 'npm pack'
+            inputs:
+              command: custom
+              verbose: false
+              customCommand: pack
+          - task: CopyFiles@2
+            displayName: 'Copy Files to: drop'
+            inputs:
+              Contents: '*.tgz'
+              TargetFolder: $(Build.ArtifactStagingDirectory)
 
-    steps:
-      - task: ea576cd4-c61f-48f8-97e7-a3cb07b90a6f@2 # CredScan@2
-        inputs:
-          toolMajorVersion: 'V2'
+          - template: /eng/publish-1es-artifact.yml
+            parameters:
+              artifactName: 'drop'
+              artifactPath: '$(Build.ArtifactStagingDirectory)'
 
-      - task: f5679091-e6da-4974-a8dc-0eec03a8ea63@1 # PostAnalysis@1
-        inputs:
-          AllTools: false
-          APIScan: false
-          BinSkim: false
-          CodesignValidation: false
-          CredScan: true
-          FortifySCA: false
-          FxCop: false
-          ModernCop: false
-          PoliCheck: false
-          RoslynAnalyzers: false
-          SDLNativeRules: false
-          Semmle: false
-          TSLint: false
-          ToolLogsNotFoundAction: 'Standard'
+      - job: Test_Windows
+        strategy:
+          matrix:
+            Win.Node10:
+              node.version: 10.x
+            Win.Node12:
+              node.version: 12.x
+        pool:
+          image: $(WINDOWSVMIMAGE)
+          pool: $(WINDOWSPOOL)
+          os: windows
+        steps:
+          - template: /eng/test-steps.yml
+            parameters:
+              version: $(node.version)
+
+      - job: Test_Linux
+        strategy:
+          matrix:
+            Linux.Node10:
+              node.version: 10.x
+            Linux.Node12:
+              node.version: 12.x
+        pool:
+          image: $(LINUXVMIMAGE)
+          pool: $(LINUXPOOL)
+          os: linux
+        steps:
+          - template: /eng/test-steps.yml
+            parameters:
+              version: $(node.version)
+
+    # only include if running on `internal` build with manual queue, otherwise never include
+    - ${{ if and(in(variables['Build.Reason'], 'Manual', ''), eq(variables['System.TeamProject'], 'internal'))}}:
+      - stage: Publish
+        displayName: Publish
+        dependsOn: Build_And_Test
+
+        jobs:
+          - deployment: Publish
+            environment: 'package-publish'
+            pool:
+              name: azsdk-pool-mms-ubuntu-2004-general
+              image: azsdk-pool-mms-ubuntu-2004-1espt
+              os: linux
+
+            strategy:
+              runOnce:
+                deploy:
+                  steps:
+                  - checkout: self
+                    submodules: false
+
+                  - download: current
+                    artifact: drop
+                    timeoutInMinutes: 5
+
+                  - task: PowerShell@2
+                    inputs:
+                      filePath: '$(Build.SourcesDirectory)/eng/scripts/determine-release-tag.ps1'
+                      failOnStderr: true
+                      pwsh: true
+
+                  - pwsh: |
+                      Write-Host "Will deploy with tag of $(Tag)"
+                      Get-ChildItem "$(Pipeline.Workspace)/drop" -Recurse -Force `
+                        | Where-Object { $_.Name -like "*.tgz" } `
+                        | Copy-Item -Destination "$(Build.ArtifactStagingDirectory)"
+
+                      Get-ChildItem "$(Build.ArtifactStagingDirectory)" -Recurse -Force | % { Write-Host $_.FullName }
+                    displayName: Move artifact to $(Build.ArtifactStagingDirectory)
+
+                  - task: EsrpRelease@7
+                    inputs:
+                      displayName: 'Publish oav to ESRP'
+                      ConnectedServiceName: 'Azure SDK Engineering System'
+                      ClientId: '5f81938c-2544-4f1f-9251-dd9de5b8a81b'
+                      KeyVaultName: 'AzureSDKEngKeyVault'
+                      AuthCertName: 'azure-sdk-esrp-release-auth-certificate'
+                      SignCertName: 'azure-sdk-esrp-release-sign-certificate'
+                      Intent: 'PackageDistribution'
+                      ContentType: 'npm'
+                      FolderLocation: $(Build.ArtifactStagingDirectory)
+                      Owners: ${{ coalesce(variables['Build.RequestedForEmail'], 'azuresdk@microsoft.com') }}
+                      Approvers: 'azuresdk@microsoft.com'
+                      ServiceEndpointUrl: 'https://api.esrp.microsoft.com'
+                      MainPublisher: 'ESRPRELPACMANTEST'
+                      DomainTenantId: '72f988bf-86f1-41af-91ab-2d7cd011db47'
+                      productstate: $(Tag)
