@@ -45,7 +45,7 @@ extends:
               node.version: 12.x
         pool:
           image: $(WINDOWSVMIMAGE)
-          pool: $(WINDOWSPOOL)
+          name: $(WINDOWSPOOL)
           os: windows
         steps:
           - template: /eng/test-steps.yml
@@ -61,7 +61,7 @@ extends:
               node.version: 12.x
         pool:
           image: $(LINUXVMIMAGE)
-          pool: $(LINUXPOOL)
+          name: $(LINUXPOOL)
           os: linux
         steps:
           - template: /eng/test-steps.yml
