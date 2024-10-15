@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.8.14",
+  "version": "0.9.0",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -89,7 +89,7 @@
     "commonmark": "^0.29.0",
     "glob": "^7.2.0",
     "js-yaml": "^3.13.1",
-    "jsonpath-plus": "^6.0.1",
+    "jsonpath-plus": "^10.0.0",
     "node-fetch": ">=2.6.1",
     "node-notifier": ">=8.0.1",
     "node-object-hash": "^1.4.2",
@@ -110,5 +110,8 @@
     "tslint-immutable": "^6.0.1",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "3.5.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
