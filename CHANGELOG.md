@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0
+
+- Breaking Change: Requires Node 18 or higher
+- Bump `jsonpath-plus` dependency to `^10.0.0`
+
 ## 0.8.14
 
 - Filter out `only` suffix tag for getSwaggerFiles function
