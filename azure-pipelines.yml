@@ -18,6 +18,17 @@ extends:
           name: $(LINUXPOOL)
           os: linux
         steps:
+          - task: NodeTool@0
+            displayName: 'Install Node'
+            inputs:
+              versionSpec: 20.x
+
+          - script: npm ci
+
+          - script: npm ls -a
+            condition: succeededOrFailed()
+            continueOnError: true
+
           - task: Npm@1
             displayName: 'npm pack'
             inputs:
