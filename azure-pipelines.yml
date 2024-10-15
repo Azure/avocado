@@ -39,10 +39,10 @@ extends:
       - job: Test_Windows
         strategy:
           matrix:
-            Win.Node10:
-              node.version: 10.x
-            Win.Node12:
-              node.version: 12.x
+            Win.Node18:
+              node.version: 18.x
+            Win.Node20:
+              node.version: 20.x
         pool:
           image: $(WINDOWSVMIMAGE)
           name: $(WINDOWSPOOL)
@@ -55,10 +55,10 @@ extends:
       - job: Test_Linux
         strategy:
           matrix:
-            Linux.Node10:
-              node.version: 10.x
-            Linux.Node12:
-              node.version: 12.x
+            Linux.Node18:
+              node.version: 18.x
+            Linux.Node20:
+              node.version: 20.x
         pool:
           image: $(LINUXVMIMAGE)
           name: $(LINUXPOOL)
