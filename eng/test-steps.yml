@@ -7,7 +7,7 @@ steps:
     displayName: 'Install Node'
     inputs:
       versionSpec: ${{ parameters.version }}
-  - script: npm install
+  - script: npm ci
   - task: Npm@1
     displayName: 'npm test'
     inputs:
