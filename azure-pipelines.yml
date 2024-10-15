@@ -24,8 +24,10 @@ extends:
               versionSpec: 20.x
 
           - script: npm ci
+            displayName: 'npm ci'
 
           - script: npm ls -a
+            displayName: 'npm ls -a'
             condition: succeededOrFailed()
             continueOnError: true
 

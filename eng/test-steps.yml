@@ -8,7 +8,9 @@ steps:
     inputs:
       versionSpec: ${{ parameters.version }}
   - script: npm ci
+    displayName: 'npm ci'
   - script: npm ls -a
+    displayName: 'npm ls -a'
     condition: succeededOrFailed()
     continueOnError: true
   - task: Npm@1
