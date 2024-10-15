@@ -110,5 +110,8 @@
     "tslint-immutable": "^6.0.1",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "3.5.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
