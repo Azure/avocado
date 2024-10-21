@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1
+
+- Restore exported API `getDefaultTag()`, accidentally removed in 0.8.12
+
 ## 0.9.0
 
 - Breaking Change: Requires Node 18 or higher

@@ -36,6 +36,7 @@ export {
   getSwaggerFiles,
   SwaggerFileList,
   IService,
+  getDefaultTag,
   getTagsToSwaggerFilesMapping,
   getLatestTag,
   sortByApiVersion,
