@@ -109,8 +109,9 @@
     "tslint-config-standard": "^8.0.1",
     "tslint-immutable": "^6.0.1",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "3.5.2"
+    "typescript": "~3.9.10"
   },
+  "_todo": "Pin @types/babel__traverse to 7.20.5 - latest version that works with our typescript version OR: update typesript",
   "engines": {
     "node": ">=18.0.0"
   }
