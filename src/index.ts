@@ -757,7 +757,11 @@ const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableE
     const dir = path.dirname(readMePath)
     yield* tscommonFs
       .recursiveReaddir(dir)
-      .filter(filePath => path.extname(filePath) === '.json')
+      .filter(
+        filePath =>
+          path.extname(filePath) === '.json' &&
+          filePath.split(path.sep).some(folder => folder === 'preview' || folder === 'stable'),
+      )
       .map<Specification>(filePath => ({
         path: filePath,
         readMePath,
