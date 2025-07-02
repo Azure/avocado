@@ -693,7 +693,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
         readMeUrl: readMePath,
         tag: getDefaultTag(m.markDown),
         path: readMePath,
-        level: 'Warning',
+        level: 'Error',
       }
     }
   })
