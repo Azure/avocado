@@ -111,11 +111,11 @@ C-->A
 
 ### MULTIPLE_API_VERSION
 
-Level: WARNING
+Level: ERROR
 
-The default tag should contain only one API version swagger.
+The default tag should contain only one API version.
 
-To solve this warning , you should copy the swaggers of old version into the current version folder.
+To solve this error, you should add a new consistent version for all resource types within your service and copy the specs into the current version folder.
 
 ### INVALID_FILE_LOCATION
 

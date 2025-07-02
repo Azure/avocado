@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.2
+
+- Change rule MULTIPLE_API_VERSION from warning to error level.
+
 ## 0.9.1
 
 - Restore exported API `getDefaultTag()`, accidentally removed in 0.8.12
