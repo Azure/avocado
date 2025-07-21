@@ -103,7 +103,7 @@
     "@types/node": "^10.14.6",
     "@types/node-fetch": "ts3.5",
     "@types/yargs": "^15.0.5",
-    "jest": "^24.8.0",
+    "jest": "^30.0.4",
     "jest-junit": "^6.4.0",
     "prettier": "^1.18.2",
     "tslint": "~5.18.0",
