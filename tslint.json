@@ -54,7 +54,8 @@
         "no-any": false,
         "no-console": false,
         "prefer-template": false,
-        "no-unsafe-any": false
+        "no-unsafe-any": false,
+        "deprecation": false
     },
     "rulesDirectory": [
         "tslint-plugin-prettier"

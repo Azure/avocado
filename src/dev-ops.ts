@@ -151,8 +151,8 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
     diff,
     structuralDiff: (): asyncIt.AsyncIterableEx<string> =>
       asyncIt
-        .fromPromise(diff())
-        .map(x => x.path)
+        .fromPromise(diff() as any)
+        .map((x: any) => x.path)
         .filter(
           async filePath =>
             !filePath.endsWith('.json') ||

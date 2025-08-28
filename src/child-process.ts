@@ -17,5 +17,5 @@ export type ExecResult = {
   readonly stderr: string
 }
 
-export const exec = (command: string, options: childProcess.ExecOptions): Promise<ExecResult> =>
-  nodeJsExec(command, { maxBuffer: Infinity, ...options })
+export const exec = async (command: string, options: childProcess.ExecOptions): Promise<ExecResult> =>
+  nodeJsExec(command, { maxBuffer: Infinity, encoding: 'utf8', ...options }) as Promise<ExecResult>

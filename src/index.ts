@@ -252,9 +252,11 @@ const jsonParse = (fileName: string, file: string) => {
 
 const getRefs = (j: json.Json): it.IterableEx<string> => {
   if (json.isObject(j)) {
-    return stringMap
+    return (stringMap
       .entries(j)
-      .flatMap(([k, v]) => (k === '$ref' && typeof v === 'string' ? it.concat([v]) : getRefs(v)))
+      .flatMap(([k, v]) =>
+        k === '$ref' && typeof v === 'string' ? (it.concat([v]) as any) : (getRefs(v) as any),
+      ) as any) as it.IterableEx<string>
   } else if (it.isArray(j)) {
     return it.flatMap(j, getRefs)
   } else {
@@ -722,9 +724,9 @@ const validateInputFiles = (
 
     // report errors if the `dir` folder has JSON files which are not referenced
     yield* asyncIt
-      .fromSync(allInputFileSet.values())
-      .filter(spec => !blackSet.has(spec.path))
-      .map<err.Error>(spec => ({
+      .fromSync(Array.from(allInputFileSet.values()) as any)
+      .filter((spec: any) => spec && !blackSet.has(spec.path))
+      .map<err.Error>((spec: any) => ({
         code: 'UNREFERENCED_JSON_FILE',
         message:
           spec.kind === 'SWAGGER'
