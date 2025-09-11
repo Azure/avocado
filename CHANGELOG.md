@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0
+
+- Breaking Change: Requires Node 20 or higher
+- Bump `glob` dependency to `^11.0.3`
+
 ## 0.9.2
 
 - Change rule MULTIPLE_API_VERSION from warning to error level.
