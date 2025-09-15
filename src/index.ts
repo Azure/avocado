@@ -25,8 +25,13 @@ import { getSwaggerFiles, SwaggerFileList, IService } from './docs'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
-// tslint:disable-next-line: no-require-imports
-import glob = require('glob')
+
+// Must use "const glob" instead of "import glob", to avoid importing bundled types, which require a newer version of TypeScript.
+// tslint:disable-next-line: no-require-imports no-var-requires
+const glob = require('glob') as {
+  // Cast to simple interface with only the options we need
+  readonly sync: (pattern: string, options?: { nodir?: boolean }) => string[]
+}
 
 export {
   devOps,

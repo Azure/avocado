@@ -1,9 +1,8 @@
 # Changelog
 
-## 0.10.0
+## 0.9.3
 
-- Breaking Change: Requires Node 20 or higher
-- Bump `glob` dependency to `^11.0.3`
+- Bump `glob` dependency to `^9.3.5`
 
 ## 0.9.2
 
