@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.3
+
+- Bump `glob` dependency to `^9.3.5`
+
 ## 0.9.2
 
 - Change rule MULTIPLE_API_VERSION from warning to error level.

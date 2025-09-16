@@ -25,8 +25,37 @@ import { getSwaggerFiles, SwaggerFileList, IService } from './docs'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
-// tslint:disable-next-line: no-require-imports
-import glob = require('glob')
+
+// Must use "const glob" instead of "import glob", to avoid importing bundled types, which require a newer version of TypeScript.
+// tslint:disable-next-line: no-require-imports no-var-requires
+const glob = require('glob') as {
+  // Cast to simple interface with only the options we need
+  readonly sync: (
+    pattern: string,
+    options?: {
+      /**
+       * Do not match directories, only files. (Note: to match
+       * _only_ directories, put a `/` at the end of the pattern.)
+       */
+      nodir?: boolean
+      /**
+       * Use `\\` as a path separator _only_, and
+       *  _never_ as an escape character. If set, all `\\` characters are
+       *  replaced with `/` in the pattern.
+       *
+       *  Note that this makes it **impossible** to match against paths
+       *  containing literal glob pattern characters, but allows matching
+       *  with patterns constructed using `path.join()` and
+       *  `path.resolve()` on Windows platforms, mimicking the (buggy!)
+       *  behavior of Glob v7 and before on Windows. Please use with
+       *  caution, and be mindful of [the caveat below about Windows
+       *  paths](#windows). (For legacy reasons, this is also set if
+       *  `allowWindowsEscape` is set to the exact value `false`.)
+       */
+      windowsPathsNoEscape?: boolean
+    },
+  ) => string[]
+}
 
 export {
   devOps,
@@ -370,7 +399,7 @@ export type PathTable = Map<string, { apiVersion: string; swaggerFile: string }>
 export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it.IterableEx<err.Error> =>
   it.iterable<err.Error>(function*() {
     const readmePattern = path.join(dir, '**/readme.md')
-    const readmes = glob.sync(readmePattern, { nodir: true })
+    const readmes = glob.sync(readmePattern, { nodir: true, windowsPathsNoEscape: true })
 
     for (const readme of readmes) {
       const readmeDir = path.dirname(readme)
@@ -402,11 +431,11 @@ export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it
       }
       const previewPattern = path.join(readmeDir, '**/preview/**/*.json')
       const previewFiles = glob
-        .sync(previewPattern, { nodir: true })
+        .sync(previewPattern, { nodir: true, windowsPathsNoEscape: true })
         .filter(swaggerFile => !swaggerFile.includes('examples'))
       const stablePattern = path.join(readmeDir, '**/stable/**/*.json')
       const stableFiles = glob
-        .sync(stablePattern, { nodir: true })
+        .sync(stablePattern, { nodir: true, windowsPathsNoEscape: true })
         .filter(swaggerFile => !swaggerFile.includes('examples'))
 
       let stablePathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
