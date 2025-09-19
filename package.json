@@ -110,7 +110,7 @@
     "tslint-config-standard": "^8.0.1",
     "tslint-immutable": "^6.0.1",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "3.5.2"
+    "typescript": "5.9.2"
   },
   "overrides": {
     "glob": "^9.3.5"
