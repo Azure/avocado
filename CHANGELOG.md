@@ -4,6 +4,7 @@
 
 - Breaking Change: Requires Node 20 or higher
 - Remove unused dependency `node-fetch`
+- Remove unused dependency `node-notifier`
 - Bump `yargs` from `^15.4.1` to `^18.0.0`
 - Bump `js-yaml` from `^3.13.1` to `^4.1.0`
 - Pin `@azure/openapi-markdown` to `0.9.4`
