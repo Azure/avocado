@@ -21,7 +21,7 @@ extends:
           - task: NodeTool@0
             displayName: 'Install Node'
             inputs:
-              versionSpec: 20.x
+              versionSpec: 22.x
 
           - script: npm ci
             displayName: 'npm ci'
@@ -52,10 +52,10 @@ extends:
       - job: Test_Windows
         strategy:
           matrix:
-            Win.Node18:
-              node.version: 18.x
             Win.Node20:
               node.version: 20.x
+            Win.Node22:
+              node.version: 22.x
         pool:
           image: $(WINDOWSVMIMAGE)
           name: $(WINDOWSPOOL)
@@ -68,10 +68,10 @@ extends:
       - job: Test_Linux
         strategy:
           matrix:
-            Linux.Node18:
-              node.version: 18.x
             Linux.Node20:
               node.version: 20.x
+            Linux.Node22:
+              node.version: 22.x
         pool:
           image: $(LINUXVMIMAGE)
           name: $(LINUXPOOL)

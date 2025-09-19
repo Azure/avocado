@@ -1,9 +1,11 @@
 # Changelog
 
-## 0.9.4
+## 0.10.0
 
+- Breaking Change: Requires Node 20 or higher
 - Remove unused dependency `node-fetch`
-- Bump `js-yaml` dependency from `^3.13.1` to `^4.1.0`
+- Bump `yargs` from `^15.4.1` to `^18.0.0`
+- Bump `js-yaml` from `^3.13.1` to `^4.1.0`
 
 ## 0.9.3
 
