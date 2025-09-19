@@ -78,7 +78,7 @@
   "homepage": "https://github.com/Azure/avocado#readme",
   "dependencies": {
     "@azure/openapi-markdown": "^0.9.4",
-    "@azure/swagger-validation-common": "^0.0.5",
+    "@azure/swagger-validation-common": "^0.1.2",
     "@ts-common/async-iterator": "^0.2.2",
     "@ts-common/commonmark-to-markdown": "^2.0.2",
     "@ts-common/fs": "^0.2.0",
