@@ -12,3 +12,6 @@ updates:
       - dependency-name: "@ts-common/json"
       - dependency-name: "@ts-common/json-parser"
       - dependency-name: "@ts-common/string-map"
+      # Updated manually
+      - dependency-name: "tslint"
+      - dependency-name: "typescript"
