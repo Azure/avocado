@@ -96,7 +96,7 @@
   },
   "devDependencies": {
     "@types/babel__traverse": "ts3.5",
-    "@types/jest": "^24.0.15",
+    "@types/jest": "^30.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^10.14.6",
     "@types/yargs": "^15.0.5",
