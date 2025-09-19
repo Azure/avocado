@@ -5,9 +5,10 @@ updates:
     schedule:
       interval: "daily"
     ignore:
-      # Pinned to the most popular version 0.0.5
+      # Pinned to the most popular versions
       - dependency-name: "@azure/swagger-validation-common"
-      # Pinned to the most popular version 0.2.3
       - dependency-name: "@ts-common/async-iterator"
-      # Pinned to the most popular version 0.2.0
       - dependency-name: "@ts-common/fs"
+      - dependency-name: "@ts-common/json"
+      - dependency-name: "@ts-common/json-parser"
+      - dependency-name: "@ts-common/string-map"
