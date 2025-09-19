@@ -6,8 +6,11 @@
 - Remove unused dependency `node-fetch`
 - Bump `yargs` from `^15.4.1` to `^18.0.0`
 - Bump `js-yaml` from `^3.13.1` to `^4.1.0`
+- Pin `@azure/openapi-markdown` to `0.9.4`
 - Pin `@azure/swagger-validation-common` to `0.0.5`
 - Pin `@ts-common/async-iterator` to `0.2.3`
+- Pin `@ts-common/fs` to `0.2.0`
+- Pin `commonmark` to `0.31.2`
 
 ## 0.9.3
 
