@@ -1,7 +1,8 @@
 # Changelog
 
-## 0.9.4
+## 0.10.0
 
+- Breaking Change: Requires Node 20 or higher
 - Remove unused dependency `node-fetch`
 
 ## 0.9.3
