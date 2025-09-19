@@ -4,3 +4,11 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      # Pinned to the most popular versions
+      - dependency-name: "@azure/swagger-validation-common"
+      - dependency-name: "@ts-common/async-iterator"
+      - dependency-name: "@ts-common/fs"
+      - dependency-name: "@ts-common/json"
+      - dependency-name: "@ts-common/json-parser"
+      - dependency-name: "@ts-common/string-map"
