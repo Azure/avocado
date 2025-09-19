@@ -92,7 +92,7 @@
     "jsonpath-plus": "^10.0.0",
     "node-notifier": ">=8.0.1",
     "node-object-hash": "^1.4.2",
-    "yargs": "^15.3.1"
+    "yargs": "^18.0.0"
   },
   "devDependencies": {
     "@types/babel__traverse": "ts3.5",
