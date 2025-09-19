@@ -4,6 +4,7 @@
 
 - Breaking Change: Requires Node 20 or higher
 - Remove unused dependency `node-fetch`
+- Bump `yargs` from `^15.4.1` to `^18.0.0`
 
 ## 0.9.3
 
