@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.4
+
+- Remove unused dependency `node-fetch`
+
 ## 0.9.3
 
 - Bump `glob` dependency to `^9.3.5`
