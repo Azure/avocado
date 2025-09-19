@@ -9,3 +9,5 @@ updates:
       - dependency-name: "@azure/swagger-validation-common"
       # Pinned to the most popular version 0.2.3
       - dependency-name: "@ts-common/async-iterator"
+      # Pinned to the most popular version 0.2.0
+      - dependency-name: "@ts-common/fs"
