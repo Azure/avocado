@@ -33,4 +33,3 @@ updates:
 
       # Updated manually, for compat with typescript version
       - dependency-name: "@types/jest"
-      - dependency-name: "@types/yargs"
