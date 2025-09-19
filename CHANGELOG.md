@@ -6,6 +6,7 @@
 - Remove unused dependency `node-fetch`
 - Bump `yargs` from `^15.4.1` to `^18.0.0`
 - Bump `js-yaml` from `^3.13.1` to `^4.1.0`
+- Pin `@azure/swagger-validation-common` to `0.0.5`
 
 ## 0.9.3
 
