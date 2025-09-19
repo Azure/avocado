@@ -15,6 +15,9 @@ updates:
       - dependency-name: "@ts-common/json-parser"
       - dependency-name: "@ts-common/string-map"
 
+      # Locked to "^9.3.5", the latest version compatible with cjs
+      - dependency-name: "glob"
+
       # devDependencies
 
       # Updated manually
