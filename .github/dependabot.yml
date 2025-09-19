@@ -4,3 +4,6 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    ignore:
+      # Pinned to the most popular version 0.0.5
+      - dependency-name: "@azure/swagger-validation-common"
