@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.5
+
+- Replace `yargs` dependency with Node.js built-in `parseArgs()` function
+
 ## 0.9.4
 
 - Remove unused dependency `node-fetch`
