@@ -20,7 +20,7 @@ import * as devOps from './dev-ops'
 import * as err from './errors'
 import { walkToNode, sortByApiVersion, getDefaultTag, getTagsToSwaggerFilesMapping, getLatestTag } from './readme'
 import * as format from '@azure/swagger-validation-common'
-import { safeLoad } from './utils'
+import { load } from './utils'
 import { getSwaggerFiles, SwaggerFileList, IService } from './docs'
 
 // tslint:disable-next-line: no-require-imports
@@ -210,7 +210,7 @@ export const getAllDefaultTags = (markDown: commonmark.Node): string[] => {
       continue
     }
     if (getHeadingLiteral(heading) === 'Basic Information' && node.literal) {
-      const latestDefinition = safeLoad(node.literal)
+      const latestDefinition = load(node.literal)
       if (latestDefinition && latestDefinition.tag) {
         tags.push(latestDefinition.tag)
       }

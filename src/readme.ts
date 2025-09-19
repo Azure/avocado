@@ -6,7 +6,7 @@ import * as commonmark from 'commonmark'
 import { parse } from '@ts-common/commonmark-to-markdown'
 import { getTagsToSettingsMapping, getCodeBlocksAndHeadings } from '@azure/openapi-markdown'
 import * as fs from 'fs'
-import { safeLoad } from './utils'
+import { load } from './utils'
 
 /**
  * walks a markdown tree until the callback provided returns true for a node
@@ -63,7 +63,7 @@ export const getDefaultTag = (markDown: commonmark.Node): string | undefined => 
   const latestHeader = 'Basic Information'
   const headerBlock = codeBlockMap[latestHeader]
   if (headerBlock && headerBlock.literal) {
-    const latestDefinition = safeLoad(headerBlock.literal)
+    const latestDefinition = load(headerBlock.literal)
     if (latestDefinition && latestDefinition.tag) {
       return latestDefinition.tag
     }
@@ -73,7 +73,7 @@ export const getDefaultTag = (markDown: commonmark.Node): string | undefined => 
     if (!block || !block.info || !block.literal || !/^(yaml|json)$/.test(block.info.trim().toLowerCase())) {
       continue
     }
-    const latestDefinition = safeLoad(block.literal)
+    const latestDefinition = load(block.literal)
     if (latestDefinition && latestDefinition.tag) {
       return latestDefinition.tag
     }
