@@ -3,6 +3,7 @@
 ## 0.9.4
 
 - Remove unused dependency `node-fetch`
+- Bump `js-yaml` dependency from `^3.13.1` to `^4.1.0`
 
 ## 0.9.3
 
