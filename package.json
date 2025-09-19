@@ -90,7 +90,6 @@
     "glob": "^9.3.5",
     "js-yaml": "^4.1.0",
     "jsonpath-plus": "^10.0.0",
-    "node-notifier": ">=8.0.1",
     "node-object-hash": "^1.4.2",
     "yargs": "^18.0.0"
   },
