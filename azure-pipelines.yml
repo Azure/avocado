@@ -103,6 +103,14 @@ extends:
               image: ubuntu-24.04
               os: linux
 
+            templateContext:
+              type: releaseJob
+              isProduction: true
+              inputs:
+              - input: pipelineArtifact
+                artifactName: drop
+                targetPath: $(Pipeline.Workspace)/drop
+
             strategy:
               runOnce:
                 deploy:
