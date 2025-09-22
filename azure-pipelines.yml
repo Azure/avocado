@@ -136,4 +136,4 @@ extends:
                       Approvers: 'azuresdk@microsoft.com'
                       ServiceEndpointUrl: 'https://api.esrp.microsoft.com'
                       MainPublisher: 'ESRPRELPACMANTEST'
-                      productstate: $(Tag)
+                      productstate: 'latest'
