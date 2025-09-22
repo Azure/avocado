@@ -107,9 +107,6 @@ extends:
               runOnce:
                 deploy:
                   steps:
-                  - download: current
-                    artifact: drop
-                    timeoutInMinutes: 5
 
                   - pwsh: |
                       Write-Host "Will deploy with tag of 'latest'"
