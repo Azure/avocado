@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.10.1",
+  "version": "0.10.2",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -91,7 +91,7 @@
     "js-yaml": "^4.1.0",
     "jsonpath-plus": "^10.0.0",
     "node-object-hash": "^1.4.2",
-    "yargs": "^18.0.0"
+    "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@types/jest": "^24.0.15",
