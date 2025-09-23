@@ -1,9 +1,5 @@
 # Changelog
 
-## 0.10.1
-
-- Fix bug triggered by upgrade to `yargs` in 0.10.0
-
 ## 0.10.0
 
 - Breaking Change: Requires Node 20 or higher

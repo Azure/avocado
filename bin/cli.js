@@ -2,7 +2,7 @@
 const cli = require('../dist/cli')
 const index = require('../dist/index')
 
-var argv = require('yargs')()
+var argv = require('yargs')
   .usage('Usage: avocado [options]')
   .alias('f', 'file')
   .describe('f', 'output detail result to log file')
