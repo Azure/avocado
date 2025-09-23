@@ -24,6 +24,9 @@ updates:
       # Locked to "^1.4.2", for compat with typescript version
       - dependency-name: "node-object-hash"
 
+      # locked to "^15.4.1", since newer majors include breaking changes that may impact us
+      - dependency-name: "yargs"
+
       # devDependencies
 
       # Updated manually
