@@ -24,3 +24,11 @@ updates:
 
       # Locked to "~3.9.10", for compat with tslint
       - dependency-name: "typescript"
+
+      # overrides
+
+      # Pinned to "7.17.1", for compat with ts3.9
+      - dependency-name: "@types/babel__traverse"
+
+      # Pinned to "17.0.10", for compat with ts3.9
+      - dependency-name: "@types/yargs"
