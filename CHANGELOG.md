@@ -8,6 +8,7 @@
 - Bump `@ts-common/json` from `0.3.1` to `^1.1.0`
 - Bump `@ts-common/json-parser` from `0.9.0` to `^1.1.0`
 - Bump `@ts-common/string-map` from `0.3.0` to `^1.1.1`
+- Bump `glob` from `^9.3.5` to `^11.0.3`
 - Bump `node-object-hash` from `^1.4.2` to `^3.1.1`
 
 ## 0.10.2
