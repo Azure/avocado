@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.3
+
+- Bump `@ts-common/async-iterator` to `^1.1.2`
+  - Compatible with new versions of TypeScript
+
 ## 0.10.2
 
 - Revert `yargs` to `^15.4.1`
