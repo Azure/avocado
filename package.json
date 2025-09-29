@@ -108,7 +108,8 @@
     "typescript": "~3.9.10"
   },
   "overrides": {
-    "@types/yargs": "^15.0.5",
+    "@types/babel__traverse": "ts3.9",
+    "@types/yargs": "ts3.9",
     "test-exclude": {
       "glob": "^9.3.5"
     },
