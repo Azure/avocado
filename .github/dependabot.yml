@@ -12,10 +12,10 @@ updates:
 
       # devDependencies
 
-      # Updated manually, for compat with typescript version
+      # Pinned to "28.1.1", for compat with ts3.9
       - dependency-name: "@types/jest"
 
-      # Locked to "^17.0.41", for compat with typescript version
+      # Pinned to "17.0.41", for compat with ts3.9
       - dependency-name: "@types/node"
 
       # Updated manually
