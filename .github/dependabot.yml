@@ -24,7 +24,7 @@ updates:
       # Locked to "^1.4.2", for compat with typescript version
       - dependency-name: "node-object-hash"
 
-      # locked to "^15.4.1", since newer majors include breaking changes that may impact us
+      # Locked to "^15.4.1", since newer majors include breaking changes that may impact us
       - dependency-name: "yargs"
 
       # devDependencies
@@ -32,6 +32,8 @@ updates:
       # Updated manually
       - dependency-name: "prettier"
       - dependency-name: "tslint"
+
+      # Locked to "~3.5.2", since newer minors are incompatible with @ts-common/async-iterator
       - dependency-name: "typescript"
 
       # Updated manually, for compat with typescript version
