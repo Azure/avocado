@@ -148,7 +148,7 @@ const errorCorrelationId = (error: err.Error) => {
     }
   }
 
-  return nodeObjectHash().hash(toObject())
+  return nodeObjectHash.hasher().hash(toObject())
 }
 
 const markDownIterate = (node: commonmark.Node | null) =>
