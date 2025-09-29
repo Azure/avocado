@@ -87,7 +87,7 @@
     "@ts-common/json-parser": "^1.1.0",
     "@ts-common/string-map": "^1.1.1",
     "commonmark": "0.31.2",
-    "glob": "^9.3.5",
+    "glob": "^11.0.3",
     "js-yaml": "^4.1.0",
     "jsonpath-plus": "^10.0.0",
     "node-object-hash": "^3.1.1",
@@ -111,7 +111,12 @@
     "@types/babel__traverse": "ts3.5",
     "@types/node-fetch": "ts3.5",
     "@types/yargs": "^15.0.5",
-    "glob": "^9.3.5"
+    "test-exclude": {
+      "glob": "^9.3.5"
+    },
+    "tslint": {
+      "glob": "^9.3.5"
+    }
   },
   "engines": {
     "node": ">=20.0.0"
