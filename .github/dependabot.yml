@@ -25,7 +25,7 @@ updates:
       - dependency-name: "prettier"
       - dependency-name: "tslint"
 
-      # Locked to "~3.6.5", since newer minors are incompatible with @ts-common/async-iterator
+      # Locked to "~3.6.5", for compat with our TS code
       - dependency-name: "typescript"
 
       # Updated manually, for compat with typescript version
