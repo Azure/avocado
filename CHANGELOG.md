@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.10.3
+
+- Bump `@azure/swagger-validation-common` from `0.0.5` to `0.1.2`
+- Bump `@ts-common/async-iterator` from `0.2.3` to `^1.1.0`
+- Bump `@ts-common/fs` to `0.2.0` to `^1.1.0`
+- Bump `@ts-common/json` from `0.3.1` to `^1.1.0`
+- Bump `@ts-common/json-parser` from `0.9.0` to `^1.1.0`
+- Bump `@ts-common/string-map` from `0.3.0` to `^1.1.1`
+
 ## 0.10.2
 
 - Revert `yargs` to `^15.4.1`
