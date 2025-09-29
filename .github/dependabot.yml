@@ -10,14 +10,6 @@ updates:
       # Locked to "^15.6.1", for compat with typescript version
       - dependency-name: "@types/node"
 
-      # Pinned to the most popular versions
-      - dependency-name: "@azure/swagger-validation-common"
-      - dependency-name: "@ts-common/async-iterator"
-      - dependency-name: "@ts-common/fs"
-      - dependency-name: "@ts-common/json"
-      - dependency-name: "@ts-common/json-parser"
-      - dependency-name: "@ts-common/string-map"
-
       # Locked to "^9.3.5", for compat with cjs
       - dependency-name: "glob"
 
@@ -33,7 +25,7 @@ updates:
       - dependency-name: "prettier"
       - dependency-name: "tslint"
 
-      # Locked to "~3.5.2", since newer minors are incompatible with @ts-common/async-iterator
+      # Locked to "~3.6.5", since newer minors are incompatible with @ts-common/async-iterator
       - dependency-name: "typescript"
 
       # Updated manually, for compat with typescript version
