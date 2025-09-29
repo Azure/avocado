@@ -2,8 +2,12 @@
 
 ## 0.10.3
 
-- Bump `@ts-common/async-iterator` to `^1.1.2`
-  - Compatible with new versions of TypeScript
+- Bump `@azure/swagger-validation-common` from `0.0.5` to `0.1.2`
+- Bump `@ts-common/async-iterator` from `0.2.3` to `^1.1.0`
+- Bump `@ts-common/fs` to `0.2.0` to `^1.1.0`
+- Bump `@ts-common/json` from `0.3.1` to `^1.1.0`
+- Bump `@ts-common/json-parser` from `0.9.0` to `^1.1.0`
+- Bump `@ts-common/string-map` from `0.3.0` to `^1.1.1`
 
 ## 0.10.2
 
