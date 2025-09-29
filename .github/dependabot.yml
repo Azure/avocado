@@ -7,20 +7,28 @@ updates:
     ignore:
       # dependencies
 
-      # Locked to "^15.6.1", for compat with typescript version
-      - dependency-name: "@types/node"
-
       # Locked to "^15.4.1", since newer majors include breaking changes that may impact us
       - dependency-name: "yargs"
 
       # devDependencies
 
+      # Pinned to "28.1.1", for compat with ts3.9
+      - dependency-name: "@types/jest"
+
+      # Pinned to "17.0.41", for compat with ts3.9
+      - dependency-name: "@types/node"
+
       # Updated manually
       - dependency-name: "prettier"
       - dependency-name: "tslint"
 
-      # Locked to "~3.6.5", for compat with our TS code
+      # Locked to "~3.9.10", for compat with tslint
       - dependency-name: "typescript"
 
-      # Updated manually, for compat with typescript version
-      - dependency-name: "@types/jest"
+      # overrides
+
+      # Pinned to "7.17.1", for compat with ts3.9
+      - dependency-name: "@types/babel__traverse"
+
+      # Pinned to "17.0.10", for compat with ts3.9
+      - dependency-name: "@types/yargs"
