@@ -1,6 +1,6 @@
 {
   "name": "@azure/avocado",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "A validator of OpenAPI configurations",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -108,9 +108,6 @@
     "typescript": "~3.9.10"
   },
   "overrides": {
-    "@types/babel__traverse": "ts3.5",
-    "@types/node-fetch": "ts3.5",
-    "@types/yargs": "^15.0.5",
     "test-exclude": {
       "glob": "^9.3.5"
     },
