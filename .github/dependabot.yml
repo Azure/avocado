@@ -20,7 +20,6 @@ updates:
 
       # Updated manually
       - dependency-name: "prettier"
-      - dependency-name: "tslint"
 
       # Locked to "~3.9.10", for compat with tslint
       - dependency-name: "typescript"
