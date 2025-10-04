@@ -31,9 +31,7 @@ describe('avocado', () => {
         message: 'The `readme.md` is not an AutoRest markdown file.',
         readMeUrl: path.resolve('src/test/not_autorest_markdown/specification/readme.md'),
         path: path.resolve('src/test/not_autorest_markdown/specification/readme.md'),
-        helpUrl:
-          // tslint:disable-next-line:max-line-length
-          'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
+        helpUrl: 'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
         level: 'Error',
       },
     ] as const
@@ -97,11 +95,9 @@ describe('avocado', () => {
         message: 'The example JSON file is not referenced from the swagger file.',
         readMeUrl: path.resolve('src/test/unreferenced_spec_with_examples/specification/testRP/readme.md'),
         jsonUrl: path.resolve(
-          // tslint:disable-next-line:max-line-length
           'src/test/unreferenced_spec_with_examples/specification/testRP/specs/examples/referenced_example.json',
         ),
         path: path.resolve(
-          // tslint:disable-next-line:max-line-length
           'src/test/unreferenced_spec_with_examples/specification/testRP/specs/examples/referenced_example.json',
         ),
         level: 'Error',
@@ -309,7 +305,6 @@ describe('avocado', () => {
         code: 'INVALID_FILE_LOCATION',
         level: 'Warning',
         message:
-          // tslint:disable-next-line: max-line-length
           'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder',
         jsonUrl: path.resolve('src/test/invalid_file_location/specification/testRP/specs/2020-05-01/b.json'),
         path: path.resolve('src/test/invalid_file_location/specification/testRP/specs/2020-05-01/b.json'),

@@ -267,7 +267,6 @@ describe('Azure DevOps', () => {
     const cfg = await createDevOpsEnv('devops-pr-diff', ['remove readme', 'add file', 'modify json'])
     const pr = await devOps.createPullRequestProperties(cfg)
     if (pr === undefined) {
-      // tslint:disable-next-line:no-throw
       throw new Error('pr === undefined')
     }
     const files = await pr.diff()
@@ -287,7 +286,6 @@ describe('Azure DevOps', () => {
     const cfg = await createDevOpsEnv('devops-pr-diff', ['remove readme', 'add file', 'modify json'])
     const pr = await devOps.createPullRequestProperties(cfg)
     if (pr === undefined) {
-      // tslint:disable-next-line:no-throw
       throw new Error('pr === undefined')
     }
     const files = await pr.structuralDiff().toArray()

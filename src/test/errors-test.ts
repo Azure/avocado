@@ -76,34 +76,26 @@ describe('errors', () => {
         level: 'Error',
         code: 'MISSING_APIS_IN_DEFAULT_TAG',
         message:
-          // tslint:disable-next-line: max-line-length
           'The default tag does not contain all APIs in this RP. Please make sure the missing API swaggers are in the default tag.',
         tag: 'default',
         readMeUrl:
-          // tslint:disable-next-line: max-line-length
           '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/readme.md',
         jsonUrl:
-          // tslint:disable-next-line: max-line-length
           '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
         path:
-          // tslint:disable-next-line: max-line-length
           '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
         apiPath:
-          // tslint:disable-next-line: max-line-length
           '/subscriptions/{}/resourceGroups/{}/providers/{}/workspaces/{}/providers/Microsoft.SecurityInsights/watchlists/{}/watchlistItems/{}',
       },
       {
         level: 'Error',
         code: 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG',
         message:
-          // tslint:disable-next-line: max-line-length
           'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.',
         tag: 'default',
         readMeUrl:
-          // tslint:disable-next-line: max-line-length
           '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/readme.md',
         jsonUrl:
-          // tslint:disable-next-line: max-line-length
           '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/operations.json',
         path: '/providers/Microsoft.SecurityInsights/operations',
       },
@@ -144,7 +136,6 @@ describe('errors', () => {
         {
           tag: 'json',
           path:
-            // tslint:disable-next-line: max-line-length
             '{"code":"unexpected token","kind":"structure","message":"unexpected token, token: }, line: 3, column: 1","position":{"column":1,"line":3},"token":"}","url":"src/test/invalid_json_trailing_comma/specification/testRP/specs/some.json"}',
         },
       ],
@@ -193,7 +184,6 @@ describe('errors', () => {
         {
           tag: 'json',
           path:
-            // tslint:disable-next-line: max-line-length
             'https://github.com/undefined/blob/undefined/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
         },
       ],
@@ -205,7 +195,6 @@ describe('errors', () => {
         {
           tag: 'json',
           path:
-            // tslint:disable-next-line: max-line-length
             'https://github.com/undefined/blob/undefined/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/operations.json',
         },
       ],

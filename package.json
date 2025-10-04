@@ -26,8 +26,7 @@
     "cli": "tsc && node ./bin/cli.js",
     "tsc": "tsc",
     "prettier": "prettier ./src/**/*.ts",
-    "tslint": "tslint -t verbose --project ./",
-    "test": "tsc && tslint -t verbose --project ./ && jest --silent --testTimeout 100000",
+    "test": "tsc && jest --silent --testTimeout 100000",
     "standard": "standard src/**/*.ts",
     "prepack": "npm install && tsc"
   },
@@ -100,21 +99,12 @@
     "jest": "^30.1.3",
     "jest-junit": "^16.0.0",
     "prettier": "^1.18.2",
-    "tslint": "^6.1.3",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-config-standard": "^9.0.0",
-    "tslint-immutable": "^6.0.1",
-    "tslint-plugin-prettier": "^2.3.0",
     "typescript": "~3.9.10"
   },
   "overrides": {
     "@types/babel__traverse": "7.17.1",
     "@types/yargs": "17.0.10",
     "test-exclude": {
-      "glob": "^9.3.5"
-    },
-    "tslint": {
-      ".": "^6.1.3",
       "glob": "^9.3.5"
     }
   },

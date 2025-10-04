@@ -49,7 +49,6 @@ describe('docs test getSwaggerFiles', () => {
       'src/test/readmes/stable/2022-05-01/analyzeconversations.json',
     ])
 
-    // tslint:disable-next-line: no-object-mutation
     cognitiveService.exclude_files = ['src/test/readmes/stable/2022-05-01/analyzetext.json']
     // test excluded files
     const resWithExcluded = docs.getSwaggerFiles(rootPath, cognitiveService)

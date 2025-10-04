@@ -103,7 +103,6 @@ export const getLatestTag = (tags: string[], versionType: 'stable' | 'preview'):
   const normalTags = tags.filter(t => !t.includes('only'))
   let filteredTags = normalTags
 
-  // tslint:disable-next-line: prefer-conditional-expression
   if (versionType === 'preview') {
     filteredTags = normalTags.filter(t => t.includes('preview'))
   } else {

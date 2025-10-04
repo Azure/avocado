@@ -13,7 +13,6 @@ describe('cli', () => {
   type MyError = { readonly message: string } & IErrorBase
 
   it('no errors, default output', async () => {
-    // tslint:disable-next-line:no-let
     let cwd: unknown
     await cli.run(c => {
       cwd = c.cwd
@@ -23,9 +22,7 @@ describe('cli', () => {
     assert.strictEqual(process.exitCode, 0)
   })
   it('no errors', async () => {
-    // tslint:disable-next-line:no-let
     let error = ''
-    // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
       logError: s => (error += s),
@@ -38,9 +35,7 @@ describe('cli', () => {
     assert.strictEqual(info, 'errors: 0')
   })
   it('with errors', async () => {
-    // tslint:disable-next-line:no-let
     let error = ''
-    // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
       logResult: s => (error += JSON.stringify(s)),
@@ -59,9 +54,7 @@ describe('cli', () => {
     assert.strictEqual(info, 'errors: 1')
   })
   it('with warnings', async () => {
-    // tslint:disable-next-line:no-let
     let error = ''
-    // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
       logResult: s => (error += JSON.stringify(s)),
@@ -80,16 +73,13 @@ describe('cli', () => {
     assert.strictEqual(info, 'errors: 0')
   })
   it('internal error: undefined error level', async () => {
-    // tslint:disable-next-line:no-let
     let error = ''
-    // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
       logResult: s => (error += JSON.stringify(s)),
       logError: s => (error += JSON.stringify(s)),
       logInfo: s => (info += s),
     }
-    // tslint:disable-next-line: no-any
     await cli.run(
       () =>
         ai.fromSequence(
@@ -103,9 +93,7 @@ describe('cli', () => {
     assert.strictEqual(info, 'errors: 1')
   })
   it('internal error', async () => {
-    // tslint:disable-next-line:no-let
     let error = ''
-    // tslint:disable-next-line:no-let
     let info = ''
     const report: cli.Report = {
       logResult: s => (error += s),
@@ -113,7 +101,6 @@ describe('cli', () => {
       logInfo: s => (info += s),
     }
     const f = () => {
-      // tslint:disable-next-line:no-throw
       throw new Error('critical error')
     }
     await cli.run(f, report)
@@ -122,11 +109,8 @@ describe('cli', () => {
   })
 
   it('test unified pipeline report result log with warning', async () => {
-    // tslint:disable-next-line: no-object-mutation
     process.env.SYSTEM_PULLREQUEST_TARGETBRANCH = 'master'
-    // tslint:disable-next-line: no-object-mutation
     process.env.TRAVIS_REPO_SLUG = 'Azure/azure-rest-api-specs'
-    // tslint:disable-next-line: no-object-mutation
     process.env.TRAVIS_PULL_REQUEST_SHA = '70ac08dc9a'
     console.log(process.env)
     try {
@@ -138,10 +122,8 @@ describe('cli', () => {
       code: 'CIRCULAR_REFERENCE',
       message: 'The JSON file has a circular reference.',
       readMeUrl:
-        // tslint:disable-next-line: max-line-length
         'https://github.com/Azure/azure-rest-api-specs/blob/70ac08dc9a/src/test/circular_reference/specification/testRP/readme.md',
       jsonUrl:
-        // tslint:disable-next-line: max-line-length
         'https://github.com/Azure/azure-rest-api-specs/blob/70ac08dc9a/src/test/circular_reference/specification/testRP/specs/c.json',
       level: 'Warning',
     }
@@ -152,7 +134,6 @@ describe('cli', () => {
   })
 
   it('test unified pipeline report result log', async () => {
-    // tslint:disable-next-line: no-object-mutation
     process.env.SYSTEM_PULLREQUEST_TARGETBRANCH = 'master'
     await cli.run(avocado, UnifiedPipelineReport('pipe.log'), { cwd: 'src/test/api_version_inconsistent', env: {} })
     const expected = {
@@ -160,10 +141,8 @@ describe('cli', () => {
       level: 'Error',
       message: 'The API version of the swagger is inconsistent with its file path.',
       jsonUrl:
-        // tslint:disable-next-line: max-line-length
         'https://github.com/Azure/azure-rest-api-specs/blob/70ac08dc9a/src/test/api_version_inconsistent/specification/testRP/specs/2020-05-01/b.json',
       readMeUrl:
-        // tslint:disable-next-line: max-line-length
         'https://github.com/Azure/azure-rest-api-specs/blob/70ac08dc9a/src/test/api_version_inconsistent/specification/testRP/readme.md',
     }
     const actual: any = JSON.parse(fs.readFileSync('pipe.log', 'utf8'))
