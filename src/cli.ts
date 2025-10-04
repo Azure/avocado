@@ -47,16 +47,13 @@ export const isAzurePipelineEnv = (): boolean => process.env.SYSTEM_PULLREQUEST_
  *
  * @param tool is a function which returns errors as `AsyncIterable`.
  */
-// tslint:disable-next-line:no-async-without-await
 export const run = async <T extends IErrorBase>(
   tool: (config: Config) => AsyncIterable<T>,
-  // tslint:disable-next-line:no-console no-unbound-method
   report: Report = { logResult: console.log, logError: console.error, logInfo: console.log },
   config: Config = defaultConfig(),
 ): Promise<void> => {
   try {
     const errors = tool(config)
-    // tslint:disable-next-line:no-let
     let errorsNumber = 0
     for await (const e of errors) {
       errorsNumber += e.level !== 'Warning' && e.level !== 'Info' ? 1 : 0
@@ -67,23 +64,19 @@ export const run = async <T extends IErrorBase>(
       if (isAzurePipelineEnv()) {
         console.log('##vso[task.setVariable variable=ValidationResult]failure')
       }
-      // tslint:disable-next-line: no-object-mutation
       process.exitCode = 1
     } else {
       if (isAzurePipelineEnv()) {
         console.log('##vso[task.setVariable variable=ValidationResult]success')
       }
-      // tslint:disable-next-line: no-object-mutation
       process.exitCode = 0
     }
-    // tslint:disable-next-line:no-object-mutation
   } catch (e) {
     report.logInfo(`INTERNAL ERROR`)
     if (isAzurePipelineEnv()) {
       console.log('##vso[task.setVariable variable=ValidationResult]failure')
     }
     report.logError(e)
-    // tslint:disable-next-line:no-object-mutation
     process.exitCode = 1
   }
 }
