@@ -57,17 +57,17 @@ const glob = require('glob') as {
 }
 
 export {
-  childProcess,
-  cli,
   devOps,
-  getDefaultTag,
-  getLatestTag,
-  getSwaggerFiles,
-  getTagsToSwaggerFilesMapping,
+  cli,
   git,
-  IService,
-  sortByApiVersion,
+  childProcess,
+  getSwaggerFiles,
   SwaggerFileList,
+  IService,
+  getDefaultTag,
+  getTagsToSwaggerFilesMapping,
+  getLatestTag,
+  sortByApiVersion,
 }
 
 const errorCorrelationId = (error: err.Error) => {
