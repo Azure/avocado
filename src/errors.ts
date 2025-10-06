@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as jsonParser from '@ts-common/json-parser'
 import * as format from '@azure/swagger-validation-common'
+import * as jsonParser from '@ts-common/json-parser'
 
 type ErrorMessage =
   | 'The example JSON file is not referenced from the swagger file.'

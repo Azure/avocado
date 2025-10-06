@@ -1,14 +1,14 @@
-import { isPRRelatedError, FileChange } from './../dev-ops'
+import { FileChange, isPRRelatedError } from './../dev-ops'
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as path from 'path'
 import * as pfs from '@ts-common/fs'
-import { git, cli, devOps, avocado } from '../index'
 import * as assert from 'assert'
-import * as tmpDir from './tmp-dir'
+import * as path from 'path'
 import { hasCommonRPFolder } from '../dev-ops'
 import * as err from '../errors'
+import { avocado, cli, devOps, git } from '../index'
+import * as tmpDir from './tmp-dir'
 
 type MockAction = 'remove readme' | 'modify json' | 'add file' | 'update readme' | 'update .github' | 'remove file'
 

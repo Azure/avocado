@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
-import { avocado, UnifiedPipelineReport } from './../index'
 import * as fs from 'fs'
+import { avocado, UnifiedPipelineReport } from './../index'
 
-import { cli } from '../index'
-import * as assert from 'assert'
 import * as ai from '@ts-common/async-iterator'
+import * as assert from 'assert'
 import * as path from 'path'
 import { IErrorBase } from '../errors'
+import { cli } from '../index'
 
 describe('cli', () => {
   type MyError = { readonly message: string } & IErrorBase

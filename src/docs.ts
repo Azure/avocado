@@ -4,11 +4,11 @@
 // https://opensource.org/licenses/MIT
 
 // This file is for docs team learn platform auto refresh.
-import * as path from 'path'
-import * as fs from 'fs'
 import { parse } from '@ts-common/commonmark-to-markdown'
+import * as fs from 'fs'
+import * as path from 'path'
 import { getSwaggerFileUnderDefaultTag } from './index'
-import { getTagsToSwaggerFilesMapping, getLatestTag } from './readme'
+import { getLatestTag, getTagsToSwaggerFilesMapping } from './readme'
 
 export interface IService {
   readme_files?: string[]
