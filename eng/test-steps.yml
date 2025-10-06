@@ -12,7 +12,10 @@ steps:
   - script: npm ls -a
     displayName: 'npm ls -a'
     condition: succeededOrFailed()
-    continueOnError: true
+  - script: npm run lint
+    displayName: 'npm run lint'
+  - script: npm run format:check:ci
+    displayName: 'npm run format:check:ci'
   - task: Npm@1
     displayName: 'npm test'
     inputs:
