@@ -20,14 +20,13 @@ import * as devOps from './dev-ops'
 import * as err from './errors'
 import { walkToNode, sortByApiVersion, getDefaultTag, getTagsToSwaggerFilesMapping, getLatestTag } from './readme'
 import * as format from '@azure/swagger-validation-common'
-import { safeLoad } from './utils'
+import { load } from './utils'
 import { getSwaggerFiles, SwaggerFileList, IService } from './docs'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
 
 // Must use "const glob" instead of "import glob", to avoid importing bundled types, which require a newer version of TypeScript.
-// tslint:disable-next-line: no-require-imports no-var-requires
 const glob = require('glob') as {
   // Cast to simple interface with only the options we need
   readonly sync: (
@@ -73,7 +72,6 @@ export {
 
 const errorCorrelationId = (error: err.Error) => {
   const toObject = () => {
-    // tslint:disable-next-line:switch-default
     switch (error.code) {
       case 'UNREFERENCED_JSON_FILE':
         return { code: error.code, url: error.jsonUrl }
@@ -148,12 +146,11 @@ const errorCorrelationId = (error: err.Error) => {
     }
   }
 
-  return nodeObjectHash().hash(toObject())
+  return nodeObjectHash.hasher().hash(toObject())
 }
 
 const markDownIterate = (node: commonmark.Node | null) =>
   it.iterable(function*() {
-    // tslint:disable-next-line:no-let
     let i = node
     while (i !== null) {
       yield i
@@ -210,7 +207,7 @@ export const getAllDefaultTags = (markDown: commonmark.Node): string[] => {
       continue
     }
     if (getHeadingLiteral(heading) === 'Basic Information' && node.literal) {
-      const latestDefinition = safeLoad(node.literal)
+      const latestDefinition = load(node.literal)
       if (latestDefinition && latestDefinition.tag) {
         tags.push(latestDefinition.tag)
       }
@@ -262,7 +259,6 @@ export const isContainsMultiVersion = (m: md.MarkDownEx): boolean => {
 }
 
 const jsonParse = (fileName: string, file: string) => {
-  // tslint:disable-next-line:readonly-array
   const errors: err.Error[] = []
   const reportError = (e: jsonParser.ParseError) =>
     errors.push({
@@ -371,7 +367,6 @@ const validateFileLocation = (current: Specification, document: json.JsonObject)
         level: 'Warning',
         path: current.path,
         message:
-          // tslint:disable-next-line: max-line-length
           'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder',
         jsonUrl: current.path,
         readMeUrl: current.readMePath,
@@ -380,9 +375,7 @@ const validateFileLocation = (current: Specification, document: json.JsonObject)
   })
 
 const findTheNearestReadme = async (rootDir: string, swaggerPath: string): Promise<string | undefined> => {
-  // tslint:disable-next-line: no-let
   let curDir = swaggerPath
-  // tslint:disable-next-line: no-let
   let prevDir = ''
   while (curDir !== rootDir && prevDir !== curDir) {
     if (await containsReadme(curDir)) {
@@ -496,7 +489,6 @@ export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: Path
           swaggerFile: value.swaggerFile,
           code: 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG',
           message:
-            // tslint:disable-next-line: max-line-length
             'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.',
         })
       }
@@ -507,9 +499,7 @@ export const diffPathTable = (defaultPathTable: PathTable, latestPathTable: Path
           path: key,
           swaggerFile: value.swaggerFile,
           code: 'MISSING_APIS_IN_DEFAULT_TAG',
-          message:
-            // tslint:disable-next-line: max-line-length
-            `The default tag should contain all APIs. The API path \`${key}\` is not in the default tag. Please make sure the missing API swaggers are in the default tag.`,
+          message: `The default tag should contain all APIs. The API path \`${key}\` is not in the default tag. Please make sure the missing API swaggers are in the default tag.`,
         })
       }
     }
@@ -524,7 +514,7 @@ export const getPathTableFromSwaggerFile = (swaggerFile: string): PathTable => {
   let swagger
   try {
     swagger = JSON.parse(fs.readFileSync(swaggerFile).toString())
-  } catch (e) {
+  } catch {
     return new Map<string, { apiVersion: string; swaggerFile: string }>()
   }
   const apiVersion = getApiVersionFromSwagger(swagger)
@@ -537,7 +527,6 @@ export const getPathTableFromSwaggerFile = (swaggerFile: string): PathTable => {
     .map((item: string) => item.toLowerCase())
 
   const pathTable = new Map<string, { apiVersion: string; swaggerFile: string }>()
-  // tslint:disable-next-line: no-shadowed-variable
   for (const it of allPaths) {
     pathTable.set(it, { apiVersion, swaggerFile })
   }
@@ -645,13 +634,11 @@ const DFSTraversalValidate = (
     if (!blackSet.has(current.path)) {
       graySet.add(current.path)
     }
-    // tslint:disable-next-line:no-let
     let file
 
-    // tslint:disable-next-line:no-try
     try {
       file = await tscommonFs.readFile(current.path)
-    } catch (e) {
+    } catch {
       yield {
         code: 'NO_JSON_FILE_FOUND',
         message: 'The JSON file is not found but it is referenced from the readme file.',
@@ -710,9 +697,7 @@ const validateReadMeFile = (readMePath: string): asyncIt.AsyncIterableEx<err.Err
         readMeUrl: readMePath,
         level: 'Error',
         path: readMePath,
-        helpUrl:
-          // tslint:disable-next-line:max-line-length
-          'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
+        helpUrl: 'http://azure.github.io/autorest/user/literate-file-formats/configuration.html#the-file-format',
       }
     }
     if (isContainsMultiVersion(m)) {
@@ -740,7 +725,6 @@ const validateInputFiles = (
   inputFileSet: Set<Specification>,
   allInputFileSet: Set<Specification>,
 ): asyncIt.AsyncIterableEx<err.Error> =>
-  // tslint:disable-next-line: no-async-without-await
   asyncIt.iterable<err.Error>(async function*() {
     // report errors if the `dir` folder has JSON files where exist circular reference
     const graySet = new Set<string>()
@@ -781,7 +765,6 @@ const getInputFilesFromReadme = (readMePath: string): asyncIt.AsyncIterableEx<Sp
   })
 
 const getAllInputFilesUnderReadme = (readMePath: string): asyncIt.AsyncIterableEx<Specification> =>
-  // tslint:disable-next-line: no-async-without-await
   asyncIt.iterable<Specification>(async function*() {
     const dir = path.dirname(readMePath)
     yield* tscommonFs
@@ -926,7 +909,6 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
   asyncIt.iterable<err.Error>(async function*() {
     const pr = await devOps.createPullRequestProperties(config)
     // detect Azure DevOps Pull Request validation.
-    // tslint:disable-next-line: no-let
     let exclude = []
     if (config.args && config.args.excludePaths) {
       exclude = config.args.excludePaths
@@ -938,7 +920,6 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
     if (pr !== undefined) {
       yield* avocadoForDevOps(pr, exclude, include)
     } else {
-      // tslint:disable-next-line: no-let
       let dir = '.'
       if (config.args && config.args.dir) {
         dir = config.args.dir
@@ -949,7 +930,6 @@ export const avocado = (config: cli.Config): asyncIt.AsyncIterableEx<err.Error> 
 
 export const UnifiedPipelineReport = (filePath: string | undefined): cli.Report => ({
   logInfo: (info: any) => {
-    // tslint:disable-next-line: no-console
     console.log(info)
   },
   logError: (error: Error) => {
@@ -958,7 +938,6 @@ export const UnifiedPipelineReport = (filePath: string | undefined): cli.Report 
       const result: format.RawMessageRecord = {
         type: 'Raw',
         level: 'Error',
-        // tslint:disable-next-line: no-non-null-assertion
         message: error.stack!,
         time: new Date(),
       }

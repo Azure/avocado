@@ -1,12 +1,43 @@
 # Changelog
 
-## 0.9.5
+## 0.10.4
 
 - Replace `yargs` dependency with Node.js built-in `parseArgs()` function
 
-## 0.9.4
+## 0.10.3
 
+- Bump `@azure/swagger-validation-common` from `0.0.5` to `0.1.2`
+- Bump `@ts-common/async-iterator` from `0.2.3` to `^1.1.0`
+- Bump `@ts-common/fs` to `0.2.0` to `^1.1.0`
+- Bump `@ts-common/json` from `0.3.1` to `^1.1.0`
+- Bump `@ts-common/json-parser` from `0.9.0` to `^1.1.0`
+- Bump `@ts-common/string-map` from `0.3.0` to `^1.1.1`
+- Bump `glob` from `^9.3.5` to `^11.0.3`
+- Bump `node-object-hash` from `^1.4.2` to `^3.1.1`
+
+## 0.10.2
+
+- Revert `yargs` to `^15.4.1`
+
+## 0.10.1
+
+- Fix bug triggered by upgrade to `yargs` in 0.10.0
+
+## 0.10.0
+
+- Breaking Change: Requires Node 20 or higher
 - Remove unused dependency `node-fetch`
+- Remove unused dependency `node-notifier`
+- Bump `yargs` from `^15.4.1` to `^18.0.0`
+- Bump `js-yaml` from `^3.13.1` to `^4.1.0`
+- Pin `@azure/openapi-markdown` to `0.9.4`
+- Pin `@azure/swagger-validation-common` to `0.0.5`
+- Pin `@ts-common/async-iterator` to `0.2.3`
+- Pin `@ts-common/fs` to `0.2.0`
+- Pin `@ts-common/json` to `0.3.1`
+- Pin `@ts-common/json-parser` to `0.9.0`
+- Pin `@ts-common/string-map` to `0.3.0`
+- Pin `commonmark` to `0.31.2`
 
 ## 0.9.3
 
