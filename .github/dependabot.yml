@@ -12,19 +12,8 @@ updates:
 
       # devDependencies
 
-      # Pinned to "28.1.1", for compat with ts3.9
-      - dependency-name: "@types/jest"
-
       # Locked to "^20.0.0" to align with our minimum node version in package.json/engines
       - dependency-name: "@types/node"
 
       # Updated manually
       - dependency-name: "prettier"
-
-      # overrides
-
-      # Pinned to "7.17.1", for compat with ts3.9
-      - dependency-name: "@types/babel__traverse"
-
-      # Pinned to "17.0.10", for compat with ts3.9
-      - dependency-name: "@types/yargs"
