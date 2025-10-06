@@ -15,14 +15,11 @@ updates:
       # Pinned to "28.1.1", for compat with ts3.9
       - dependency-name: "@types/jest"
 
-      # Pinned to "17.0.41", for compat with ts3.9
+      # Locked to "^20.0.0" to align with our minimum node version in package.json/engines
       - dependency-name: "@types/node"
 
       # Updated manually
       - dependency-name: "prettier"
-
-      # Locked to "~3.9.10", for compat with tslint
-      - dependency-name: "typescript"
 
       # overrides
 

@@ -130,13 +130,12 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
   }
 
   const getJsonString = async (filePath: string, branch: string) => {
-    // tslint:disable-next-line:no-try
     try {
       const { stdout } = await originGitRepository({
         show: [`${branch}:${filePath}`],
       })
       return JSON.stringify(JSON.parse(stdout))
-    } catch (e) {
+    } catch {
       return filePath
     }
   }

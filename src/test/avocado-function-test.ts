@@ -46,9 +46,7 @@ describe('check default tag should contains all apiVersion', () => {
   })
 
   it('normalize api path should succeed', () => {
-    // tslint:disable-next-line: no-let
     let apiPath = '/subscriptions/{subscriptionId}/providers/Microsoft.Advisor/configurations/{configurationName}'
-    // tslint:disable-next-line: no-let
     let ret = avocado.normalizeApiPath(apiPath)
     assert.deepStrictEqual(ret, '/subscriptions/{}/providers/Microsoft.Advisor/configurations/{}')
 

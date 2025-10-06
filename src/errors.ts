@@ -14,11 +14,8 @@ type ErrorMessage =
   | 'Can not find readme.md in the folder. If no readme.md file, it will block SDK generation.'
   | 'The API version of the swagger is inconsistent with its file path.'
   | 'The default tag contains multiple API versions swaggers.'
-  // tslint:disable-next-line: max-line-length
   | 'The management plane swagger JSON file does not match its folder path. Make sure management plane swagger located in resource-manager folder'
-  // tslint:disable-next-line: max-line-length
   | 'The default tag should contain all APIs. The API path `{0}` is not in the default tag. Please make sure the missing API swaggers are in the default tag.'
-  // tslint:disable-next-line: max-line-length
   | 'The default tag does not contains the latest API version. Please make sure the latest api version swaggers are in the default tag.'
   | 'The readme file has more than one default tag.'
   | 'TypeSpec file is not allowed in resource-manager or data-plane folder.'
