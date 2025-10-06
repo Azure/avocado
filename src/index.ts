@@ -1,27 +1,27 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as path from 'path'
-import * as tscommonFs from '@ts-common/fs'
-import * as fs from 'fs'
-import * as md from '@ts-common/commonmark-to-markdown'
 import * as openApiMd from '@azure/openapi-markdown'
+import * as format from '@azure/swagger-validation-common'
 import * as asyncIt from '@ts-common/async-iterator'
-import * as jsonParser from '@ts-common/json-parser'
+import * as md from '@ts-common/commonmark-to-markdown'
+import * as tscommonFs from '@ts-common/fs'
 import * as it from '@ts-common/iterator'
 import * as json from '@ts-common/json'
+import * as jsonParser from '@ts-common/json-parser'
 import * as stringMap from '@ts-common/string-map'
 import * as commonmark from 'commonmark'
+import * as fs from 'fs'
 import { JSONPath } from 'jsonpath-plus'
-import * as cli from './cli'
-import * as git from './git'
+import * as path from 'path'
 import * as childProcess from './child-process'
+import * as cli from './cli'
 import * as devOps from './dev-ops'
+import { getSwaggerFiles, IService, SwaggerFileList } from './docs'
 import * as err from './errors'
-import { walkToNode, sortByApiVersion, getDefaultTag, getTagsToSwaggerFilesMapping, getLatestTag } from './readme'
-import * as format from '@azure/swagger-validation-common'
+import * as git from './git'
+import { getDefaultTag, getLatestTag, getTagsToSwaggerFilesMapping, sortByApiVersion, walkToNode } from './readme'
 import { load } from './utils'
-import { getSwaggerFiles, SwaggerFileList, IService } from './docs'
 
 // tslint:disable-next-line: no-require-imports
 import nodeObjectHash = require('node-object-hash')
@@ -57,17 +57,17 @@ const glob = require('glob') as {
 }
 
 export {
-  devOps,
-  cli,
-  git,
   childProcess,
-  getSwaggerFiles,
-  SwaggerFileList,
-  IService,
+  cli,
+  devOps,
   getDefaultTag,
-  getTagsToSwaggerFilesMapping,
   getLatestTag,
+  getSwaggerFiles,
+  getTagsToSwaggerFilesMapping,
+  git,
+  IService,
   sortByApiVersion,
+  SwaggerFileList,
 }
 
 const errorCorrelationId = (error: err.Error) => {

@@ -3,8 +3,8 @@
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
 
-import * as docs from '../docs'
 import * as assert from 'assert'
+import * as docs from '../docs'
 
 describe('docs test getSwaggerFiles', () => {
   it('Test getSwaggerFiles for signalR service ', () => {

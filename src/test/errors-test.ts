@@ -1,5 +1,5 @@
-import { getPathInfoFromError, Error } from './../errors'
 import * as assert from 'assert'
+import { Error, getPathInfoFromError } from './../errors'
 describe('errors', () => {
   it('test get path info from error', () => {
     const input = [

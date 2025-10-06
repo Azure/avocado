@@ -1,12 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as cli from './cli'
-import * as git from './git'
-import * as path from 'path'
-import * as err from './errors'
-import * as fs from '@ts-common/fs'
 import * as asyncIt from '@ts-common/async-iterator'
+import * as fs from '@ts-common/fs'
+import * as path from 'path'
+import * as cli from './cli'
+import * as err from './errors'
+import * as git from './git'
 
 export type FileChangeKind = 'Added' | 'Deleted' | 'Modified'
 

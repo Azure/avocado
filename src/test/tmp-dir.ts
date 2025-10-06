@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-import * as path from 'path'
 import * as pfs from '@ts-common/fs'
+import * as path from 'path'
 
 export const getTmpRoot = () => path.resolve(path.join('..', 'avocado-tmp'))
 /**

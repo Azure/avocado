@@ -2,9 +2,9 @@
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
-import * as commonmark from 'commonmark'
+import { getCodeBlocksAndHeadings, getTagsToSettingsMapping } from '@azure/openapi-markdown'
 import { parse } from '@ts-common/commonmark-to-markdown'
-import { getTagsToSettingsMapping, getCodeBlocksAndHeadings } from '@azure/openapi-markdown'
+import * as commonmark from 'commonmark'
 import * as fs from 'fs'
 import { load } from './utils'
 

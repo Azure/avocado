@@ -2,10 +2,10 @@
 //
 // This software is released under the MIT License.
 // https://opensource.org/licenses/MIT
-import * as readme from '../readme'
+import { parse } from '@ts-common/commonmark-to-markdown'
 import * as assert from 'assert'
 import * as fs from 'fs'
-import { parse } from '@ts-common/commonmark-to-markdown'
+import * as readme from '../readme'
 
 describe('readme test', () => {
   it('getTagsToSwaggerFilesMapping', () => {
