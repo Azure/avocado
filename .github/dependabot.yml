@@ -18,9 +18,6 @@ updates:
       # Locked to "^20.0.0" to align with our minimum node version in package.json/engines
       - dependency-name: "@types/node"
 
-      # Updated manually
-      - dependency-name: "prettier"
-
       # overrides
 
       # Pinned to "7.17.1", for compat with ts3.9

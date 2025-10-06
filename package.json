@@ -23,11 +23,12 @@
   },
   "scripts": {
     "cli": "tsc && node ./bin/cli.js",
+    "format": "prettier \"./src/**/*.ts\" --write",
+    "format:check": "prettier \"./src/**/*.ts\" --check",
+    "format:check:ci": "prettier \"./src/**/*.ts\" --check --log-level debug",
     "lint": "cross-env DEBUG=eslint:eslint eslint",
     "integration": "tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
     "prepack": "npm install && tsc",
-    "prettier": "prettier ./src/**/*.ts",
-    "standard": "standard src/**/*.ts",
     "test": "tsc && jest --silent --testTimeout 100000",
     "tsc": "tsc"
   },
@@ -102,7 +103,7 @@
     "eslint": "^9.37.0",
     "jest": "^30.1.3",
     "jest-junit": "^16.0.0",
-    "prettier": "^1.18.2",
+    "prettier": "^3.6.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.0"
   },
