@@ -10,7 +10,7 @@ describe('git', () => {
     const repo = git.repository(dir)
     try {
       await repo({ clone: ['https://github.com/Azure/fake1b68e2d1771e4f2b9fc8ea287e46cd56', '.'] })
-    } catch (_) {
+    } catch {
       // as expected
     }
   })

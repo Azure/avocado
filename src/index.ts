@@ -514,7 +514,7 @@ export const getPathTableFromSwaggerFile = (swaggerFile: string): PathTable => {
   let swagger
   try {
     swagger = JSON.parse(fs.readFileSync(swaggerFile).toString())
-  } catch (e) {
+  } catch {
     return new Map<string, { apiVersion: string; swaggerFile: string }>()
   }
   const apiVersion = getApiVersionFromSwagger(swagger)
@@ -638,7 +638,7 @@ const DFSTraversalValidate = (
 
     try {
       file = await tscommonFs.readFile(current.path)
-    } catch (e) {
+    } catch {
       yield {
         code: 'NO_JSON_FILE_FOUND',
         message: 'The JSON file is not found but it is referenced from the readme file.',

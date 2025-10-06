@@ -135,7 +135,7 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
         show: [`${branch}:${filePath}`],
       })
       return JSON.stringify(JSON.parse(stdout))
-    } catch (e) {
+    } catch {
       return filePath
     }
   }
