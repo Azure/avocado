@@ -79,10 +79,10 @@ export const hasCommonRPFolder = (pathA: string, pathB: string) => {
 
 export const isPRRelatedError = (fileChanges: readonly FileChange[], error: err.Error): boolean => {
   if (error.code === 'MISSING_README') {
-    return fileChanges.some(item => hasCommonRPFolder(item.path, error.folderUrl))
+    return fileChanges.some((item) => hasCommonRPFolder(item.path, error.folderUrl))
   }
   if (error.code === 'MULTIPLE_API_VERSION') {
-    return fileChanges.some(item => hasCommonRPFolder(item.path, error.readMeUrl))
+    return fileChanges.some((item) => hasCommonRPFolder(item.path, error.readMeUrl))
   }
   return false
 }
@@ -122,8 +122,8 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
 
     return stdout
       .split('\n')
-      .filter(v => v !== '')
-      .map(line => ({
+      .filter((v) => v !== '')
+      .map((line) => ({
         kind: parseGitFileChangeKind(line),
         path: line.substr(2),
       }))
@@ -151,9 +151,9 @@ export const createPullRequestProperties = async (config: cli.Config): Promise<P
     structuralDiff: (): asyncIt.AsyncIterableEx<string> =>
       asyncIt
         .fromPromise(diff())
-        .map(x => x.path)
+        .map((x) => x.path)
         .filter(
-          async filePath =>
+          async (filePath) =>
             !filePath.endsWith('.json') ||
             (await getJsonString(filePath, sourceBranch)) !== (await getJsonString(filePath, targetBranch)),
         ),

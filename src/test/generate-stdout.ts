@@ -11,4 +11,4 @@ export const generate = () => iterator.repeat('Hello world!', 100000)
 /**
  * The function prints to `stdout` a lot of `Hello world!` strings to test `exec` function.
  */
-export const print = () => generate().forEach(v => console.log(v))
+export const print = () => generate().forEach((v) => console.log(v))

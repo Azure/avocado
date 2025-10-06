@@ -340,11 +340,11 @@ describe('avocado', () => {
     const r = await avocado.avocado({ cwd: 'src/test/default_tag_latest_swaggers', env: {} }).toArray()
     assert.deepStrictEqual(r.length > 0, true)
     assert.deepStrictEqual(
-      r.some(it => it.code === 'MISSING_APIS_IN_DEFAULT_TAG'),
+      r.some((it) => it.code === 'MISSING_APIS_IN_DEFAULT_TAG'),
       true,
     )
     assert.deepStrictEqual(
-      r.some(it => it.code === 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'),
+      r.some((it) => it.code === 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'),
       true,
     )
   })
@@ -353,15 +353,15 @@ describe('avocado', () => {
     const r = await avocado.avocado({ cwd: 'src/test/multi_default_tag', env: {} }).toArray()
     assert.deepStrictEqual(r.length > 0, true)
     assert.deepStrictEqual(
-      r.some(it => it.code === 'MISSING_APIS_IN_DEFAULT_TAG'),
+      r.some((it) => it.code === 'MISSING_APIS_IN_DEFAULT_TAG'),
       false,
     )
     assert.deepStrictEqual(
-      r.some(it => it.code === 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'),
+      r.some((it) => it.code === 'NOT_LATEST_API_VERSION_IN_DEFAULT_TAG'),
       false,
     )
     assert.deepStrictEqual(
-      r.some(it => it.code === 'MULTIPLE_DEFAULT_TAGS'),
+      r.some((it) => it.code === 'MULTIPLE_DEFAULT_TAGS'),
       true,
     )
   })
@@ -370,11 +370,11 @@ describe('avocado', () => {
     const r = await avocado.avocado({ cwd: 'src/test/contain_cadl_folder', env: {} }).toArray()
     assert.deepStrictEqual(r.length > 0, true)
     assert.deepStrictEqual(
-      r.some(it => it.code === 'INVALID_TYPESPEC_LOCATION'),
+      r.some((it) => it.code === 'INVALID_TYPESPEC_LOCATION'),
       true,
     )
     assert.deepStrictEqual(
-      r.some(it => it.path.includes('/cadl/')),
+      r.some((it) => it.path.includes('/cadl/')),
       false,
     )
   })

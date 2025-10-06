@@ -14,7 +14,7 @@ describe('cli', () => {
 
   it('no errors, default output', async () => {
     let cwd: unknown
-    await cli.run(c => {
+    await cli.run((c) => {
       cwd = c.cwd
       return ai.fromSequence<IErrorBase>()
     })
@@ -25,9 +25,9 @@ describe('cli', () => {
     let error = ''
     let info = ''
     const report: cli.Report = {
-      logError: s => (error += s),
-      logResult: s => (error += s),
-      logInfo: s => (info += s),
+      logError: (s) => (error += s),
+      logResult: (s) => (error += s),
+      logInfo: (s) => (info += s),
     }
     await cli.run(() => ai.fromSequence<IErrorBase>(), report)
     assert.strictEqual(process.exitCode, 0)
@@ -38,9 +38,9 @@ describe('cli', () => {
     let error = ''
     let info = ''
     const report: cli.Report = {
-      logResult: s => (error += JSON.stringify(s)),
-      logError: s => (error += s),
-      logInfo: s => (info += s),
+      logResult: (s) => (error += JSON.stringify(s)),
+      logError: (s) => (error += s),
+      logInfo: (s) => (info += s),
     }
     await cli.run(
       () =>
@@ -57,9 +57,9 @@ describe('cli', () => {
     let error = ''
     let info = ''
     const report: cli.Report = {
-      logResult: s => (error += JSON.stringify(s)),
-      logError: s => (error += s),
-      logInfo: s => (info += s),
+      logResult: (s) => (error += JSON.stringify(s)),
+      logError: (s) => (error += s),
+      logInfo: (s) => (info += s),
     }
     await cli.run(
       () =>
@@ -76,17 +76,11 @@ describe('cli', () => {
     let error = ''
     let info = ''
     const report: cli.Report = {
-      logResult: s => (error += JSON.stringify(s)),
-      logError: s => (error += JSON.stringify(s)),
-      logInfo: s => (info += s),
+      logResult: (s) => (error += JSON.stringify(s)),
+      logError: (s) => (error += JSON.stringify(s)),
+      logInfo: (s) => (info += s),
     }
-    await cli.run(
-      () =>
-        ai.fromSequence(
-          ...Array<any>({ level: 'hint', message: 'some error' }),
-        ),
-      report,
-    )
+    await cli.run(() => ai.fromSequence(...Array<any>({ level: 'hint', message: 'some error' })), report)
     assert.strictEqual(process.exitCode, 1)
     console.log(JSON.stringify(error))
     assert.strictEqual(error, '{"level":"hint","message":"some error"}')
@@ -96,9 +90,9 @@ describe('cli', () => {
     let error = ''
     let info = ''
     const report: cli.Report = {
-      logResult: s => (error += s),
-      logError: s => (error += s),
-      logInfo: s => (info += s),
+      logResult: (s) => (error += s),
+      logError: (s) => (error += s),
+      logInfo: (s) => (info += s),
     }
     const f = () => {
       throw new Error('critical error')
