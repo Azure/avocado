@@ -82,8 +82,7 @@ describe('errors', () => {
           '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/readme.md',
         jsonUrl:
           '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
-        path:
-          '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
+        path: '/work/avocado/src/test/default_tag_latest_swaggers/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
         apiPath:
           '/subscriptions/{}/resourceGroups/{}/providers/{}/workspaces/{}/providers/Microsoft.SecurityInsights/watchlists/{}/watchlistItems/{}',
       },
@@ -100,7 +99,7 @@ describe('errors', () => {
         path: '/providers/Microsoft.SecurityInsights/operations',
       },
     ]
-    const res = input.map(it => getPathInfoFromError(it as Error))
+    const res = input.map((it) => getPathInfoFromError(it as Error))
     const expected = [
       [
         {
@@ -135,8 +134,7 @@ describe('errors', () => {
       [
         {
           tag: 'json',
-          path:
-            '{"code":"unexpected token","kind":"structure","message":"unexpected token, token: }, line: 3, column: 1","position":{"column":1,"line":3},"token":"}","url":"src/test/invalid_json_trailing_comma/specification/testRP/specs/some.json"}',
+          path: '{"code":"unexpected token","kind":"structure","message":"unexpected token, token: }, line: 3, column: 1","position":{"column":1,"line":3},"token":"}","url":"src/test/invalid_json_trailing_comma/specification/testRP/specs/some.json"}',
         },
       ],
       [
@@ -183,8 +181,7 @@ describe('errors', () => {
         },
         {
           tag: 'json',
-          path:
-            'https://github.com/undefined/blob/undefined/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
+          path: 'https://github.com/undefined/blob/undefined/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/Watchlists.json',
         },
       ],
       [
@@ -194,8 +191,7 @@ describe('errors', () => {
         },
         {
           tag: 'json',
-          path:
-            'https://github.com/undefined/blob/undefined/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/operations.json',
+          path: 'https://github.com/undefined/blob/undefined/specification/securityinsights/resource-manager/Microsoft.SecurityInsights/stable/2021-04-01/operations.json',
         },
       ],
     ]

@@ -39,7 +39,7 @@ export const sortByApiVersion = (versions: string[]): string[] => {
     return new Date(year, month, day)
   }
   for (const regex of supportedRegex) {
-    const filterVersion = versions.filter(v => regex.test(v))
+    const filterVersion = versions.filter((v) => regex.test(v))
     if (filterVersion.length > 0) {
       return filterVersion.sort((a, b) => {
         const aMatch = a.match(regex)!
@@ -100,13 +100,13 @@ export const getTagsToSwaggerFilesMapping = (readmeFilePath: string): Map<string
 
 export const getLatestTag = (tags: string[], versionType: 'stable' | 'preview'): string => {
   // filter out tag with 'only' postfix
-  const normalTags = tags.filter(t => !t.includes('only'))
+  const normalTags = tags.filter((t) => !t.includes('only'))
   let filteredTags = normalTags
 
   if (versionType === 'preview') {
-    filteredTags = normalTags.filter(t => t.includes('preview'))
+    filteredTags = normalTags.filter((t) => t.includes('preview'))
   } else {
-    filteredTags = normalTags.filter(t => !t.includes('preview'))
+    filteredTags = normalTags.filter((t) => !t.includes('preview'))
   }
   const sorted = sortByApiVersion(filteredTags)
   return sorted[sorted.length - 1]

@@ -44,12 +44,12 @@ export const getSwaggerFiles = (rootPath: string, service: IService): SwaggerFil
 
     // There are some platform issues. For windows, it has different path format. To keep it safe and avoid path issue, I use replace instead of path.relative.
     const latestSwaggerFiles = inputFiles
-      .map(it => readmeFile.replace(readmeFileName, it))
-      .filter(it => !excludeFiles.some(ex => it.match(ex)))
+      .map((it) => readmeFile.replace(readmeFileName, it))
+      .filter((it) => !excludeFiles.some((ex) => it.match(ex)))
     ret.latest.push(...latestSwaggerFiles)
 
     const stableSwaggerFiles = getStableSwaggerFiles(rootPath, readmeFile).filter(
-      it => !excludeFiles.some(ex => it.match(ex)),
+      (it) => !excludeFiles.some((ex) => it.match(ex)),
     )
     ret.stable.push(...stableSwaggerFiles)
   }
@@ -66,6 +66,6 @@ export const getStableSwaggerFiles = (rootPath: string, readmeFilePath: string):
 
   const tag = getLatestTag(allTags, 'stable')
 
-  const inputFiles = (mapping.get(tag) || []).map(f => readmeFilePath.replace(readmeFileName, f))
+  const inputFiles = (mapping.get(tag) || []).map((f) => readmeFilePath.replace(readmeFileName, f))
   return inputFiles
 }
