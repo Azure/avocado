@@ -366,6 +366,12 @@ describe('avocado', () => {
     )
   })
 
+  it('avocado check semver api version sorts oldest', async () => {
+    const r = await avocado.avocado({ cwd: 'src/test/latest_api_version', env: {} }).toArray()
+    const errorCodes = r.map((e) => e.code)
+    assert.deepStrictEqual(errorCodes, [])
+  })
+
   it('avocado check illegal file, like cadl', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/contain_cadl_folder', env: {} }).toArray()
     assert.deepStrictEqual(r.length > 0, true)
