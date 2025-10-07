@@ -15,6 +15,7 @@ import * as fs from 'fs'
 import { globSync } from 'glob'
 import { JSONPath } from 'jsonpath-plus'
 import * as path from 'path'
+import { compareApiVersion } from './api-version'
 import * as childProcess from './child-process'
 import * as cli from './cli'
 import * as devOps from './dev-ops'
@@ -440,7 +441,7 @@ export const validateRPMustContainAllLatestApiVersionSwagger = (dir: string): it
 export const mergePathTable = (pathTable: PathTable, newPathTable: PathTable): PathTable => {
   for (const [key, value] of newPathTable) {
     if (pathTable.has(key)) {
-      if (pathTable.get(key)!.apiVersion < value.apiVersion) {
+      if (compareApiVersion(pathTable.get(key)!.apiVersion, value.apiVersion) < 0) {
         pathTable.set(key, value)
       }
     } else {

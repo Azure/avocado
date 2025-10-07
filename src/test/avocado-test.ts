@@ -366,6 +366,17 @@ describe('avocado', () => {
     )
   })
 
+  it('avocado check date-based version is latest', async () => {
+    // Spec contains two versions "7.0" and "2025-07-01", and default version "2025-07-01". If the versions are only
+    // sorted alphabetically, "7.0" sorts later than "2025-07-01", which results in error
+    // "NOT_LATEST_API_VERSION_IN_DEFAULT_TAG".  Thus, our runtime code must special-case this, and ensure date-based
+    // versions always sort "later" than non-date-based-versions.
+
+    const r = await avocado.avocado({ cwd: 'src/test/latest_api_version', env: {} }).toArray()
+    const errorCodes = r.map((e) => e.code)
+    assert.deepStrictEqual(errorCodes, [])
+  })
+
   it('avocado check illegal file, like cadl', async () => {
     const r = await avocado.avocado({ cwd: 'src/test/contain_cadl_folder', env: {} }).toArray()
     assert.deepStrictEqual(r.length > 0, true)
