@@ -77,11 +77,6 @@
     "typescript-eslint": "^8.46.0",
     "vitest": "^3.2.4"
   },
-  "overrides": {
-    "test-exclude": {
-      "glob": "^9.3.5"
-    }
-  },
   "engines": {
     "node": ">=20.0.0"
   }
