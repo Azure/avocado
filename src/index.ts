@@ -770,6 +770,8 @@ const validateFolder = (dir: string) =>
       .recursiveReaddir(dir)
       .filter((f) => path.basename(f).toLowerCase() === 'readme.md')
 
+    console.log(`allReadMeFiles: ${await allReadMeFiles.toArray()}`)
+
     yield* validateRPFolderMustContainReadme(dir)
 
     yield* allReadMeFiles.flatMap(validateReadMeFile)
