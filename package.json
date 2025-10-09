@@ -30,7 +30,9 @@
     "integration": "tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
     "prepack": "npm install && tsc",
     "test": "tsc && jest --silent --testTimeout 100000",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "vitest": "vitest",
+    "vitest:ci": "vitest run --reporter=verbose"
   },
   "jest": {
     "testEnvironment": "node",
@@ -106,7 +108,8 @@
     "prettier": "~3.6.2",
     "prettier-plugin-organize-imports": "^4.3.0",
     "typescript": "~5.9.3",
-    "typescript-eslint": "^8.46.0"
+    "typescript-eslint": "^8.46.0",
+    "vitest": "^3.2.4"
   },
   "overrides": {
     "test-exclude": {
