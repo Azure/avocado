@@ -6,6 +6,7 @@ import { avocado, UnifiedPipelineReport } from './../index'
 import * as ai from '@ts-common/async-iterator'
 import * as assert from 'assert'
 import * as path from 'path'
+import { describe, it } from 'vitest'
 import { IErrorBase } from '../errors'
 import { cli } from '../index'
 
