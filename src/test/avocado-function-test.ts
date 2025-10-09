@@ -5,7 +5,7 @@ import * as md from '@ts-common/commonmark-to-markdown'
 import * as assert from 'assert'
 import { readFileSync } from 'fs'
 import * as path from 'path'
-import * as avocado from '../index'
+import * as avocado from '../index.js'
 
 describe('avocado', () => {
   it('get default tag', () => {

@@ -6,7 +6,7 @@ import { getCodeBlocksAndHeadings, getTagsToSettingsMapping } from '@azure/opena
 import { parse } from '@ts-common/commonmark-to-markdown'
 import * as commonmark from 'commonmark'
 import * as fs from 'fs'
-import { load } from './utils'
+import { load } from './utils.js'
 
 /**
  * walks a markdown tree until the callback provided returns true for a node

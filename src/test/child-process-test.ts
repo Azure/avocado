@@ -2,8 +2,8 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import * as assert from 'assert'
-import { childProcess } from '../index'
-import { generate } from './generate-stdout'
+import { childProcess } from '../index.js'
+import { generate } from './generate-stdout.js'
 
 describe('child-process', () => {
   it('exec maxBuffer', async () => {

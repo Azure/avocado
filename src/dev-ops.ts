@@ -4,9 +4,9 @@
 import * as asyncIt from '@ts-common/async-iterator'
 import * as fs from '@ts-common/fs'
 import * as path from 'path'
-import * as cli from './cli'
-import * as err from './errors'
-import * as git from './git'
+import * as cli from './cli.js'
+import * as err from './errors.js'
+import * as git from './git.js'
 
 export type FileChangeKind = 'Added' | 'Deleted' | 'Modified'
 

@@ -7,8 +7,8 @@
 import { parse } from '@ts-common/commonmark-to-markdown'
 import * as fs from 'fs'
 import * as path from 'path'
-import { getSwaggerFileUnderDefaultTag } from './index'
-import { getLatestTag, getTagsToSwaggerFilesMapping } from './readme'
+import { getSwaggerFileUnderDefaultTag } from './index.js'
+import { getLatestTag, getTagsToSwaggerFilesMapping } from './readme.js'
 
 export interface IService {
   readme_files?: string[]

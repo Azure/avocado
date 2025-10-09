@@ -3,8 +3,8 @@
 
 import * as assert from 'assert'
 import * as path from 'path'
-import * as error from '../errors'
-import * as avocado from '../index'
+import * as error from '../errors.js'
+import * as avocado from '../index.js'
 
 describe('avocado', () => {
   it('avocado validation folder', async () => {

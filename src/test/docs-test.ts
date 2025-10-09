@@ -4,7 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 import * as assert from 'assert'
-import * as docs from '../docs'
+import * as docs from '../docs.js'
 
 describe('docs test getSwaggerFiles', () => {
   it('Test getSwaggerFiles for signalR service ', () => {
