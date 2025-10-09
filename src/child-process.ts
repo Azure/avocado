@@ -23,7 +23,7 @@ export const exec = async (
 ): Promise<ExecResult> => {
   console.log(`exec("${command}")`)
   const result = await nodeJsExec(command, { maxBuffer: Infinity, ...options })
-  console.log(`stdout:\n${result.stdout}`)
-  console.log(`stderr:\n${result.stderr}`)
+  console.log(`stdout:\n${result.stdout.trim()}`)
+  console.log(`stderr:\n${result.stderr.trim()}`)
   return result
 }
