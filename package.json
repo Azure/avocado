@@ -30,7 +30,7 @@
     "integration": "tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
     "prepack": "npm install && tsc",
     "test": "vitest",
-    "test:ci": "vitest run --reporter=verbose",
+    "test:ci": "vitest run --coverage --reporter=verbose",
     "tsc": "tsc"
   },
   "repository": {
