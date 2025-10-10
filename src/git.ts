@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import * as stringMap from '@ts-common/string-map'
-import * as childProcess from './child-process'
+import * as childProcess from './child-process.js'
 
 export type GenericCommand = stringMap.StringMap<readonly string[]>
 

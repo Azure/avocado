@@ -2,7 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import * as stringMap from '@ts-common/string-map'
-import { IErrorBase } from './errors'
+import { IErrorBase } from './errors.js'
 
 export type Report = {
   /**

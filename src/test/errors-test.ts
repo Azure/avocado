@@ -1,6 +1,7 @@
 import * as assert from 'assert'
 import { describe, it } from 'vitest'
-import { Error, getPathInfoFromError } from './../errors'
+import { Error, getPathInfoFromError } from './../errors.js'
+
 describe('errors', () => {
   it('test get path info from error', () => {
     const input = [
