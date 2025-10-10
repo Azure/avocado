@@ -14,6 +14,7 @@ import * as commonmark from 'commonmark'
 import * as fs from 'fs'
 import { globSync } from 'glob'
 import { JSONPath } from 'jsonpath-plus'
+import { hasher } from 'node-object-hash'
 import * as path from 'path'
 import * as childProcess from './child-process.js'
 import * as cli from './cli.js'
@@ -23,9 +24,6 @@ import * as err from './errors.js'
 import * as git from './git.js'
 import { getDefaultTag, getLatestTag, getTagsToSwaggerFilesMapping, sortByApiVersion, walkToNode } from './readme.js'
 import { load } from './utils.js'
-
-// tslint:disable-next-line: no-require-imports
-import nodeObjectHash = require('node-object-hash')
 
 export {
   childProcess,
@@ -117,7 +115,7 @@ const errorCorrelationId = (error: err.Error) => {
     }
   }
 
-  return nodeObjectHash.hasher().hash(toObject())
+  return hasher().hash(toObject())
 }
 
 const markDownIterate = (node: commonmark.Node | null) =>
