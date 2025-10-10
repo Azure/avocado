@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 import * as assert from 'assert'
+import { describe, it } from 'vitest'
 import { childProcess } from '../index'
 import { generate } from './generate-stdout'
 

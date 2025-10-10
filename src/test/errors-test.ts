@@ -1,4 +1,5 @@
 import * as assert from 'assert'
+import { describe, it } from 'vitest'
 import { Error, getPathInfoFromError } from './../errors'
 describe('errors', () => {
   it('test get path info from error', () => {
