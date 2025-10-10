@@ -3,6 +3,7 @@
 
 import * as assert from 'assert'
 import * as path from 'path'
+import { describe, it } from 'vitest'
 import * as error from '../errors.js'
 import * as avocado from '../index.js'
 

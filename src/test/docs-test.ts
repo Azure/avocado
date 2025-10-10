@@ -4,6 +4,7 @@
 // https://opensource.org/licenses/MIT
 
 import * as assert from 'assert'
+import { describe, it } from 'vitest'
 import * as docs from '../docs.js'
 
 describe('docs test getSwaggerFiles', () => {
