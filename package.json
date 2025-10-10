@@ -15,12 +15,6 @@
   "bin": {
     "avocado": "./bin/cli.js"
   },
-  "standard": {
-    "parser": "typescript-eslint-parser",
-    "plugins": [
-      "typescript"
-    ]
-  },
   "scripts": {
     "build": "tsc",
     "format": "prettier \"./src/**/*.ts\" --write",
