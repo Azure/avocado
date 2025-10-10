@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.4
+
+- Convert from CJS to ESM
+
 ## 0.10.3
 
 - Bump `@azure/swagger-validation-common` from `0.0.5` to `0.1.2`
