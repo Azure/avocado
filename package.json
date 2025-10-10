@@ -22,16 +22,14 @@
     ]
   },
   "scripts": {
-    "cli": "tsc && node ./bin/cli.js",
+    "build": "tsc",
     "format": "prettier \"./src/**/*.ts\" --write",
     "format:check": "prettier \"./src/**/*.ts\" --check",
     "format:check:ci": "prettier \"./src/**/*.ts\" --check --log-level debug",
     "lint": "cross-env DEBUG=eslint:eslint eslint",
-    "integration": "tsc && cd ../azure-rest-api-specs/ && node ../avocado/bin/cli.js",
     "prepack": "npm install && tsc",
     "test": "vitest",
-    "test:ci": "vitest run --coverage --reporter=verbose",
-    "tsc": "tsc"
+    "test:ci": "vitest run --coverage --reporter=verbose"
   },
   "repository": {
     "type": "git",
