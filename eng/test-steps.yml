@@ -1,36 +1,23 @@
 parameters:
-- name: version
-  type: string
+  - name: version
+    type: string
 
 steps:
   - task: NodeTool@0
-    displayName: 'Install Node'
+    displayName: "Install Node"
     inputs:
       versionSpec: ${{ parameters.version }}
+
   - script: npm ci
-    displayName: 'npm ci'
+
   - script: npm ls -a
-    displayName: 'npm ls -a'
     condition: succeededOrFailed()
     continueOnError: true
+
+  - script: npm run build
+
   - script: npm run lint
-    displayName: 'npm run lint'
+
   - script: npm run format:check:ci
-    displayName: 'npm run format:check:ci'
-  - task: Npm@1
-    displayName: 'npm test'
-    inputs:
-      command: custom
-      verbose: false
-      customCommand: test
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFiles: '**/test-results.xml'
-      testRunTitle: 'Test results for JavaScript'
-  - task: PublishCodeCoverageResults@1
-    condition: succeededOrFailed()
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/*coverage.xml'
-      reportDirectory: '$(System.DefaultWorkingDirectory)/**/coverage'
+
+  - script: npm run test:ci
