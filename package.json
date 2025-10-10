@@ -17,7 +17,7 @@
     "avocado": "./bin/cli.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --build --verbose",
     "format": "prettier \"./src/**/*.ts\" --write",
     "format:check": "prettier \"./src/**/*.ts\" --check",
     "format:check:ci": "prettier \"./src/**/*.ts\" --check --log-level debug",
