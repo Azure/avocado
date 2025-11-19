@@ -3,6 +3,7 @@
 ## 0.10.4
 
 - Convert from CJS to ESM
+- Bump `glob` from `^11.0.3` to `^12.0.0`
 
 ## 0.10.3
 
