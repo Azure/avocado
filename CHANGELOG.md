@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10.5
+
+- Bump `glob` from `^12.0.0` to `^13.0.0`
+
 ## 0.10.4
 
 - Convert from CJS to ESM
