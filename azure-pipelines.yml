@@ -119,7 +119,7 @@ extends:
                     displayName: Packages to be published
 
                   - task: EsrpRelease@9
-                    displayName: 'Publish oav to ESRP'
+                    displayName: 'Publish to ESRP'
                     inputs:
                       ConnectedServiceName: 'Azure SDK PME Managed Identity'
                       ClientId: '5f81938c-2544-4f1f-9251-dd9de5b8a81b'
