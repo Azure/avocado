@@ -4,6 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 7
     ignore:
       # Locked to "^20.0.0" to align with our minimum node version in package.json/engines
       - dependency-name: "@types/node"
