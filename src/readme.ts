@@ -101,13 +101,10 @@ export const getTagsToSwaggerFilesMapping = (readmeFilePath: string): Map<string
 export const getLatestTag = (tags: string[], versionType: 'stable' | 'preview'): string => {
   // filter out tag with 'only' postfix
   const normalTags = tags.filter((t) => !t.includes('only'))
-  let filteredTags = normalTags
-
-  if (versionType === 'preview') {
-    filteredTags = normalTags.filter((t) => t.includes('preview'))
-  } else {
-    filteredTags = normalTags.filter((t) => !t.includes('preview'))
-  }
+  const filteredTags =
+    versionType === 'preview'
+      ? normalTags.filter((t) => t.includes('preview'))
+      : normalTags.filter((t) => !t.includes('preview'))
   const sorted = sortByApiVersion(filteredTags)
   return sorted[sorted.length - 1]
 }
