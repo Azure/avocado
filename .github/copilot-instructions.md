@@ -54,7 +54,7 @@ Key source files:
 
 ## PR and CI Guidelines
 
-- CI runs on GitHub Actions (`.github/workflows/test.yaml`) on both Ubuntu and Windows with Node 20 and 24.
+- CI runs on GitHub Actions (`.github/workflows/test.yaml`) on Ubuntu (Node 20) and Windows (Node 24).
 - CI steps: install → build → lint → format check → test with coverage.
 - All PRs should pass lint, format check, and tests before merging.
 - Update `CHANGELOG.md` when making user-facing changes.
