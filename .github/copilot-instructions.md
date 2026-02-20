@@ -46,7 +46,7 @@ dist/          – Compiled output (git-ignored)
 Key source files:
 - `src/index.ts` – Main validation logic and public API
 - `src/errors.ts` – Error type definitions
-- `src/cli.ts` – CLI argument parsing (yargs)
+- `src/cli.ts` – CLI runner/reporting utilities (yargs setup lives in `bin/cli.js`)
 - `src/dev-ops.ts` – Azure DevOps PR integration
 - `src/git.ts` – Git operations
 - `src/readme.ts` – Readme/markdown parsing utilities
