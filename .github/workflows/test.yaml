@@ -63,10 +63,3 @@ jobs:
       - name: Test
         run: npm run test:ci
         shell: pwsh
-
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v7
-        with:
-          name: code-coverage-report-${{ matrix.os }}-${{ matrix.node-version }}
-          path: ./coverage
-          if-no-files-found: ignore
