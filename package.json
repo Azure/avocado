@@ -18,7 +18,6 @@
   },
   "scripts": {
     "build": "tsc --build --verbose",
-    "check": "npm run build && npm run test:ci && npm run lint && npm run format:check",
     "format": "prettier \"./src/**/*.ts\" --write",
     "format:check": "prettier \"./src/**/*.ts\" --check",
     "format:check:ci": "prettier \"./src/**/*.ts\" --check --log-level debug",
