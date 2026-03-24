@@ -2,7 +2,7 @@
 
 ## 0.11.0
 
-- Breaking Change: Replace public `child_process.exec()`-based API with `execFile()` (consumers must use `execFile`)
+- Breaking Change: Replace export `childProcess.exec()` with `childProcess.execFile()`
 
 ## 0.10.5
 
