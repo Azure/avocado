@@ -7,7 +7,7 @@ import { childProcess } from '../index.js'
 import { generate } from './generate-stdout.js'
 
 describe('child-process', () => {
-  it('exec maxBuffer', async () => {
+  it('execFile maxBuffer', async () => {
     // call `generate-stdout.print()` as a separate process.
     const { stdout } = await childProcess.execFile(
       'node',
