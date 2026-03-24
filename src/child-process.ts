@@ -20,5 +20,5 @@ export type ExecResult = {
 export const execFile = (
   file: string,
   args: readonly string[],
-  options: childProcess.ExecOptionsWithStringEncoding,
+  options: childProcess.ExecFileOptionsWithStringEncoding,
 ): Promise<ExecResult> => nodeJsExecFile(file, args, { maxBuffer: Infinity, ...options })
