@@ -34,5 +34,5 @@ export const repository =
         GIT_TERMINAL_PROMPT: '0',
       },
     }
-    return childProcess.exec(`git ${cmd} ${args.join(' ')}`, options)
+    return childProcess.execFile('git', [cmd, ...args], options)
   }
