@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.0
+## 0.10.6
 
 - Breaking Change: Replace export `childProcess.exec()` with `childProcess.execFile()`
 
