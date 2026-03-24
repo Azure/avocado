@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.5
+## 0.10.6
 
 - Replace `child_process.exec()` with `execFile()`
 
