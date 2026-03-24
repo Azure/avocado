@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.6
+## 0.11.0
 
 - Breaking Change: Replace public `child_process.exec()`-based API with `execFile()` (consumers must use `execFile`)
 
