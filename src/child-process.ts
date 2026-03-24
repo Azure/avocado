@@ -4,7 +4,7 @@
 import * as childProcess from 'child_process'
 import * as util from 'util'
 
-const nodeJsExec = util.promisify(childProcess.exec)
+const nodeJsExecFile = util.promisify(childProcess.execFile)
 
 export type ExecResult = {
   /**
@@ -17,5 +17,8 @@ export type ExecResult = {
   readonly stderr: string
 }
 
-export const exec = (command: string, options: childProcess.ExecOptionsWithStringEncoding): Promise<ExecResult> =>
-  nodeJsExec(command, { maxBuffer: Infinity, ...options })
+export const execFile = (
+  file: string,
+  args: readonly string[],
+  options: childProcess.ExecOptionsWithStringEncoding,
+): Promise<ExecResult> => nodeJsExecFile(file, args, { maxBuffer: Infinity, ...options })
