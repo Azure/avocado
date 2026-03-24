@@ -2,7 +2,7 @@
 
 ## 0.10.6
 
-- Replace `child_process.exec()` with `execFile()`
+- Breaking Change: Replace public `child_process.exec()`-based API with `execFile()` (consumers must use `execFile`)
 
 ## 0.10.5
 
