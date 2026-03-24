@@ -11,7 +11,7 @@ describe('child-process', () => {
     // call `generate-stdout.print()` as a separate process.
     const { stdout } = await childProcess.execFile(
       'node',
-      ['-e', 'import { print } from "./dist/test/generate-stdout.js"; print();'],
+      ['-e', "import { print } from './dist/test/generate-stdout.js'; print();"],
       {},
     )
     const expected = generate()
