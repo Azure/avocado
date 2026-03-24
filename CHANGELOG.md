@@ -2,7 +2,7 @@
 
 ## 0.10.6
 
-- Breaking Change: Replace export `childProcess.exec()` with `childProcess.execFile()`
+- Add `childProcess.execFile()`
 
 ## 0.10.5
 
