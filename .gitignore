@@ -62,4 +62,5 @@ typings/
 
 test-results.xml
 dist/
+*.tsbuildinfo
 .vs/
