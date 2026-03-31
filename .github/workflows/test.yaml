@@ -59,11 +59,11 @@ jobs:
       - name: Check Formatting
         run: npm run format:check:ci
 
-      - if: ${{ matrix.folder == '.github' && matrix.os == 'ubuntu'}}
+      - if: ${{ runner.os == 'Linux'}}
         name: Pack
         run: npm pack
 
-      - if: ${{ matrix.folder == '.github' && matrix.os == 'ubuntu'}}
+      - if: ${{ runner.os == 'Linux'}}
         name: Upload tarball
         uses: actions/upload-artifact@v7
         with:
@@ -71,11 +71,11 @@ jobs:
           archive: false
 
       # Content copied from https://raw.githubusercontent.com/rhysd/actionlint/2ab3a12c7848f6c15faca9a92612ef4261d0e370/.github/actionlint-matcher.json
-      - if: ${{ matrix.folder == '.github' && matrix.os == 'ubuntu'}}
+      - if: ${{ runner.os == 'Linux'}}
         name: Add ActionLint Problem Matcher
         run: echo "::add-matcher::.github/matchers/actionlint.json"
 
-      - if: ${{ matrix.folder == '.github' && matrix.os == 'ubuntu'}}
+      - if: ${{ runner.os == 'Linux'}}
         name: Lint workflows
         uses: docker://rhysd/actionlint:1.7.11
         with:
