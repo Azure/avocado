@@ -75,7 +75,7 @@ jobs:
         name: Add ActionLint Problem Matcher
         run: echo "::add-matcher::.github/matchers/actionlint.json"
 
-      - if: $runner.os == 'Linux'
+      - if: runner.os == 'Linux'
         name: Lint workflows
         uses: docker://rhysd/actionlint:1.7.11
         with:
