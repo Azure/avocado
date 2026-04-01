@@ -77,6 +77,6 @@ jobs:
 
       - if: runner.os == 'Linux'
         name: Lint workflows
-        uses: docker://rhysd/actionlint:1.7.11
+        uses: docker://rhysd/actionlint:1.7.12
         with:
           args: -color -verbose
