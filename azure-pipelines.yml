@@ -52,8 +52,8 @@ extends:
       - job: Test_Windows
         strategy:
           matrix:
-            Win.Node20:
-              node.version: 20.x
+            Win.Node22:
+              node.version: 22.x
             Win.Node24:
               node.version: 24.x
         pool:
@@ -68,8 +68,8 @@ extends:
       - job: Test_Linux
         strategy:
           matrix:
-            Linux.Node20:
-              node.version: 20.x
+            Linux.Node22:
+              node.version: 22.x
             Linux.Node24:
               node.version: 24.x
         pool:
