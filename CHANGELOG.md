@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1
+
+- Bump minimum Node.js version from 20 to 22
+
 ## 0.11.0
 
 - Breaking Change: Replace export `childProcess.exec()` with `childProcess.execFile()`
