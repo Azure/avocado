@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2
+
+- Fix CVE-2026-53550 / GHSA-h67p-54hq-rp68: replace transitive `js-yaml@3.14.2` instances (from `@azure/openapi-markdown` and `front-matter`) with a compatibility shim backed by the patched `js-yaml@4.2.0`
+
 ## 0.11.1
 
 - Bump minimum Node.js version from 20 to 22
