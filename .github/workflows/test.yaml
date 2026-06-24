@@ -28,7 +28,7 @@ jobs:
       - if: runner.os == 'Windows'
         run: git config --global core.longpaths true
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Setup Node ${{ matrix.node-version }}
         uses: actions/setup-node@v6
