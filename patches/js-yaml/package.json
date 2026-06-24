@@ -1,0 +1,13 @@
+{
+  "name": "js-yaml",
+  "version": "4.2.0",
+  "description": "Compatibility shim: wraps js-yaml@4.2.0 with v3 API aliases (safeLoad/safeDump) to fix CVE-2026-53550 / GHSA-h67p-54hq-rp68 in transitive dependencies that require js-yaml@3.x",
+  "main": "./index.cjs",
+  "exports": {
+    ".": "./index.cjs"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml-v4": "npm:js-yaml@4.2.0"
+  }
+}
