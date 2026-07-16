@@ -53,6 +53,8 @@ typings/
 
 # Output of 'npm pack'
 *.tgz
+# Exception: vendored js-yaml compatibility shim consumed via package.json overrides
+!patches/*.tgz
 
 # Yarn Integrity file
 .yarn-integrity

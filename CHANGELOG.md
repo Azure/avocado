@@ -2,7 +2,8 @@
 
 ## 0.11.2
 
-- Fix CVE-2026-53550 / GHSA-h67p-54hq-rp68: replace transitive `js-yaml@3.14.2` instances (from `@azure/openapi-markdown` and `front-matter`) with a compatibility shim backed by the patched `js-yaml@4.2.0`
+- Bump `js-yaml` from `^4.1.0` to `^5.2.0`
+- Fix CVE-2026-53550 / GHSA-h67p-54hq-rp68: replace transitive `js-yaml@3.14.2` instances (pulled in by `@azure/openapi-markdown` and `front-matter`) with a compatibility shim backed by the patched `js-yaml@5.2.0`
 
 ## 0.11.1
 
