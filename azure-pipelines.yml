@@ -23,6 +23,8 @@ extends:
             inputs:
               version: 24.x
 
+          - template: /eng/common/pipelines/templates/steps/create-authenticated-npmrc.yml
+  
           - script: npm ci
             displayName: 'npm ci'
 
