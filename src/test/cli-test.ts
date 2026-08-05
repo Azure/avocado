@@ -107,7 +107,6 @@ describe('cli', () => {
     process.env.SYSTEM_PULLREQUEST_TARGETBRANCH = 'master'
     process.env.TRAVIS_REPO_SLUG = 'Azure/azure-rest-api-specs'
     process.env.TRAVIS_PULL_REQUEST_SHA = '70ac08dc9a'
-    console.log(process.env)
     try {
       await cli.run(avocado, UnifiedPipelineReport('pipe.log'), { cwd: 'src/test/circular_reference', env: {} })
     } catch (err) {
