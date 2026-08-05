@@ -3,10 +3,10 @@ parameters:
     type: string
 
 steps:
-  - task: NodeTool@0
+  - task: UseNode@1
     displayName: 'Install Node'
     inputs:
-      versionSpec: ${{ parameters.version }}
+      version: ${{ parameters.version }}
 
   - script: npm ci
     displayName: 'npm ci'
