@@ -8,6 +8,8 @@ steps:
     inputs:
       versionSpec: ${{ parameters.version }}
 
+  - template: /eng/common/pipelines/templates/steps/create-authenticated-npmrc.yml
+
   - script: npm ci
     displayName: 'npm ci'
 
