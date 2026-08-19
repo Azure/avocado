@@ -3,18 +3,13 @@
 
 import * as path from 'path'
 import type { FileChange, PullRequestProperties } from './dev-ops.js'
-import { getSuppressions } from './suppressions.js'
+import { getSuppressionsForTools } from './suppressions.js'
 
 const avocadoSuppressionTools = ['SwaggerAvocado', 'SwaggerAll'] as const
 
 export const isAvocadoPathSuppressed = async (targetPath: string): Promise<boolean> => {
-  for (const tool of avocadoSuppressionTools) {
-    const suppressions = await getSuppressions(tool, targetPath)
-    if (suppressions.some((suppression) => !suppression.rules?.length && !suppression.subRules?.length)) {
-      return true
-    }
-  }
-  return false
+  const suppressions = await getSuppressionsForTools(avocadoSuppressionTools, targetPath)
+  return suppressions.some((suppression) => !suppression.rules?.length && !suppression.subRules?.length)
 }
 
 const getSuppressedPaths = async (workingDir: string, fileChanges: readonly FileChange[]): Promise<readonly string[]> =>
