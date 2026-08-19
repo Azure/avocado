@@ -1,0 +1,5 @@
+- tool: SwaggerAll
+  reason: Suppress Avocado validation for this directory
+  paths:
+    - "."
+    - "**"

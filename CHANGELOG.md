@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.0
+
+- Add path suppression support to Azure DevOps validation using suppressions.yaml with tool names: `SwaggerAvocado` and `SwaggerAll`.
+
 ## 0.11.1
 
 - Bump minimum Node.js version from 20 to 22

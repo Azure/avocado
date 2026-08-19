@@ -1,0 +1,7 @@
+- tool: SwaggerAvocado
+  reason: A scoped suppression must not suppress the whole diagnostic
+  rules:
+    - UNREFERENCED_JSON_FILE
+  paths:
+    - "."
+    - "**"

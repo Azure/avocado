@@ -16,6 +16,7 @@ import { globSync } from 'glob'
 import { JSONPath } from 'jsonpath-plus'
 import { hasher } from 'node-object-hash'
 import * as path from 'path'
+import { excludeSuppressedPaths } from './avocado-suppressions.js'
 import * as childProcess from './child-process.js'
 import * as cli from './cli.js'
 import * as devOps from './dev-ops.js'
@@ -825,7 +826,7 @@ const avocadoForDevOps = (
   asyncIt.iterable<err.Error>(async function* () {
     // collect all errors from the 'targetBranch'
     const diffFiles = await pr.diff()
-    const changedSwaggerFilePath = diffFiles.map((item) => item.path)
+    const changedSwaggerFilePath = await excludeSuppressedPaths(pr, diffFiles)
 
     const swaggerParentDirs = new Set<string>()
     changedSwaggerFilePath
