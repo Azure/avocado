@@ -11,7 +11,8 @@ import * as err from '../errors.js'
 import { avocado, cli, devOps, git } from '../index.js'
 import * as tmpDir from './tmp-dir.js'
 
-type MockAction = 'remove readme' | 'modify json' | 'add file' | 'update readme' | 'update .github' | 'remove file'
+type MockAction =
+  'remove readme' | 'modify json' | 'add file' | 'update readme' | 'update .github' | 'remove file' | 'use suppression'
 
 /**
  * Create Azure DevOps environment for testing.
@@ -93,8 +94,19 @@ input-file:
   )
 
   await pfs.writeFile(path.join(remote, 'license'), '')
+  if (action.includes('use suppression')) {
+    await pfs.writeFile(
+      path.join(resourceProviderFolder, 'suppressions.yaml'),
+      `
+- tool: SwaggerAvocado
+  path: resource-manager/**
+  reason: Suppress Avocado validation for this directory
+`,
+    )
+  }
   await gitRemote({ add: ['.'] })
   await gitRemote({ commit: ['-m', '"initial commit"', '--no-gpg-sign'] })
+  await gitRemote({ branch: ['-M', 'master'] })
 
   await gitRemote({ checkout: ['-b', 'source'] })
   if (action.includes('remove readme')) {
@@ -264,6 +276,12 @@ describe('Azure DevOps', () => {
     ])
   })
 
+  it('filters suppressed paths in Azure DevOps validation', async () => {
+    const cfg = await createDevOpsEnv('devops-pr-suppression', ['add file', 'modify json', 'use suppression'])
+    const errors = await avocado(cfg).toArray()
+    assert.deepStrictEqual(errors, [])
+  })
+
   it('PR diff', async () => {
     const cfg = await createDevOpsEnv('devops-pr-diff', ['remove readme', 'add file', 'modify json'])
     const pr = await devOps.createPullRequestProperties(cfg)
@@ -317,6 +335,7 @@ describe('Azure DevOps', () => {
     await pfs.writeFile(path.join(remote, 'license'), '')
     await gitRemote({ add: ['.'] })
     await gitRemote({ commit: ['-m', '"initial commit"', '--no-gpg-sign'] })
+    await gitRemote({ branch: ['-M', 'master'] })
 
     // commit removing 'specification/readme.md' to 'source'.
     await gitRemote({ checkout: ['-b', 'source'] })
