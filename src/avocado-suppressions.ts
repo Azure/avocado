@@ -26,7 +26,7 @@ const getSuppressedPaths = async (workingDir: string, fileChanges: readonly File
     )
   ).filter((item): item is string => item !== undefined)
 
-export const filterSuppressedPaths = async (
+export const excludeSuppressedPaths = async (
   pr: PullRequestProperties,
   fileChanges: readonly FileChange[],
 ): Promise<readonly string[]> => {
