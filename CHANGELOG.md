@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.0
 
 - Add path suppression support to Azure DevOps validation using suppressions.yaml with tool names: `SwaggerAvocado` and `SwaggerAll`.
 
