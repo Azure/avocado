@@ -12,7 +12,14 @@ import { avocado, cli, devOps, git } from '../index.js'
 import * as tmpDir from './tmp-dir.js'
 
 type MockAction =
-  'remove readme' | 'modify json' | 'add file' | 'update readme' | 'update .github' | 'remove file' | 'use suppression'
+  | 'remove readme'
+  | 'modify json'
+  | 'add file'
+  | 'update readme'
+  | 'update .github'
+  | 'remove file'
+  | 'use suppression'
+  | 'add new spec'
 
 /**
  * Create Azure DevOps environment for testing.
@@ -174,6 +181,30 @@ input-file:
     await pfs.unlink(path.join(resourceManagerFolder, 'file1.json'))
   }
 
+  if (action.includes('add new spec')) {
+    // brand new RP folder, including its readme.md, that does not exist on the target branch.
+    const newResourceProviderFolder = path.join(specification, 'newRP')
+    const newResourceManagerFolder = path.join(newResourceProviderFolder, 'resource-manager')
+    await pfs.mkdir(newResourceProviderFolder)
+    await pfs.mkdir(newResourceManagerFolder)
+    await pfs.writeFile(
+      path.join(newResourceManagerFolder, 'readme.md'),
+      `
+# New RP
+
+> see https://aka.ms/autorest
+
+### Tag: package-2020-07-01
+
+\`\`\` yaml $(tag)=='package-2020-07-01'
+input-file:
+- $(this-folder)/new.json
+\`\`\`
+`,
+    )
+    await pfs.writeFile(path.join(newResourceManagerFolder, 'new.json'), `{"foo":"bar"}`)
+  }
+
   await pfs.writeFile(path.join(remote, 'license'), 'MIT')
   await gitRemote({ add: ['.'] })
   await gitRemote({
@@ -278,6 +309,12 @@ describe('Azure DevOps', () => {
 
   it('filters suppressed paths in Azure DevOps validation', async () => {
     const cfg = await createDevOpsEnv('devops-pr-suppression', ['add file', 'modify json', 'use suppression'])
+    const errors = await avocado(cfg).toArray()
+    assert.deepStrictEqual(errors, [])
+  })
+
+  it('does not raise MISSING_README for a brand new spec added by the PR', async () => {
+    const cfg = await createDevOpsEnv('devops-pr-add-new-spec', ['add new spec'])
     const errors = await avocado(cfg).toArray()
     assert.deepStrictEqual(errors, [])
   })
