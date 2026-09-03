@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.12.1
 
 - Fix regression introduced in 0.12.0 where newly added specs incorrectly raised `MISSING_README` errors. Suppression filtering for Azure DevOps validation left the working directory checked out on the target branch instead of the source branch.
 
