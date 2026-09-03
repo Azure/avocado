@@ -41,5 +41,10 @@ export const excludeSuppressedPaths = async (
     suppressedPaths.add(suppressedPath)
   }
 
+  // Restore the working directory to the source branch. Callers expect the working
+  // directory to reflect the source branch content (e.g. to find readme.md files for
+  // newly added specs) after suppression filtering completes.
+  await pr.checkout(pr.sourceBranch)
+
   return fileChanges.map((item) => item.path).filter((item) => !suppressedPaths.has(item))
 }

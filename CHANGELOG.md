@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.1
+
+- Fix regression introduced in 0.12.0 where newly added specs incorrectly raised `MISSING_README` errors. Suppression filtering for Azure DevOps validation left the working directory checked out on the target branch instead of the source branch.
+
 ## 0.12.0
 
 - Add path suppression support to Azure DevOps validation using suppressions.yaml with tool names: `SwaggerAvocado` and `SwaggerAll`.
