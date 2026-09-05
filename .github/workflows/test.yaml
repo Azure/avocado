@@ -22,7 +22,7 @@ jobs:
           - os: windows
             node-version: 24
 
-    runs-on: ${{ fromJSON('{"ubuntu":"ubuntu-24.04", "windows":"windows-2022"}')[matrix.os] }}
+    runs-on: ${{ fromJSON('{"ubuntu":"ubuntu-24.04", "windows":"windows-2025"}')[matrix.os] }}
 
     steps:
       - if: runner.os == 'Windows'

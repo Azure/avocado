@@ -48,7 +48,7 @@ extends:
         runInSingleJob: true
       sourceAnalysisPool:
         name: azsdk-pool
-        image: windows-2022
+        image: windows-2025
         os: windows
       eslint:
         enabled: false
