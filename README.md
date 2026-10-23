@@ -1,6 +1,6 @@
 # ⚠️ Deprecation Notice
 
-**AutoRest and its ecosystem(including avocado) is deprecated and will be retired on July 1, 2026.**
+**AutoRest and its ecosystem(including avocado) is deprecated and was retired on July 1, 2026.**
 
 AutoRest is no longer under active development. No new features, language generators, or plugins will be added.
 
