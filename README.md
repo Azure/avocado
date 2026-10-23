@@ -1,3 +1,14 @@
+# ⚠️ Deprecation Notice
+
+**AutoRest and its ecosystem(including avocado) is deprecated and was retired on July 1, 2026.**
+
+AutoRest is no longer under active development. No new features, language generators, or plugins will be added.
+
+### ✅ Recommended replacement: TypeSpec
+
+The recommended successor to AutoRest is **[TypeSpec](https://typespec.io/)** — a modern, actively developed API description language and code generation platform.
+
+
 # Avocado
 
 Another Validator of OpenAPI spec repository Configuration And Directories.
