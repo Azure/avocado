@@ -51,7 +51,7 @@
     "@ts-common/json-parser": "^1.1.0",
     "@ts-common/string-map": "^1.1.1",
     "commonmark": "0.31.2",
-    "glob": "^13.0.0",
+    "glob": "^14.0.3",
     "js-yaml": "^5.2.0",
     "jsonpath-plus": "^10.0.0",
     "minimatch": "^10.2.6",
