@@ -509,13 +509,13 @@ export const getAllPathFromSwagger = (swagger: any) => {
     path: apiJsonPath,
     json: swagger,
     resultType: 'all',
-  })
+  }) as { readonly value: any }[]
   const xmsApiJsonPath = '$.x-ms-paths.*~'
   const xMsPaths = JSONPath({
     path: xmsApiJsonPath,
     json: swagger,
     resultType: 'all',
-  })
+  }) as { readonly value: any }[]
 
   return paths
     .map((item: { readonly value: any }) => item.value)
@@ -528,7 +528,7 @@ export const getApiVersionFromSwagger = (swagger: any) => {
     path: apiVersionPath,
     json: swagger,
     resultType: 'all',
-  })
+  }) as { readonly value: any }[]
   if (version.length === 0) {
     return undefined
   }
